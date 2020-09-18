@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Stevebauman\Location\Location;
 
 class User extends Authenticatable
 {
@@ -70,6 +71,14 @@ class User extends Authenticatable
         $str = $this->last_login_at;
         $date = strtotime($str);
         return date('d/M/Y h:i:s', $date);
+    }
+
+    public function getLocationAttribute() {
+        $ip = $this->last_login_ip;
+
+        $data = Location::get($ip);
+
+        return $data->countryName .", ". $data->cityName;
     }
 
 }

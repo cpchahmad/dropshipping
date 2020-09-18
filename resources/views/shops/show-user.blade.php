@@ -191,7 +191,7 @@
                                         {{ $user->date }}
                                     </p>
                                     <p>
-                                        location
+                                        {{ $user->location }}
                                     </p>
                                 </div>
                             </div>

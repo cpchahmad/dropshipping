@@ -56,3 +56,8 @@ Route::get('/store/customers', 'AdminController@storeCustomers');
 Route::get('/dashboard', 'HomeController@index')->name('dashboard');
 Route::get('/config', 'ShopsController@config');
 
+
+Route::get('/dummy', function () {
+    return view('products.new');
+});
+

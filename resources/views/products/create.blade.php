@@ -21,7 +21,6 @@
     </style>
     <script src="{{ asset('js/plugins/ckeditor/ckeditor.js') }}"></script>
 
-
 @endsection
 
 @section('js_after')
