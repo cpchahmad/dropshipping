@@ -160,17 +160,19 @@ class ShopifyOrder extends Model
         foreach ($line_item_obj as $item) {
 
             $varient = ShopifyVarient::find($item->variant_id);
-            $image_src = null;
+            $image_src = "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
 
             if($varient){
                 $image_id = $varient->image_id;
                 $image = ProductImage::where('shopify_id', $image_id)->first();
                 if($image){
+
                     $image_src = $image->src;
                 }
                 else{
                     $product_id = $varient->shopify_product_id;
                     $image_src = $this->getImgAttribute($product_id);
+//                    $image_src = "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
                 }
             }
 
@@ -251,6 +253,7 @@ class ShopifyOrder extends Model
              <tr>
                 <td class='d-flex align-items-center'>
                     <div>
+
                     <img src='$image_src' alt='No img' class=\"img-fluid\" style='width: 120px; height: auto;'>
                     </div>
                     <div class='ml-2'>
@@ -320,11 +323,20 @@ class ShopifyOrder extends Model
         $product = ShopifyProduct::find($id);
 
         if($product->image == "null") {
-            return 12;
+            return "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
         }
         else{
-            $image = json_decode($product->image);
-            return $image->src;
+
+            if($product->image == null) {
+
+                dd('yes');
+                return "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
+            }
+            else {
+                $image = json_decode($product->image);
+                return $image->src;
+            }
+
         }
     }
 }
