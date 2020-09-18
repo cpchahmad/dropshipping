@@ -163,7 +163,7 @@
                                     @foreach($details as $detail)
                                       <tr>
                                           <td>{{ $detail->date }}</td>
-                                          <td>location</td>
+                                          <td>{{ $detail->location }}</td>
                                       </tr>
                                     @endforeach
                                 </tbody>

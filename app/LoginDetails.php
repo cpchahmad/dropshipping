@@ -14,4 +14,12 @@ class LoginDetails extends Model
         $date = strtotime($str);
         return date('d/M/Y h:i:s', $date);
     }
+
+    public function getLocationAttribute() {
+        $ip = $this->last_login_ip;
+
+        $data = \Location::get($ip);
+
+        return $data->countryName .", ". $data->cityName;
+    }
 }

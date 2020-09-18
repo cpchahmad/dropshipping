@@ -76,7 +76,7 @@ class User extends Authenticatable
     public function getLocationAttribute() {
         $ip = $this->last_login_ip;
 
-        $data = Location::get($ip);
+        $data = \Location::get($ip);
 
         return $data->countryName .", ". $data->cityName;
     }
