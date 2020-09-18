@@ -21,7 +21,7 @@ class CreateProductImagesTable extends Migration
             $table->string('alt')->nullable();
             $table->integer('width')->nullable();
             $table->integer('height')->nullable();
-            $table->string('src')->nullable();
+            $table->text('src')->nullable();
             $table->text('variant_ids')->nullable();
             $table->timestamps();
         });
