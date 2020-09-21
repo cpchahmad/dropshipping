@@ -266,6 +266,7 @@
                                                  <span><strong style="font-size: 14px !important">Compare at Price:</strong> ${{ $product->compare_price }}</span><br>
                                                  <span><strong style="font-size: 14px !important">Tags:</strong> {{ $product->product_tags }}</span><br>
                                                  <span><strong style="font-size: 14px !important">Weight:</strong> {{ $product->weight }} {{ $product->unit }}</span><br>
+                                                 <span><strong style="font-size: 16px !important">Approved Status:</strong>{{ $product->approved_status }}</span><br>
                                             </td>
 
                                             <td class="text-center" style="font-size: 12px !important;">
