@@ -18,6 +18,25 @@
 
     <!-- Page JS Code -->
     <script src="{{ asset('js/pages/tables_datatables.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.rejectBtn').click(function (event) {
+                event.preventDefault();
+                var id = $(this).attr('id');
+                $('#approvalForm').attr('action', `/admin/approve/products/${id}`);
+                $('#approvalForm').submit();
+
+            });
+
+            $('.approveBtn').click(function (event) {
+                event.preventDefault();
+                var id = $(this).attr('id');
+                $('#approvalForm').attr('action', `/admin/reject/products/${id}`);
+                $('#approvalForm').submit();
+
+            });
+        });
+    </script>
 @endsection
 
 @section('content')
@@ -242,7 +261,7 @@
                                             <td class="" style="font-size: 12px !important;">
 
                                                  <span><strong style="font-size: 14px !important">Description:</strong>{!! $product->description  !!}</span><br>
-                                                 <span><strong style="font-size: 14px !important">Outsource Team:</strong> {{ $product->source_name }}</span><br>
+                                                 <span><strong style="font-size: 14px !important">Source Team:</strong> {{ $product->source_name }}</span><br>
                                                  <span><strong style="font-size: 14px !important">Price:</strong> ${{ $product->price }}</span><br>
                                                  <span><strong style="font-size: 14px !important">Compare at Price:</strong> ${{ $product->compare_price }}</span><br>
                                                  <span><strong style="font-size: 14px !important">Tags:</strong> {{ $product->product_tags }}</span><br>
@@ -250,11 +269,36 @@
                                             </td>
 
                                             <td class="text-center" style="font-size: 12px !important;">
-                                                @if($product->approved == 1)
-                                                    <a href="{{ route('admin.reject.products', $product->id) }}" class="btn btn-danger">Reject<i class="fa fa-times text-white ml-2"></i></a>
-                                                @else
-                                                    <a href="{{ route('admin.approve.products', $product->id) }}" class="btn btn-success">Approve<i class="fa fa-check text-white ml-2"></i></a>
-                                                @endif
+                                                <button type="button" class="btn btn-sm btn-primary push" data-toggle="modal" data-target="#addNotesModal{{$product->id}}">Change Status</button>
+
+                                                <div class="modal" id="addNotesModal{{$product->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
+                                                        <div class="modal-dialog modal-md" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="block block-themed block-transparent mb-0">
+                                                                    <div class="block-header bg-primary-dark">
+                                                                        <h3 class="block-title">Give some notes about {{ $product->title }}</h3>
+                                                                        <div class="block-options">
+                                                                            <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                                                                                <i class="fa fa-fw fa-times"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <form action="" method="POST" id="approvalForm">
+                                                                        @csrf
+                                                                        <div class="block-content font-size-sm pb-2">
+                                                                            <h5>Notes</h5>
+                                                                            <textarea name="notes" id="" cols="30" rows="10" class="form-control" placeholder="Enter some notes regarding the product"></textarea>
+                                                                        </div>
+                                                                        <div class="block-content block-content-full text-right">
+                                                                            <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                                                                            <button type="submit" class="btn btn-success rejectBtn" id="{{ $product->id }}">Approve<i class="fa fa-check text-white ml-2"></i></button>
+                                                                            <button type="submit" class="btn btn-danger approveBtn" id="{{ $product->id }}">Reject<i class="fa fa-times text-white ml-2"></i></button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                             </td>
 
                                         </tr>

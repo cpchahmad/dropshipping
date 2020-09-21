@@ -375,18 +375,20 @@ class AdminController extends Controller
         return view('products.outsource-products')->with('products', $products);
     }
 
-    public function approveProduct($id) {
+    public function approveProduct(Request $request, $id) {
         $product = Product::find($id);
         $product->approved = 1;
+        $product->notes = $request->notes;
         $product->save();
 
         return redirect()->back()->with('success', "Product Approved successfully!");
 
     }
 
-    public function rejectProduct($id) {
+    public function rejectProduct(Request $request, $id) {
         $product = Product::find($id);
         $product->approved = 0;
+        $product->notes = $request->notes;
         $product->save();
 
         return redirect()->back()->with('success', "Product Rejected!");

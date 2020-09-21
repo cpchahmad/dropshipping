@@ -25,6 +25,7 @@ class CreateProductsTable extends Migration
             $table->integer('quantity')->nullable();
             $table->text('tags')->nullable();
             $table->boolean('approved')->default(false);
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

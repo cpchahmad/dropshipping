@@ -174,8 +174,8 @@
                         <tr>
                             <th class="text-center" style="width: 10%;">Product</th>
                             <th class="text-center" style="width: 40%;">Variants</th>
-                            <th class="text-center" style="width: 40%;">Details</th>
-                            <th class="text-center" style="width: 5%;">Status</th>
+                            <th class="text-center" style="width: 35%;">Details</th>
+                            <th class="text-center" style="width: 10%;">Status</th>
                             <th class="text-center" style="width: 5%;">Actions</th>
                         </tr>
                         </thead>
@@ -203,8 +203,9 @@
                                     <span><strong style="font-size: 14px !important">Weight:</strong> {{ $product->weight }} {{ $product->unit }}</span><br>
                                 </td>
 
-                                <td class="text-center" style="font-size: 12px !important;">
+                                <td class="text-center" style="font-size: 14px !important;">
                                     {{ $product->approved_status }}
+                                    <p class="text-left">{{ $product->notes }}</p>
                                 </td>
                                 <td class="">
                                     <div class="d-flex">

@@ -36,8 +36,8 @@ Route::get('/admin/customers', 'AdminController@getCustomers')->name('admin.cust
 Route::get('/admin/orders', 'AdminController@getOrders')->name('admin.orders');
 Route::get('/admin/products', 'AdminController@getProducts')->name('admin.products');
 Route::get('/admin/outsource/products', 'AdminController@getOutsourceProducts')->name('admin.outsource.products');
-Route::get('/admin/approve/products/{id}', 'AdminController@approveProduct')->name('admin.approve.products');
-Route::get('/admin/reject/products/{id}', 'AdminController@rejectProduct')->name('admin.reject.products');
+Route::post('/admin/approve/products/{id}', 'AdminController@approveProduct')->name('admin.approve.products');
+Route::post('/admin/reject/products/{id}', 'AdminController@rejectProduct')->name('admin.reject.products');
 Route::get('/admin/products/{id}', 'AdminController@showProductDetails')->name('admin.products.details');
 Route::get('/admin/orders/{id}', 'AdminController@showOrderDetails')->name('admin.orders.details');
 Route::post('/admin/add/vendor/{id}', 'AdminController@addVendorForProduct')->name('admin.add.product.vendor');
