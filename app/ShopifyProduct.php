@@ -53,6 +53,10 @@ class ShopifyProduct extends Model
         return $this->belongsToMany(Vendor::class);
     }
 
+    public function vendors_details() {
+        return $this->belongsToMany(ProductVendorDetail::class);
+    }
+
     public function getVariantDetailsAttribute() {
 
 
@@ -111,19 +115,20 @@ class ShopifyProduct extends Model
     }
 
     public function getVendorDetailAttribute() {
-        $vendor_details = ProductVendorDetail::where('shopify_product_id', $this->id)->simplePaginate(10);
+        $vendor_details = ProductVendorDetail::where('shopify_product_id', $this->id)->get();
 
         foreach ($vendor_details as $details) {
+
             echo "
-                <li class='mb-2'>
-                    <div class='row'>
-                        <div class='col-4'>
+                <li class='mb-2 list-unstyled'>
+                    <div class='row d-flex flex-column'>
+                        <div class=''>
                             $details->vendor_name
                         </div>
-                        <div class='col-4'>
+                        <div class='font-weight-bold'>
                             $$details->product_price
                         </div>
-                        <div class='col-4'>
+                        <div class=''>
                             <a href=\"$details->product_link\" target=_blank\" > View Product </a >
                         </div>
                     </div>

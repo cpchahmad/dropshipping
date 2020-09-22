@@ -198,11 +198,11 @@
                             </a>
                         </li>
 
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.outsource.products') }}">--}}
-{{--                                <span class="nav-main-link-name">Pending Products</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
+                        <li class="nav-main-item">
+                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.products.reports') }}">
+                                <span class="nav-main-link-name">Sale Reports</span>
+                            </a>
+                        </li>
                         @endrole
 
                         @role('shipping_team')

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Monolog\Formatter\LineFormatter;
 
 class ShopifyOrder extends Model
 {
@@ -20,6 +21,10 @@ class ShopifyOrder extends Model
       'processed_at',
     ];
 
+    protected $casts = [
+        'processed_at' => 'date:hh:mm'
+    ];
+
     public function getDateAttribute() {
         $str = $this->processed_at;
         $date = strtotime($str);
@@ -28,6 +33,10 @@ class ShopifyOrder extends Model
 
     public function shopify_customer() {
         return $this->belongsTo(ShopifyCustomer::class);
+    }
+
+    public function line_items() {
+        return $this->hasMany(LineItem::class);
     }
 
     public function getCustomerNameAttribute() {
@@ -44,6 +53,10 @@ class ShopifyOrder extends Model
     }
     public function getFulfillmentAttribute() {
         return $this->fulfillment_status ? 'Fulfilled' : 'Unfulfilled';
+    }
+
+    public function getFulCheckAttribute() {
+        return $this->fulfillment_status ? false : true;
     }
 
 
@@ -160,9 +173,14 @@ class ShopifyOrder extends Model
         foreach ($line_item_obj as $item) {
 
             $varient = ShopifyVarient::find($item->variant_id);
+            $vendor_details = null;
             $image_src = "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
 
+
+
             if($varient){
+                $product = $varient->shopify_product()->first();
+                $vendor_details = ProductVendorDetail::where('shopify_product_id', $product->id)->get();;
                 $image_id = $varient->image_id;
                 $image = ProductImage::where('shopify_id', $image_id)->first();
                 if($image){
@@ -172,7 +190,6 @@ class ShopifyOrder extends Model
                 else{
                     $product_id = $varient->shopify_product_id;
                     $image_src = $this->getImgAttribute($product_id);
-//                    $image_src = "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
                 }
             }
 
@@ -184,13 +201,32 @@ class ShopifyOrder extends Model
                     </div>
                     <div class='ml-2 text-left'>
                         <span class=\"d-block font-weight-lighter\">$item->title</span>
-                        <span class=\"d-block font-weight-lighter\">(SKU: $item->sku)</span>
+                        <span class=\"d-block font-weight-lighter\"><span class='font-weight-bold'>SKU: </span> $item->sku</span>
+                 ";
+                    if($vendor_details != null) {
+                        foreach ($vendor_details as $details) {
+                            echo "
+                                <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
+                                    <div class='row d-flex'>
+                                        <div class='mr-2'>
+                                            $details->vendor_name:
+                                        </div>
+                                        <div class='font-weight-bold'>
+                                            $$details->product_price
+                                        </div>
+                                    </div>
+
+                                </li>
+                            ";
+                        }
+                    }
+                 echo "
                     </div>
                         <p class=\"d-block font-weight-bold ml-5 text-left\">x$item->quantity</p>
 
-                </div>
+                </div>"
 
-            ";
+            ;
             }
             else{
                 echo "
@@ -200,7 +236,26 @@ class ShopifyOrder extends Model
                     </div>
                     <div class='ml-2 text-left'>
                         <span class=\"d-block font-weight-lighter\">$item->title</span>
-                        <span class=\"d-block font-weight-lighter\">(SKU: $item->sku)</span>
+                        <span class=\"d-block font-weight-lighter\"><span class='font-weight-bold'>SKU: </span> $item->sku</span>
+                ";
+                if($vendor_details != null) {
+                    foreach ($vendor_details as $details) {
+                        echo "
+                                <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
+                                    <div class='row d-flex'>
+                                        <div class='mr-2'>
+                                            $details->vendor_name:
+                                        </div>
+                                        <div class='font-weight-bold'>
+                                            $$details->product_price
+                                        </div>
+                                    </div>
+
+                                </li>
+                            ";
+                    }
+                }
+                echo "
                     </div>
                         <p class=\"d-block font-weight-bold ml-5 text-left\">x$item->quantity</p>
 
@@ -339,4 +394,6 @@ class ShopifyOrder extends Model
 
         }
     }
+
+
 }

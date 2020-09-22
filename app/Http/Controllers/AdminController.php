@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\LineItem;
 use App\LoginDetails;
+use App\OrderVendor;
 use App\Product;
 use App\ProductImage;
 use App\ProductVendorDetail;
@@ -12,9 +14,11 @@ use App\ShopifyProduct;
 use App\ShopifyVarient;
 use App\User;
 use App\Vendor;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use SebastianBergmann\Diff\Line;
 
 class AdminController extends Controller
 {
@@ -88,7 +92,6 @@ class AdminController extends Controller
             }
         }
 
-
         foreach ($orders as $order) {
             $o = ShopifyOrder::find($order['id']);
 
@@ -117,14 +120,39 @@ class AdminController extends Controller
                 $o->name = $order['name'];
                 $o->fulfillment_status = $order['fulfillment_status'];
                 $o->financial_status = $order['financial_status'];
-                $o->processed_at = $order['processed_at'];
+
+
+
+                $o->processed_at = date('Y-m-d h:i:s',strtotime($order['created_at']));
                 $o->line_items = json_encode($order['line_items']);
                 $o->line_items = json_encode($order['line_items']);
                 $o->shipping_lines = json_encode($order['shipping_lines']);
-
                 $o->notes = $order['note'];
                 $o->save();
+
+                $line_item_obj = json_decode($o->line_items);
+
+                $line_items_count = count($line_item_obj);
+
+                if($line_items_count !=0) {
+                    foreach ($line_item_obj as $item) {
+                        $line = new LineItem();
+                        $line->id = $item->id;
+                        $line->variant_id = $item->variant_id;
+                        $line->title = $item->title;
+                        $line->quantity = $item->quantity;
+                        $line->sku = $item->sku;
+                        $line->product_id = $item->product_id;
+                        $line->price = $item->price;
+                        $line->shopify_order_id = $order['id'];
+//                        $line->vendor = $item->vendor;
+                        $line->save();
+                    }
+                }
+
             }
+
+
         }
 
     }
@@ -301,6 +329,8 @@ class AdminController extends Controller
         $product_price_array = [];
         $product_link_array = [];
         $notes_array = [];
+        $flag = false;
+        $create_flag = false;
 
         $vendor_id_array = array_merge($vendor_id_array, $request->vendor_id);
         $product_price_array = array_merge($product_price_array, $request->product_price);
@@ -311,13 +341,20 @@ class AdminController extends Controller
 
             $vendor = ProductVendorDetail::where('shopify_product_id', $id)->where('vendor_id', $vendor_id_array[$i])->first();
             if($vendor == null) {
-                ProductVendorDetail::create([
-                    'shopify_product_id' => $id,
-                    'vendor_id' =>  $vendor_id_array[$i],
-                    'product_price' => $product_price_array[$i],
-                    'product_link' => $product_link_array[$i],
-                    'notes' => $notes_array[$i],
-                ]);
+
+                if($product_price_array[$i] == null && $product_link_array[$i] == null) {
+
+                }
+                else{
+                    ProductVendorDetail::create([
+                        'shopify_product_id' => $id,
+                        'vendor_id' =>  $vendor_id_array[$i],
+                        'product_price' => $product_price_array[$i],
+                        'product_link' => $product_link_array[$i],
+                        'notes' => $notes_array[$i],
+                    ]);
+                    $create_flag = true;
+                }
             }
             else {
 //                $vendor->update([
@@ -328,10 +365,12 @@ class AdminController extends Controller
 //                    'notes' => $notes_array[$i],
 //                ]);
 //
-                return redirect()->back()->with('error', 'Nothing new to add!');
+                $flag = true;
             }
+        }
 
-
+        if($flag && !$create_flag) {
+            return redirect()->back()->with('error', 'Nothing new to add!');
         }
 
         return redirect()->back()->with('success', 'Vendors added successfully!');
@@ -504,6 +543,87 @@ class AdminController extends Controller
         return view('shops.show-user')->with('user', $user)->with('products', $products)->with('product', $last_product)->with('details', $login_details);
     }
 
+    public function storeOrderVendor(Request $request) {
+
+
+        if(isset($request->vendors)) {
+            foreach ($request->line as $line) {
+                $vendor_array = array();
+
+                foreach ($request->vendors as $vendor) {
+                    $order_vendor = new OrderVendor();
+                    $vendorDetail = ProductVendorDetail::find($vendor);
+
+
+                    $order_vendor->vendor_id = $vendorDetail->vendor_id;
+                    $order_vendor->vendor_product_id = $vendorDetail->shopify_product_id;
+                    $order_vendor->line_id = $line;
+                    $order_vendor->save();
+
+                    $vendor = Vendor::find($vendorDetail->vendor_id);
+                    array_push($vendor_array, $vendor->name);
+
+                }
+
+                $line_item = LineItem::find($line);
+                $line_item->vendor = $vendor_array;
+                $line_item->save();
+            }
+
+            return redirect()->back()->with('success', 'Vendors added');
+        }
+
+        return redirect()->back()->with('error', 'Select vendors to add');
+    }
+
+    public function getReports(Request $request) {
+
+        if($request->query('datefilter')) {
+            $query = $request->query('datefilter');
+            $dates_array = explode('- ', $query);
+
+            $start_date = date('Y-m-d h:i:s',strtotime($dates_array[0]));
+            $end_date = date('Y-m-d h:i:s',strtotime($dates_array[1]));
+
+            $orders_total_price = ShopifyOrder::whereBetween('processed_at', [$start_date, $end_date])->sum('total_price');
+        }
+        else{
+            $orders_total_price = ShopifyOrder::sum('total_price');
+        }
+
+        $orders = ShopifyOrder::all();
+        $price = 0;
+        foreach ($orders as $order) {
+
+            foreach ($order->line_items()->get() as $item) {
+                $vendor = $item->vendor;
+                if($vendor != null) {
+                    $vendors = json_decode($vendor);
+                    foreach ($vendors as $vendor) {
+                        $ven = Vendor::where('name', $vendor)->first();
+                        $vendor_details = ProductVendorDetail::where('vendor_id', $ven->id)->first();
+                        $price += $vendor_details->product_price;
+                    }
+                }
+                else {
+                    $price +=0;
+                }
+            }
+
+        }
+
+
+        $cost =  number_format($price, 2);
+
+
+        return view('products.reports')->with('orders_sum', $orders_total_price)->with('cost', $cost);
+    }
+
+    public static function setDate($d) {
+        $str = $d;
+        $date = strtotime($str);
+        return date('d/M/Y ', $date);
+    }
 
 
 

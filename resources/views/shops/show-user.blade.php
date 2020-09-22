@@ -109,36 +109,36 @@
                     <!-- END Products -->
                     @else
                     <!-- Orders -->
-                    <div class="block">
-                        <div class="block-header block-header-default">
-                            <h3 class="block-title">
-                                <i class="fa fa-briefcase text-muted mr-1"></i> Products
-                            </h3>
-                        </div>
-                        @if(count($products) >0)
-                            <div class="block-content">
-                                @foreach($products as $product)
-                                    <div class="media d-flex align-items-center push">
-                                        <div class="mr-3">
-                                    <span class="item item-rounded" >
-                                        <img src="{{ asset('storage/'.$product->image) }}" class="w-100" alt="">
-                                    </span>
-                                        </div>
-                                        <div class="media-body">
-                                            <div class="font-w600"><a href="{{ route('products.show', $product->id) }}">{{ $product->title}}</a></div>
-                                            <div class="font-size-sm">Approved: {{ $product->approved_status }}</div>
-                                        </div>
-                                    </div>
-                                @endforeach
+{{--                    <div class="block">--}}
+{{--                        <div class="block-header block-header-default">--}}
+{{--                            <h3 class="block-title">--}}
+{{--                                <i class="fa fa-briefcase text-muted mr-1"></i> O--}}
+{{--                            </h3>--}}
+{{--                        </div>--}}
+{{--                        @if(count($products) >0)--}}
+{{--                            <div class="block-content">--}}
+{{--                                @foreach($products as $product)--}}
+{{--                                    <div class="media d-flex align-items-center push">--}}
+{{--                                        <div class="mr-3">--}}
+{{--                                    <span class="item item-rounded" >--}}
+{{--                                        <img src="{{ asset('storage/'.$product->image) }}" class="w-100" alt="">--}}
+{{--                                    </span>--}}
+{{--                                        </div>--}}
+{{--                                        <div class="media-body">--}}
+{{--                                            <div class="font-w600"><a href="{{ route('products.show', $product->id) }}">{{ $product->title}}</a></div>--}}
+{{--                                            <div class="font-size-sm">Approved: {{ $product->approved_status }}</div>--}}
+{{--                                        </div>--}}
+{{--                                    </div>--}}
+{{--                                @endforeach--}}
 
-                                <div>
-                                    {{ $products->links() }}
-                                </div>
-                            </div>
-                        @else
-                            <p>No data!</p>
-                        @endif
-                    </div>
+{{--                                <div>--}}
+{{--                                    {{ $products->links() }}--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                        @else--}}
+{{--                            <p>No data!</p>--}}
+{{--                        @endif--}}
+{{--                    </div>--}}
                     <!-- END Orders -->
                     @endif
 

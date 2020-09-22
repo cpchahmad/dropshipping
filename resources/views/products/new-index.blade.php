@@ -96,11 +96,11 @@
                                 <table class="table table-striped table-vcenter table-bordered">
                                     <thead>
                                     <tr>
-                                        <th class="text-center" style="width: 10%">Product</th>
-                                        <th class="text-center" style="width: 40%;">Variants</th>
-                                        <th class="text-center" style="width: 20%;">Details</th>
-                                        <th class="text-center" style="width: 5%;">Add Vendor</th>
-                                        <th class="text-center" style="width: 25%;">Added Vendors</th>
+                                        <th class="text-center" style="width: 10px">Product</th>
+                                        <th class="text-center" style="width: 20px">Variants</th>
+                                        <th class="text-center" style="width: 20px">Details</th>
+                                        <th class="text-center" style="width: 5px">Add Vendor</th>
+                                        <th class="text-center" style="width: 50px">Added Vendors</th>
 
                                     </tr>
                                     </thead>
@@ -197,7 +197,7 @@
 
                                             <td class="d-flex border-0" style="font-size: 14px !important;">
                                                 @if(($product->vendor_count)>0)
-                                                    <ul class="">
+                                                    <ul class="pl-3">
                                                         {{ $product->vendor_detail }}
                                                     </ul>
                                                 @else
@@ -216,9 +216,6 @@
                             <div class="d-flex justify-content-end">
                                 {{ $products->links() }}
                             </div>
-
-
-
                         </div>
                     </div>
                     <!-- Shopify Product Table Full -->

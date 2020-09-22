@@ -35,6 +35,7 @@ Route::resource('vendors', 'VendorsController');
 Route::get('/admin/customers', 'AdminController@getCustomers')->name('admin.customers');
 Route::get('/admin/orders', 'AdminController@getOrders')->name('admin.orders');
 Route::get('/admin/products', 'AdminController@getProducts')->name('admin.products');
+Route::get('/admin/products/reports', 'AdminController@getReports')->name('admin.products.reports');
 Route::get('/admin/outsource/products', 'AdminController@getOutsourceProducts')->name('admin.outsource.products');
 Route::post('/admin/approve/products/{id}', 'AdminController@approveProduct')->name('admin.approve.products');
 Route::post('/admin/reject/products/{id}', 'AdminController@rejectProduct')->name('admin.reject.products');
@@ -48,6 +49,7 @@ Route::delete('/admin/delete/user/{id}', 'AdminController@deleteUser')->name('ad
 Route::put('/admin/edit/user/{id}', 'AdminController@editUser')->name('admin.edit.user');
 Route::post('/admin/change/order/status/{id}', 'AdminController@changeOrderStatus')->name('admin.change.order.status');
 Route::post('/admin/store/order/notes/{id}', 'AdminController@storeOrderNotes')->name('admin.store.order.notes');
+Route::post('/admin/store/order/vendor', 'AdminController@storeOrderVendor')->name('admin.store.order.vendor');
 
 Route::get('/store/orders', 'AdminController@storeOrders');
 Route::get('/store/products', 'AdminController@storeProducts');
