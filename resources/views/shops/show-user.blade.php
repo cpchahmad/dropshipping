@@ -50,24 +50,26 @@
         <!-- END Hero -->
 
         <!-- Stats -->
-        <div class="bg-white border-bottom">
-            <div class="content content-boxed">
-                <div class="row items-push text-center">
-                    <div class="col-6 col-md-4">
-                        <div class="font-size-sm font-w600 text-muted text-uppercase">Products</div>
-                        <span class="link-fx font-size-h3" >{{ $user->product_count }}</span>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <div class="font-size-sm font-w600 text-muted text-uppercase">Approved Products</div>
-                        <span class="link-fx font-size-h3" >{{ $user->approve_product_count }}</span>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <div class="font-size-sm font-w600 text-muted text-uppercase">Unapproved Products</div>
-                        <span class="link-fx font-size-h3" >{{ $user->unapprove_product_count }}</span>
+        @if($user->roleName == "Source Team")
+            <div class="bg-white border-bottom">
+                <div class="content content-boxed">
+                    <div class="row items-push text-center">
+                        <div class="col-6 col-md-4">
+                            <div class="font-size-sm font-w600 text-muted text-uppercase">Products</div>
+                            <span class="link-fx font-size-h3" >{{ $user->product_count }}</span>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="font-size-sm font-w600 text-muted text-uppercase">Approved Products</div>
+                            <span class="link-fx font-size-h3" >{{ $user->approve_product_count }}</span>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="font-size-sm font-w600 text-muted text-uppercase">Unapproved Products</div>
+                            <span class="link-fx font-size-h3" >{{ $user->unapprove_product_count }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
         <!-- END Stats -->
 
         <!-- Page Content -->
