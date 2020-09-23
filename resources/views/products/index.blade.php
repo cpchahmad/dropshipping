@@ -205,7 +205,7 @@
 
                                 <td class="text-center" style="font-size: 14px !important;">
                                     {{ $product->approved_status }}
-                                    <p class="text-left">{{ $product->notes }}</p>
+                                    <p class="text-left"><strong>Comments: </strong>{{ $product->notes }}</p>
                                 </td>
                                 <td class="">
                                     <div class="d-flex">
