@@ -93,10 +93,13 @@ class AdminController extends Controller
         }
 
         foreach ($orders as $order) {
-            $o = ShopifyOrder::find($order['id']);
 
-            if($o === null) {
+            if(ShopifyOrder::where('id', $order['id'])->exists()) {
+                $o = ShopifyOrder::find($order['id']);
+            }
+            else {
                 $o = new ShopifyOrder();
+            }
 
                 if(array_key_exists("shipping_address",$order)) {
                     $o->shipping_address = json_encode($order['shipping_address']);
@@ -149,10 +152,6 @@ class AdminController extends Controller
                         $line->save();
                     }
                 }
-
-            }
-
-
         }
 
     }
@@ -190,29 +189,32 @@ class AdminController extends Controller
 
 
         foreach ($customers as $customer) {
-            $c = ShopifyCustomer::find($customer['id']);
 
-            if($c === null) {
-                $c = new ShopifyCustomer();
-
-                $c->id = $customer['id'];
-                $c->email = $customer['email'];
-                $c->first_name = $customer['first_name'];
-                $c->last_name = $customer['last_name'];
-                $c->orders_count = $customer['orders_count'];
-                $c->state = $customer['state'];
-                $c->total_spent = $customer['total_spent'];
-                $c->last_order_id = $customer['last_order_id'];
-                $c->note = $customer['note'];
-                $c->verified_email = $customer['verified_email'];
-                $c->phone = $customer['phone'];
-                $c->tags = $customer['tags'];
-                $c->last_order_name = $customer['last_order_name'];
-                $c->currency = $customer['currency'];
-                $c->addresses = json_encode($customer['addresses']);
-                $c->default_address = json_encode($customer['default_address']);
-                $c->save();
+            if(ShopifyCustomer::where('id', $customer['id'])->exists()) {
+                $c = ShopifyCustomer::find($customer['id']);
             }
+            else {
+                $c = new ShopifyCustomer();
+            }
+
+            $c->id = $customer['id'];
+            $c->email = $customer['email'];
+            $c->first_name = $customer['first_name'];
+            $c->last_name = $customer['last_name'];
+            $c->orders_count = $customer['orders_count'];
+            $c->state = $customer['state'];
+            $c->total_spent = $customer['total_spent'];
+            $c->last_order_id = $customer['last_order_id'];
+            $c->note = $customer['note'];
+            $c->verified_email = $customer['verified_email'];
+            $c->phone = $customer['phone'];
+            $c->tags = $customer['tags'];
+            $c->last_order_name = $customer['last_order_name'];
+            $c->currency = $customer['currency'];
+            $c->addresses = json_encode($customer['addresses']);
+            $c->default_address = json_encode($customer['default_address']);
+            $c->save();
+
         }
 
     }
@@ -250,9 +252,15 @@ class AdminController extends Controller
         foreach ($products as $product) {
 
 
-            $p = ShopifyProduct::find($product['id']);
-            if($p === null){
+
+            if(ShopifyProduct::where('id', $product['id'])->exists()) {
+                $p = ShopifyProduct::find($product['id']);
+            }
+            else{
                 $p = new ShopifyProduct();
+            }
+
+
                 $p->id = $product['id'];
                 $p->title =  $product['title'];
                 $p->body_html = $product['body_html'];
@@ -316,11 +324,7 @@ class AdminController extends Controller
                         ]);
                     }
                 }
-            }
-
         }
-
-
     }
 
     public function addVendorForProduct(Request $request, $id) {
@@ -586,11 +590,45 @@ class AdminController extends Controller
             $end_date = date('Y-m-d h:i:s',strtotime($dates_array[1]));
 
             $orders_total_price = ShopifyOrder::whereBetween('processed_at', [$start_date, $end_date])->sum('total_price');
+
+            $ordersQ = DB::table('shopify_orders')
+                ->select(DB::raw('DATE(processed_at) as date'), DB::raw('count(*) as total, sum(total_price) as total_sum'))
+                ->whereBetween('processed_at', [$start_date, $end_date])
+                ->groupBy('date')
+                ->get();
+
         }
         else{
             $orders_total_price = ShopifyOrder::sum('total_price');
+
+            $ordersQ = DB::table('shopify_orders')
+                ->select(DB::raw('DATE(processed_at) as date'), DB::raw('count(*) as total, sum(total_price) as total_sum'))
+                ->groupBy('date')
+                ->get();
+
         }
 
+        // Graph calculations
+        $graph_one_order_dates = $ordersQ->pluck('date')->toArray();
+        $graph_one_order_values = $ordersQ->pluck('total')->toArray();
+        $graph_two_order_values = $ordersQ->pluck('total_sum')->toArray();
+
+        // Top products
+        $top_products_stores = ShopifyProduct::join('line_items', function ($join) {
+                    $join->on('line_items.product_id', '=', 'shopify_products.id')
+                        ->join('shopify_orders', function ($o) {
+                            $o->on('line_items.shopify_order_id', '=', 'shopify_orders.id')
+                                ->where('shopify_orders.financial_status', '=', 'paid');
+                        });
+        })->select('shopify_products.*', DB::raw('sum(line_items.quantity) as sold'), DB::raw('sum(line_items.price) as selling_cost'))
+            ->groupBy('shopify_products.id' )
+            ->orderBy('sold', 'DESC')
+            ->get()
+            ->take(5);
+
+
+
+        // Vendor cost calculation
         $orders = ShopifyOrder::all();
         $price = 0;
         foreach ($orders as $order) {
@@ -611,12 +649,18 @@ class AdminController extends Controller
             }
 
         }
-
-
         $cost =  number_format($price, 2);
 
 
-        return view('products.reports')->with('orders_sum', $orders_total_price)->with('cost', $cost);
+        return view('products.reports')->with([
+            'orders_sum' => $orders_total_price,
+            'graph_one_labels' => $graph_one_order_dates,
+            'graph_one_values' => $graph_one_order_values,
+            'graph_two_values' => $graph_two_order_values,
+            'top_products_stores' => $top_products_stores,
+            'cost' => $cost
+        ]);
+
     }
 
     public static function setDate($d) {

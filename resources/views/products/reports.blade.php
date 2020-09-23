@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables/dataTables.bootstrap4.css') }}">
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables/buttons-bs4/buttons.bootstrap4.min.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
 @endsection
 
 @section('js_after')
@@ -18,8 +19,7 @@
     <script src="{{ asset('js/plugins/datatables/buttons/buttons.colVis.min.js') }}"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
-    <!-- Page JS Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>]
     <script src="{{ asset('js/pages/tables_datatables.js') }}"></script>
     <script>
         $(function() {
@@ -38,6 +38,115 @@
             $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
                 $(this).val('');
             });
+
+            if($('body').find('#canvas-graph-one').length > 0){
+                console.log('ok');
+                var config = {
+                    type: 'bar',
+                    data: {
+                        labels: JSON.parse($('#canvas-graph-one').attr('data-labels')),
+                        datasets: [{
+                            label: 'Order Count',
+                            backgroundColor: '#00e2ff',
+                            borderColor: '#00e2ff',
+                            data: JSON.parse($('#canvas-graph-one').attr('data-values')),
+                            fill: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: true,
+                            text: 'Summary Orders Count'
+                        },
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Date'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                ticks: {
+                                    beginAtZero: true,
+                                    stepSize: 1
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Value'
+                                }
+                            }]
+                        }
+                    }
+                };
+
+                var ctx = document.getElementById('canvas-graph-one').getContext('2d');
+                window.myBar = new Chart(ctx, config);
+            }
+
+            if($('body').find('#canvas-graph-two').length > 0){
+                console.log('ok');
+                var config = {
+                    type: 'line',
+                    data: {
+                        labels: JSON.parse($('#canvas-graph-two').attr('data-labels')),
+                        datasets: [{
+                            label: 'Orders Sales',
+                            backgroundColor: '#5c80d1',
+                            borderColor: '#5c80d1',
+                            data: JSON.parse($('#canvas-graph-two').attr('data-values')),
+                            fill: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: true,
+                            text: 'Summary Orders Sales'
+                        },
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Date'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                ticks: {
+                                    beginAtZero: true
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Sales'
+                                }
+                            }]
+                        }
+                    }
+                };
+
+                var ctx_2 = document.getElementById('canvas-graph-two').getContext('2d');
+                window.myLine = new Chart(ctx_2, config);
+            }
 
         });
     </script>
@@ -76,7 +185,7 @@
         </form>
         <div class="row">
             <div class="col-md-4">
-                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="javascript:void(0)">
+                <a class="block block-rounded block-link-pop border-left border-primary border-4x" >
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Total Sales</div>
                         <div class="font-size-h2 font-w400 text-dark">${{ $orders_sum }}</div>
@@ -84,7 +193,7 @@
                 </a>
             </div>
             <div class="col-md-4">
-                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="javascript:void(0)">
+                <a class="block block-rounded block-link-pop border-left border-primary border-4x">
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Total Cost</div>
                         <div class="font-size-h2 font-w400 text-dark">${{ $cost }}</div>
@@ -92,7 +201,7 @@
                 </a>
             </div>
             <div class="col-md-4">
-                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="javascript:void(0)">
+                <a class="block block-rounded block-link-pop border-left border-primary border-4x">
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Profit</div>
                         <div class="font-size-h2 font-w400 text-dark">${{ ($orders_sum - $cost) }}</div>
@@ -100,6 +209,68 @@
                 </a>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="block block-rounded block-link-pop">
+                    <div class="block-content block-content-full">
+                        <canvas id="canvas-graph-one" data-labels="{{json_encode($graph_one_labels)}}" data-values="{{json_encode($graph_one_values)}}"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="block block-rounded block-link-pop">
+                    <div class="block-content block-content-full">
+                        <canvas id="canvas-graph-two" data-labels="{{json_encode($graph_one_labels)}}" data-values="{{json_encode($graph_two_values)}}"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="block block-rounded">
+                    <div class="block-header block-header-default">
+                        <h3 class="block-title">Top Selling Products</h3>
+                    </div>
+                    <div class="block-content ">
+                        @if(count($top_products_stores) > 0)
+                            <table class="table table-striped table-hover table-borderless table-vcenter">
+                                <thead>
+                                <tr class="text-uppercase">
+                                    <th class="font-w700">Product</th>
+                                    <th class="d-none d-sm-table-cell font-w700 text-center" style="width: 80px;">Quantity</th>
+                                    <th class="font-w700 text-center" style="width: 60px;">Sales</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                @foreach($top_products_stores as $product)
+                                    <tr>
+                                        <td class="font-w600">
+                                            <img class="img-avatar img-avatar32" style="margin-right: 5px" src="{{ $product->img }}" alt="">
+                                            <a>{{$product->title}}</a>
+                                        </td>
+                                        <td class="d-none d-sm-table-cell text-center">
+                                            {{$product->sold}}
+                                        </td>
+                                        <td class="">
+                                            ${{number_format($product->selling_cost,2)}}
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+                                </tbody>
+                                @else
+                                    <p  class="text-center"> No Top Products Based on Stores Found </p>
+                                @endif
+                            </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
+
+
+
     <!-- END Page Content -->
 @endsection
