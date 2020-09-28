@@ -135,7 +135,7 @@
                                             </td>
                                             <td class="" style="font-size: 12px !important;">
                                                 <div class="w-75">
-                                                    <span class="w-50"><strong style="font-size: 14px !important">Description:</strong>{!! $product->body_html  !!}</span><br>
+                                                    <span><strong style="font-size: 14px !important">Description:</strong>{!! $product->body_html !!}</span><br>
                                                 </div>
                                                 <span><strong style="font-size: 14px !important">Vendor:</strong> {{ $product->vendor }}</span><br>
                                                 <span><strong style="font-size: 14px !important">Type:</strong> {{ $product->product_type }}</span><br>
