@@ -105,7 +105,7 @@
                                             {{ $log->date }}
                                         </td>
                                         <td class="font-w600">
-{{--                                            {{ $log->location  }}--}}
+                                            {{ $log->location  }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -137,7 +137,7 @@
                                             {{ $user->date }}
                                         </p>
                                         <p>
-{{--                                            {{ $user->location }}--}}
+                                            {{ $user->location }}
                                         </p>
                                     </div>
                                 @else

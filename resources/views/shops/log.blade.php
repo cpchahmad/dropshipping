@@ -63,7 +63,7 @@
                                     <span class="badge badge-success">{{ $log->user->name }}</span>
                                     <strong>{{ $log->type }} </strong>{{ $log->item }}
                                     {{ $log->date }}
-{{--                                    {{ $log->location }}--}}
+                                    {{ $log->location }}
                             </li>
                         @endforeach
                     </ul>
