@@ -103,135 +103,137 @@
                             <h3 class="block-title">Shopify Products</h3>
                         </div>
                         <div class="block-content block-content-full">
-                            <!-- DataTables init on table by adding .js-dataTable-full class, functionality is initialized in js/pages/tables_datatables.js -->
-                            @if(count($products)>0)
-                                <table class="table table-striped table-vcenter table-bordered w-75">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-left" style="width: 10px">Product</th>
-                                        <th class="text-left" style="width: 260px">Variants</th>
-                                        <th class="text-left" style="width: 20px">Details</th>
-                                        <th class="text-center" style="width: 5px">Add Vendor</th>
-                                        <th class="text-left" style="width: 50px">Added Vendors</th>
-
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($products as $product)
+                            <div class="w-50">
+                                @if(count($products)>0)
+                                    <table class="table table-striped table-vcenter table-bordered w-75">
+                                        <thead>
                                         <tr>
-                                            <td class="">
-                                                <div class="text-left pt-3">
-                                                    <a href="{{ $product->img }}" target="_blank">
-                                                        <img src="{{ $product->img }}" alt="No Image Availble" style="width: 90px; height: auto">
-                                                    </a>
-                                                </div>
-                                                <div class=" d-flex flex-column " style="font-size: 12px !important;">
-                                                    <span class="font-weight-bolder" style="font-size: 14px !important;">{{ $product->title}}</span>
-                                                    <em>{{ $product->date }}</em>
-                                                </div>
-                                            </td>
-                                            <td class="" style="font-size: 12px !important;">
-                                                {{ $product->variant_details}}
-                                            </td>
-                                            <td class="" style="font-size: 12px !important;">
-                                                <div class="w-75">
-                                                    <span><strong style="font-size: 14px !important">Description:</strong>{!! $product->body_html !!}</span><br>
-                                                </div>
-                                                <span><strong style="font-size: 14px !important">Vendor:</strong> {{ $product->vendor }}</span><br>
-                                                <span><strong style="font-size: 14px !important">Type:</strong> {{ $product->product_type }}</span><br>
-                                                <span><strong style="font-size: 14px !important">Tags:</strong> {{ $product->tags }}</span><br>
-                                            </td>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#addModal{{$product->id}}">Add Vendor</button>
+                                            <th class="text-left" style="width: 10px">Product</th>
+                                            <th class="text-left" style="width: 260px">Variants</th>
+                                            <th class="text-left" style="width: 20px">Details</th>
+                                            <th class="text-center" style="width: 5px">Add Vendor</th>
+                                            <th class="text-left" style="width: 50px">Added Vendors</th>
 
-                                                <div class="modal p-0" id="addModal{{$product->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
-                                                    <div class="modal-dialog modal-lg" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="block block-themed block-transparent mb-0">
-                                                                <div class="block-header bg-primary-dark">
-                                                                    <h3 class="block-title">Add vendor details for {{ $product->title }}</h3>
-                                                                    <div class="block-options">
-                                                                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
-                                                                            <i class="fa fa-fw fa-times"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <form class="col-md-12" method="POST" action="{{ route('admin.add.product.vendor', $product->id) }}">
-                                                                    @csrf
-                                                                    <div class="block mt-3">
-                                                                        <div class="block-content block-content-full">
-                                                                            <!-- DataTables init on table by adding .js-dataTable-full class, functionality is initialized in js/pages/tables_datatables.js -->
-                                                                            @if(count($vendors)>0)
-                                                                                <table class="table table-striped table-vcenter">
-                                                                                    <thead>
-                                                                                    <tr>
-                                                                                        <th>Vendor name</th>
-                                                                                        <th>Product Price</th>
-                                                                                        <th>Product link</th>
-                                                                                        <th>Notes</th>
-                                                                                    </tr>
-                                                                                    </thead>
-                                                                                    <tbody>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($products as $product)
+                                            <tr>
+                                                <td class="">
+                                                    <div class="text-left pt-3">
+                                                        <a href="{{ $product->img }}" target="_blank">
+                                                            <img src="{{ $product->img }}" alt="No Image Availble" style="width: 90px; height: auto">
+                                                        </a>
+                                                    </div>
+                                                    <div class=" d-flex flex-column " style="font-size: 12px !important;">
+                                                        <span class="font-weight-bolder" style="font-size: 14px !important;">{{ $product->title}}</span>
+                                                        <em>{{ $product->date }}</em>
+                                                    </div>
+                                                </td>
+                                                <td class="" style="font-size: 12px !important;">
+                                                    {{ $product->variant_details}}
+                                                </td>
+                                                <td class="" style="font-size: 12px !important;">
+                                                    <div class="w-75">
+                                                        <span><strong style="font-size: 14px !important">Description:</strong>{!! $product->body_html !!}</span><br>
+                                                    </div>
+                                                    <span><strong style="font-size: 14px !important">Vendor:</strong> {{ $product->vendor }}</span><br>
+                                                    <span><strong style="font-size: 14px !important">Type:</strong> {{ $product->product_type }}</span><br>
+                                                    <span><strong style="font-size: 14px !important">Tags:</strong> {{ $product->tags }}</span><br>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#addModal{{$product->id}}">Add Vendor</button>
 
-                                                                                    @foreach($vendors as $vendor)
-                                                                                        <tr>
-                                                                                            <td class="font-w600">
-                                                                                                {{ $vendor->name }}
-                                                                                                <input type="hidden" class="form-control" name="vendor_id[]" value="{{ $vendor->id }}">
-                                                                                            </td>
-
-                                                                                            <td class=" ">
-                                                                                                <input type="text" class="form-control" placeholder="Enter product price" name="product_price[]">
-                                                                                            </td>
-
-                                                                                            <td class=" ">
-                                                                                                <input type="text" class="form-control" placeholder="Enter product link" name="product_link[]">
-                                                                                            </td>
-
-                                                                                            <td class=" ">
-                                                                                                <textarea type="text" class="form-control" placeholder="Enter notes" name="product_notes[]"></textarea>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    @endforeach
-
-                                                                                    </tbody>
-                                                                                </table>
-                                                                                <div class="d-flex justify-content-end">
-                                                                                    <button type="submit" class="btn btn-primary">Add</button>
-                                                                                </div>
-                                                                            @else
-                                                                                No data!
-                                                                            @endif
+                                                    <div class="modal p-0" id="addModal{{$product->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="block block-themed block-transparent mb-0">
+                                                                    <div class="block-header bg-primary-dark">
+                                                                        <h3 class="block-title">Add vendor details for {{ $product->title }}</h3>
+                                                                        <div class="block-options">
+                                                                            <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                                                                                <i class="fa fa-fw fa-times"></i>
+                                                                            </button>
                                                                         </div>
                                                                     </div>
-                                                                </form>
+                                                                    <form class="col-md-12" method="POST" action="{{ route('admin.add.product.vendor', $product->id) }}">
+                                                                        @csrf
+                                                                        <div class="block mt-3">
+                                                                            <div class="block-content block-content-full">
+                                                                                <!-- DataTables init on table by adding .js-dataTable-full class, functionality is initialized in js/pages/tables_datatables.js -->
+                                                                                @if(count($vendors)>0)
+                                                                                    <table class="table table-striped table-vcenter">
+                                                                                        <thead>
+                                                                                        <tr>
+                                                                                            <th>Vendor name</th>
+                                                                                            <th>Product Price</th>
+                                                                                            <th>Product link</th>
+                                                                                            <th>Notes</th>
+                                                                                        </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+
+                                                                                        @foreach($vendors as $vendor)
+                                                                                            <tr>
+                                                                                                <td class="font-w600">
+                                                                                                    {{ $vendor->name }}
+                                                                                                    <input type="hidden" class="form-control" name="vendor_id[]" value="{{ $vendor->id }}">
+                                                                                                </td>
+
+                                                                                                <td class=" ">
+                                                                                                    <input type="text" class="form-control" placeholder="Enter product price" name="product_price[]">
+                                                                                                </td>
+
+                                                                                                <td class=" ">
+                                                                                                    <input type="text" class="form-control" placeholder="Enter product link" name="product_link[]">
+                                                                                                </td>
+
+                                                                                                <td class=" ">
+                                                                                                    <textarea type="text" class="form-control" placeholder="Enter notes" name="product_notes[]"></textarea>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        @endforeach
+
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                    <div class="d-flex justify-content-end">
+                                                                                        <button type="submit" class="btn btn-primary">Add</button>
+                                                                                    </div>
+                                                                                @else
+                                                                                    No data!
+                                                                                @endif
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </td>
+                                                </td>
 
-                                            <td class="d-flex border-0" style="font-size: 14px !important;">
-                                                @if(($product->vendor_count)>0)
-                                                    <ul class="pl-3">
-                                                        {{ $product->vendor_detail }}
-                                                    </ul>
-                                                @else
-                                                    <p>No data!</p>
-                                                @endif
-                                            </td>
+                                                <td class="d-flex border-0" style="font-size: 14px !important;">
+                                                    @if(($product->vendor_count)>0)
+                                                        <ul class="pl-3">
+                                                            {{ $product->vendor_detail }}
+                                                        </ul>
+                                                    @else
+                                                        <p>No data!</p>
+                                                    @endif
+                                                </td>
 
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <p>No data!</p>
-                            @endif
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <p>No data!</p>
+                                @endif
 
-                            <div class="d-flex justify-content-end">
-                                {{ $products->links() }}
+                                <div class="d-flex justify-content-end">
+                                    {{ $products->links() }}
+                                </div>
                             </div>
+
                         </div>
                     </div>
                     <!-- Shopify Product Table Full -->
