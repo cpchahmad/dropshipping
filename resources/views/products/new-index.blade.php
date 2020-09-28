@@ -105,7 +105,7 @@
                         <div class="block-content block-content-full">
                             <!-- DataTables init on table by adding .js-dataTable-full class, functionality is initialized in js/pages/tables_datatables.js -->
                             @if(count($products)>0)
-                                <table class="table table-striped table-vcenter table-bordered">
+                                <table class="table table-striped table-vcenter table-bordered w-75">
                                     <thead>
                                     <tr>
                                         <th class="text-left" style="width: 10px">Product</th>
