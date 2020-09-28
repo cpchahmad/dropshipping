@@ -25,7 +25,7 @@ class ShopifyProduct extends Model
 
     public function getImgAttribute() {
         if($this->image == "null") {
-            return 12;
+            return "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
         }
         else{
             $image = json_decode($this->image);
@@ -79,10 +79,13 @@ class ShopifyProduct extends Model
                     echo "
                         <div class='d-flex align-items-center  py-2'>
                             <div>
-                            <img src='$image_src' alt='No img' class=\"img-fluid\" style='width: 50px; height: auto;'>
+                                <a href='$image_src' target='_blank'>
+                                    <img src='$image_src' alt='No img' class=\"img-fluid\" style='width: 70px; height: auto;'>
+                                </a>
                             </div>
                             <div class='ml-2 text-left'>
-                                <p class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->title (SKU: $varient->sku)</p>
+                                <span class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->title</span><br>
+                                <span>SKU: $varient->sku</span><br>
                                 <span><strong>$$varient->price</strong></span>
                             </div>
                         </div>
@@ -92,10 +95,13 @@ class ShopifyProduct extends Model
                     echo "
                         <div class='d-flex align-items-center border-bottom py-2'>
                             <div>
-                            <img src='$image_src' alt='No img' class=\"img-fluid\" style='width: 50px; height: auto;'>
+                                <a href='$image_src' target='_blank'>
+                                    <img src='$image_src' alt='No img' class=\"img-fluid\" style='width: 70px; height: auto;'>
+                                </a>
                             </div>
                             <div class='ml-2 text-left'>
-                                <p class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->title (SKU: $varient->sku)</p>
+                                <span class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->title</span><br>
+                                <span>SKU: $varient->sku</span><br>
                                 <span><strong>$$varient->price</strong></span>
                             </div>
                         </div>

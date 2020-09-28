@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Log;
 use App\LoginDetails;
 use App\Providers\RouteServiceProvider;
 use Carbon\Carbon;
@@ -50,6 +51,13 @@ class LoginController extends Controller
            'user_id' => $user->id,
            'last_login_at' => Carbon::now()->toDateTimeString(),
            'last_login_ip' => $request->getClientIp(),
+        ]);
+
+        Log::create([
+           'user_id' => $user->id,
+           'attempt_time' => Carbon::now()->toDateTimeString(),
+           'attempt_location_ip' => $request->getClientIp(),
+           'type' => 'Log in',
         ]);
 
         $user->last_login_at = Carbon::now()->toDateTimeString();

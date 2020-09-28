@@ -39,7 +39,7 @@
 @section('content')
     <!-- Hero -->
     <div class="bg-body-light">
-        <div class="content content-full">
+        <div class="content content-full py-2">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
 
                 <h1 class="flex-sm-fill h3 my-2">
@@ -63,22 +63,70 @@
     <!-- Page Content -->
     <div class="content">
 
+        <form class="js-form-icon-search push" action="" method="get">
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="search" class="form-control" placeholder="Search by Order ID" value="{{$search}}" name="search" required >
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+                        <a class="btn btn-danger" href="/admin/orders"> <i class="fa fa-times"></i> Clear </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="bg-white p-3 push">
+            <!-- Navigation -->
+            <div id="horizontal-navigation-hover-normal" class="d-none d-lg-block mt-2 mt-lg-0">
+                <ul class="nav-main nav-main-horizontal nav-main-hover">
+                    <li class="nav-main-item">
+                        <a class="nav-main-link @if($status == 'unfulfilled') active @endif" href="?status=unfulfilled">
+                            <i class="nav-main-link-icon fa fa-flag-checkered"></i>
+                            <span class="nav-main-link-name">Unfulfilled</span>
+                            <span class="nav-main-link-badge badge badge-pill badge-warning">{{$all_orders->where('fulfillment_status', null)->count()}}</span>
+                        </a>
+                    </li>
+                    <li class="nav-main-item">
+                        <a class="nav-main-link @if($status == 'fulfilled') active @endif " href="?status=fulfilled">
+                            <i class="nav-main-link-icon fa fa-star"></i>
+                            <span class="nav-main-link-name">Fulfilled</span>
+                            <span class="nav-main-link-badge badge badge-pill badge-success">{{$all_orders->whereIN('fulfillment_status',['fulfilled'])->count()}}</span>
+                        </a>
+                    </li>
+                    <li class="nav-main-item">
+                        <a class="nav-main-link @if($status == 'completed') active @endif " href="?status=completed">
+                            <i class="nav-main-link-icon fa fa-check-circle"></i>
+                            <span class="nav-main-link-name">Completed</span>
+                            <span class="nav-main-link-badge badge badge-pill " style="background: darkslategray;color: white;">{{$all_orders->whereIN('fulfillment_status',['completed'])->count()}}</span>
+                        </a>
+                    </li>
+                    <li class="nav-main-item">
+                        <a class="nav-main-link @if($status == 'cancelled') active @endif " href="?status=cancelled">
+                            <i class="nav-main-link-icon fa fa-times-circle"></i>
+                            <span class="nav-main-link-name">Cancelled</span>
+                            <span class="nav-main-link-badge badge badge-pill badge-danger" >{{$all_orders->whereIN('fulfillment_status',['cancelled'])->count()}}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- END Navigation -->
+        </div>
+
         <!-- Dynamic Table Full -->
         <div class="block mt-3">
             <div class="block-header">
                 <h3 class="block-title">Orders</h3>
             </div>
             <div class="block-content block-content-full">
-                <!-- DataTables init on table by adding .js-dataTable-full class, functionality is initialized in js/pages/tables_datatables.js -->
                 @if(count($orders)> 0)
                     <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th class="text-center" style="width: 80px;">Order</th>
-                            <th class="text-center">Products</th>
+                            <th class="">Products</th>
                             <th class="text-center" style="width: 120px;">Status</th>
-                            <th class="text-center">Shipping Method</th>
-                            <th class="">Shipping Address</th>
+                            <th class="" style="width: 120px;">Shipping Method</th>
+                            <th class="" style="width: 150px;">Shipping Address</th>
                             <th class="text-center" style="width: 40px;">Notes</th>
                         </tr>
                     </thead>
@@ -86,7 +134,7 @@
                         @foreach($orders as $order)
                         <tr>
                             <td class="" style="font-size: 12px !important;">
-                                <a href="{{ route('admin.orders.details', $order->id) }}" class="d-block">{{ $order->name }}</a>
+                                <a class="d-block font-weight-bold" style="font-size: 14px !important;">#{{ $order->name }}</a>
                                 {{ $order->date }}
                             </td>
                             <td class="" style="font-size: 12px !important;">
@@ -99,7 +147,9 @@
                                         <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">
                                             @csrf
                                             <div class="col-2">
-                                                <img src='{{ $item->img }}' alt='No img' class="img-fluid" style='width: 70%; height: auto;'>
+                                                <a href="{{ $item->img }}" target="_blank">
+                                                    <img src='{{ $item->img }}' alt='No img' class="img-fluid" style='width: 80%; height: auto;'>
+                                                </a>
                                             </div>
                                             <div class=' col-6'>
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
@@ -112,7 +162,7 @@
                                             </div>
                                             <div class="text-right col-4">
                                                 <p class="font-weight-bold">x{{$item->quantity}}</p>
-                                                @if($order->ful_check)
+                                                @if($order->ful_check && $item->vendor_chk)
                                                     <button type="submit" class="btn btn-dark btn-sm">Save</button>
                                                 @endif
                                             </div>

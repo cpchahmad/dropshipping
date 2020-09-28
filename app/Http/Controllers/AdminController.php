@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\LineItem;
+use App\Log;
 use App\LoginDetails;
 use App\OrderVendor;
 use App\Product;
@@ -16,6 +17,7 @@ use App\User;
 use App\Vendor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use SebastianBergmann\Diff\Line;
@@ -23,13 +25,20 @@ use SebastianBergmann\Diff\Line;
 class AdminController extends Controller
 {
 
-    public function getProducts() {
-        $products = ShopifyProduct::simplePaginate(20);
-        $prods = Product::simplePaginate(20);
+    public function getProducts(Request $request) {
+
+        if ($request->has('search')) {
+            $products = ShopifyProduct::where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
+            $prods = Product::where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
+        }
+        else{
+            $products = ShopifyProduct::orderBy('updated_at', 'DESC')->paginate(20);
+            $prods = Product::orderBy('updated_at', 'DESC')->paginate(20);
+        }
         $vendors = Vendor::all();
 
 
-        return view('products.new-index')->with('products',$products)->with('prods',$prods)->with('vendors', $vendors);
+        return view('products.new-index')->with('products',$products)->with('prods',$prods)->with('vendors', $vendors)->with('search', $request->input('search'));
     }
 
     public function showProductDetails($id) {
@@ -48,17 +57,42 @@ class AdminController extends Controller
     }
 
     public function getCustomers() {
-        $customers = ShopifyCustomer::simplePaginate(20);
+        $customers = ShopifyCustomer::paginate(20);
         return view('customers.index')->with('customers', $customers);
 
     }
 
-    public function getOrders() {
+    public function getOrders(Request $request) {
 
-        $orders = ShopifyOrder::simplePaginate(20);
+        $orders = ShopifyOrder::whereIn('financial_status', ['paid', 'partially_refunded'])->newQuery();
 
-        return view('orders.new-index')->with('orders', $orders);
+        if ($request->has('search')) {
+            $orders->where('name', 'LIKE', '%' . $request->input('search') . '%');
+        }
+        if($request->has('status')){
+            if($request->input('status') == 'unfulfilled'){
+                $orders->where('fulfillment_status', null);
+            }
+            else
+            {
+                $orders->where('fulfillment_status', $request->input('status'));
+            }
 
+        }
+        if($request->query('customer')){
+            $customer_id = $request->query('customer');
+            $orders->where('customer', $customer_id)->get();
+        }
+
+        $all_orders = ShopifyOrder::all();
+        $orders = $orders->orderBy('updated_at', 'ASC')->paginate(30);
+
+        return view('orders.new-index')->with([
+            'all_orders' => $all_orders,
+            'orders' => $orders,
+            'search' => $request->input('search'),
+            'status' => $request->input('status')
+        ]);
     }
 
     public function storeOrders($next = null)
@@ -87,7 +121,7 @@ class AdminController extends Controller
                 }
 
                 if(array_key_exists("customer",$order)) {
-                    $o->customer = json_encode($order['customer']);
+                    $o->customer = $order['customer']['id'];
                 }
                 if(count($order["fulfillments"])>0) {
                     $o->fulfillments = json_encode($order['fulfillments']);
@@ -510,7 +544,7 @@ class AdminController extends Controller
     public function getUsers() {
         $users = User::whereHas('roles', function ($query) {
             return $query->where('name','!=', 'admin');
-        })->get();
+        })->orderBy('updated_at', 'DESC')->paginate(20);
 
         return view('shops.add-user')->with('users', $users);
     }
@@ -565,14 +599,19 @@ class AdminController extends Controller
 
     public function changeOrderStatus(Request $request, $id) {
 
-
-
-
         $order = ShopifyOrder::find($id);
 
         if($request->status == 'Fulfilled') {
             $order->fulfillment_status = 'fulfilled';
             $order->save();
+
+            Log::create([
+                'user_id' => Auth::user()->id,
+                'attempt_time' => Carbon::now()->toDateTimeString(),
+                'attempt_location_ip' => $request->getClientIp(),
+                'type' => 'Order Status Changed',
+                'shopify_order_id' => $order->id
+            ]);
 
             $api = ShopsController::config();
             $fulfillment_array_to_be_passed = [
@@ -592,6 +631,9 @@ class AdminController extends Controller
             else {
                 return redirect()->back()->with('error', 'Request cannot be proceed');
             }
+
+            return redirect()->back()->with('success', 'Order status changed successfully!');
+
 
         }
 
@@ -666,11 +708,11 @@ class AdminController extends Controller
 
     public function showUser($id) {
         $user = User::find($id);
-        $products = Product::where('outsource_id', $id)->simplePaginate(10);
-        $last_product = Product::where('outsource_id', $id)->orderBy('created_at', 'desc')->first();
-        $login_details = LoginDetails::where('user_id', $id)->get();
+        $products = Product::where('outsource_id', $id)->paginate(10);
+        $last_product = Product::where('outsource_id', $id)->orderBy('updated_at', 'DESC')->first();
+        $logs = Log::where('user_id', $id)->paginate(20);
 
-        return view('shops.show-user')->with('user', $user)->with('products', $products)->with('product', $last_product)->with('details', $login_details);
+        return view('shops.show-user')->with('user', $user)->with('products', $products)->with('product', $last_product)->with('logs', $logs);
     }
 
     public function storeOrderVendor(Request $request) {
@@ -793,6 +835,13 @@ class AdminController extends Controller
         $str = $d;
         $date = strtotime($str);
         return date('d/M/Y ', $date);
+    }
+
+    public function getLogs(Request $request) {
+
+        $logs = Log::orderBy('updated_at', 'DESC')->paginate(30);
+
+        return view('shops.log')->with('logs', $logs);
     }
 
 

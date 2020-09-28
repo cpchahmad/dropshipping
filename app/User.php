@@ -81,4 +81,10 @@ class User extends Authenticatable
         return $data->countryName .", ". $data->cityName;
     }
 
+    public function getCreateAttribute() {
+        $str = $this->created_at;
+        $date = strtotime($str);
+        return date('d/M/Y', $date);
+    }
+
 }

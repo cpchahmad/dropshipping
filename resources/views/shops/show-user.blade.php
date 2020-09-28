@@ -13,7 +13,7 @@
 @section('content')
     <!-- Hero -->
     <div class="bg-body-light">
-        <div class="content content-full">
+        <div class="content content-full py-2">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
                 <h1 class="flex-sm-fill h3 my-2">
                     Add User
@@ -43,6 +43,8 @@
                         <img class="img-avatar img-avatar-thumb" src="{{ asset('media/avatars/avatar13.jpg') }}" alt="">
                     </div>
                     <h1 class="h2 text-white mb-0">{{ $user->name }}</h1>
+                    <span class="text-white-75">{{ $user->email }}</span><br>
+                    <span class="text-white-75"><strong>Account created on: </strong>{{ $user->create }}</span><br>
                     <span class="text-white-75">{{ $user->roleName }}</span>
                 </div>
             </div>
@@ -52,17 +54,17 @@
         <!-- Stats -->
         @if($user->roleName == "Source Team")
             <div class="bg-white border-bottom">
-                <div class="content content-boxed">
+                <div class="content ">
                     <div class="row items-push text-center">
-                        <div class="col-6 col-md-4">
+                        <div class="col-md-4">
                             <div class="font-size-sm font-w600 text-muted text-uppercase">Products</div>
                             <span class="link-fx font-size-h3" >{{ $user->product_count }}</span>
                         </div>
-                        <div class="col-6 col-md-3">
+                        <div class="col-md-4">
                             <div class="font-size-sm font-w600 text-muted text-uppercase">Approved Products</div>
                             <span class="link-fx font-size-h3" >{{ $user->approve_product_count }}</span>
                         </div>
-                        <div class="col-6 col-md-3">
+                        <div class="col-md-4">
                             <div class="font-size-sm font-w600 text-muted text-uppercase">Unapproved Products</div>
                             <span class="link-fx font-size-h3" >{{ $user->unapprove_product_count }}</span>
                         </div>
@@ -73,78 +75,9 @@
         <!-- END Stats -->
 
         <!-- Page Content -->
-        <div class="content content-boxed">
+        <div class="content">
             <div class="row">
                 <div class="col-md-7 col-xl-8">
-                    @if($user->roleName == "Source Team")
-                    <!-- Products -->
-                    <div class="block">
-                        <div class="block-header block-header-default">
-                            <h3 class="block-title">
-                                <i class="fa fa-briefcase text-muted mr-1"></i> Products
-                            </h3>
-                        </div>
-                        @if(count($products) >0)
-                            <div class="block-content">
-                                @foreach($products as $product)
-                                    <div class="media d-flex align-items-center push">
-                                        <div class="mr-3">
-                                            <span class="item item-rounded" >
-                                                <img src="{{ $product->image }}" class="w-100" alt="">
-                                            </span>
-                                        </div>
-                                        <div class="media-body">
-                                            <div class="font-w600"><a href="{{ route('products.show', $product->id) }}">{{ $product->title}}</a></div>
-                                            <div class="font-size-sm">Approved: {{ $product->approved_status }}</div>
-                                        </div>
-                                    </div>
-                                @endforeach
-
-                                <div>
-                                    {{ $products->links() }}
-                                </div>
-                            </div>
-                        @else
-                            <p>No data!</p>
-                        @endif
-                    </div>
-                    <!-- END Products -->
-                    @else
-                    <!-- Orders -->
-{{--                    <div class="block">--}}
-{{--                        <div class="block-header block-header-default">--}}
-{{--                            <h3 class="block-title">--}}
-{{--                                <i class="fa fa-briefcase text-muted mr-1"></i> O--}}
-{{--                            </h3>--}}
-{{--                        </div>--}}
-{{--                        @if(count($products) >0)--}}
-{{--                            <div class="block-content">--}}
-{{--                                @foreach($products as $product)--}}
-{{--                                    <div class="media d-flex align-items-center push">--}}
-{{--                                        <div class="mr-3">--}}
-{{--                                    <span class="item item-rounded" >--}}
-{{--                                        <img src="{{ asset('storage/'.$product->image) }}" class="w-100" alt="">--}}
-{{--                                    </span>--}}
-{{--                                        </div>--}}
-{{--                                        <div class="media-body">--}}
-{{--                                            <div class="font-w600"><a href="{{ route('products.show', $product->id) }}">{{ $product->title}}</a></div>--}}
-{{--                                            <div class="font-size-sm">Approved: {{ $product->approved_status }}</div>--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
-{{--                                @endforeach--}}
-
-{{--                                <div>--}}
-{{--                                    {{ $products->links() }}--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        @else--}}
-{{--                            <p>No data!</p>--}}
-{{--                        @endif--}}
-{{--                    </div>--}}
-                    <!-- END Orders -->
-                    @endif
-
-
                     <!-- Logs -->
                     <div class="block">
                         <div class="block-header block-header-default">
@@ -153,26 +86,37 @@
                             </h3>
                         </div>
 
-                        @if(count($details) >0)
-                            <table class="table table-striped">
+                        @if(count($logs)>0)
+                            <table class="table table-striped table-vcenter">
                                 <thead>
-                                    <tr>
-                                        <th>Login Time</th>
-                                        <th>Login Location</th>
-                                    </tr>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Attempt Time</th>
+                                    <th>Attempt Location</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($details as $detail)
-                                      <tr>
-                                          <td>{{ $detail->date }}</td>
-                                          <td>{{ $detail->location }}</td>
-                                      </tr>
-                                    @endforeach
+                                @foreach($logs as $log)
+                                    <tr>
+                                        <td class="font-w600">
+                                            {{ $log->type }} {{ $log->item }}
+                                        </td>
+                                        <td class="font-w600">
+                                            {{ $log->date }}
+                                        </td>
+                                        <td class="font-w600">
+{{--                                            {{ $log->location  }}--}}
+                                        </td>
+                                    </tr>
+                                @endforeach
                                 </tbody>
                             </table>
                         @else
-                            <p>No data!</p>
+                            <p class="p-3">No data!</p>
                         @endif
+                        <div class="d-flex justify-content-end">
+                            {{ $logs->links() }}
+                        </div>
                     </div>
                     <!-- END Logs -->
                 </div>
@@ -186,16 +130,19 @@
                             <div class="timeline-event-block block invisible" data-toggle="appear">
                                 <div class="block-header">
                                     <h3 class="block-title">Last Login</h3>
-
                                 </div>
-                                <div class="block-content">
-                                    <p class="font-w600 mb-2">
-                                        {{ $user->date }}
-                                    </p>
-                                    <p>
-                                        {{ $user->location }}
-                                    </p>
-                                </div>
+                                @if($user->last_login_ip)
+                                    <div class="block-content">
+                                        <p class="font-w600 mb-2">
+                                            {{ $user->date }}
+                                        </p>
+                                        <p>
+{{--                                            {{ $user->location }}--}}
+                                        </p>
+                                    </div>
+                                @else
+                                    <p class="p-3">No login attempt yet!</p>
+                                @endif
                             </div>
                         </li>
                         @if($product)

@@ -56,7 +56,12 @@ class ShopifyOrder extends Model
     }
 
     public function getFulCheckAttribute() {
-        return $this->fulfillment_status ? false : true;
+        if(is_null($this->fulfillment_status)) {
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
 

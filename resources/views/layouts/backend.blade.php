@@ -162,45 +162,58 @@
                                 <span class="nav-main-link-name">Dashboard</span>
                             </a>
                         </li>
-                        <li class="nav-main-heading">Sections</li>
                         @role('admin')
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('shops.create') }}">
+                                <i class="nav-main-link-icon fa fa-store"></i>
                                 <span class="nav-main-link-name">Shop Settings</span>
                             </a>
                         </li>
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.products') }}">
+                                <i class="nav-main-link-icon si si-layers"></i>
                                 <span class="nav-main-link-name">Products</span>
                             </a>
                         </li>
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.customers') }}">
+                                <i class="nav-main-link-icon si si-user"></i>
                                 <span class="nav-main-link-name">Customers</span>
                             </a>
                         </li>
 
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.orders') }}">
+                                <i class="nav-main-link-icon si si-bag"></i>
                                 <span class="nav-main-link-name">Orders</span>
                             </a>
                         </li>
 
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('vendors.index') }}">
+                                <i class="nav-main-link-icon fa fa-store"></i>
                                 <span class="nav-main-link-name">Vendors</span>
                             </a>
                         </li>
 
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.users') }}">
+                                <i class="nav-main-link-icon si si-users"></i>
                                 <span class="nav-main-link-name">Users</span>
                             </a>
                         </li>
 
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.products.reports') }}">
+                                <i class="fa fa-chart-area nav-main-link-icon"></i>
                                 <span class="nav-main-link-name">Sale Reports</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-main-item">
+                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.logs') }}">
+                                <i class="fa fa-chart-bar nav-main-link-icon"></i>
+                                <span class="nav-main-link-name">User Logs</span>
                             </a>
                         </li>
                         @endrole
@@ -208,6 +221,7 @@
                         @role('shipping_team')
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.orders') }}">
+                                <i class="nav-main-link-icon si si-bag"></i>
                                 <span class="nav-main-link-name">Orders</span>
                             </a>
                         </li>
@@ -216,6 +230,7 @@
                         @role('outsource_team')
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('products.index') }}">
+                                <i class="nav-main-link-icon si si-layers"></i>
                                 <span class="nav-main-link-name">Products</span>
                             </a>
                         </li>

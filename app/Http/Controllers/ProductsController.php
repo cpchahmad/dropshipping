@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\Log;
 use App\Product;
 use App\ProdImage;
 use App\SubCategory;
 use App\Variant;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -114,6 +116,15 @@ class ProductsController extends Controller
 
         }
 
+
+        Log::create([
+            'user_id' => Auth::user()->id,
+            'attempt_time' => Carbon::now()->toDateTimeString(),
+            'attempt_location_ip' => $request->getClientIp(),
+            'type' => 'Product Added',
+            'shopify_product_id' => $product->id
+        ]);
+
         return redirect(route('products.index'))->with('success', 'Product Added Sucessfully!');
 
     }
@@ -205,6 +216,15 @@ class ProductsController extends Controller
             }
         }
 
+
+        Log::create([
+            'user_id' => Auth::user()->id,
+            'attempt_time' => Carbon::now()->toDateTimeString(),
+            'attempt_location_ip' => $request->getClientIp(),
+            'type' => 'Product Updated',
+            'shopify_product_id' => $product->id
+        ]);
+
         return redirect(route('products.index'))->with('success', 'Product Updated Sucessfully!');
 
     }
@@ -215,13 +235,22 @@ class ProductsController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
 
         foreach ($product->prod_images()->get() as $image) {
             Storage::delete($image->image);
         }
         $product->delete();
+
+
+        Log::create([
+            'user_id' => Auth::user()->id,
+            'attempt_time' => Carbon::now()->toDateTimeString(),
+            'attempt_location_ip' => $request->getClientIp(),
+            'type' => 'Product Deleted',
+            'shopify_product_id' => $product->id
+        ]);
 
         return redirect()->back()->with('success', 'Product Deleted successfully!');
     }

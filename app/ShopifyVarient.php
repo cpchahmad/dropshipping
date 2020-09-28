@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ShopifyVarient extends Model
 {
     protected $fillable = [
+       'id',
        'shopify_product_id',
        'title',
        'price',

@@ -23,7 +23,7 @@
 @section('content')
     <!-- Hero -->
     <div class="bg-body-light">
-        <div class="content content-full">
+        <div class="content content-full py-2">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
 
                 <h1 class="flex-sm-fill h3 my-2">
@@ -172,11 +172,11 @@
                     <table class="table table-striped table-vcenter table-bordered">
                         <thead>
                         <tr>
-                            <th class="text-center" style="width: 10%;">Product</th>
-                            <th class="text-center" style="width: 40%;">Variants</th>
-                            <th class="text-center" style="width: 35%;">Details</th>
-                            <th class="text-center" style="width: 10%;">Status</th>
-                            <th class="text-center" style="width: 5%;">Actions</th>
+                            <th class="text-left" style="width: 10%;">Product</th>
+                            <th class="text-left" style="width: 35%;">Variants</th>
+                            <th class="text-left" style="width: 35%;">Details</th>
+                            <th class="text-left" style="width: 10%;">Status</th>
+                            <th class="text-center" style="width: 10%;">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -203,22 +203,20 @@
                                     <span><strong style="font-size: 14px !important">Weight:</strong> {{ $product->weight }} {{ $product->unit }}</span><br>
                                 </td>
 
-                                <td class="text-center" style="font-size: 14px !important;">
+                                <td class="text-left" style="font-size: 14px !important;">
                                     {{ $product->approved_status }}
-                                    <p class="text-left"><strong>Comments: </strong>{{ $product->notes }}</p>
+                                    @if($product->notes)
+                                        <p class="text-left"><strong>Comments: </strong>{{ $product->notes }}</p>
+                                    @endif
                                 </td>
-                                <td class="">
-                                    <div class="d-flex">
-                                        <a class="btn btn-sm btn-alt-success js-tooltip-enabled" href="{{ route('products.edit', $product->id) }}" data-toggle="tooltip" title="" data-original-title="View">
+                                <td class="text-center justify-content-center">
+                                    <div class="btn-group">
+                                        <a class="btn btn-sm btn-success" href="{{ route('products.edit', $product->id) }}" data-toggle="tooltip" title="" data-original-title="View">
                                             <i class="fa fa-fw fa-pen"></i>
                                         </a>
-                                        <button type="button" data-toggle="modal" data-target="#deleteModal{{ $product->id }}" class="btn btn-danger btn-sm mx-1" >
+                                        <button type="button" data-toggle="modal" data-target="#deleteModal{{ $product->id }}" class="btn btn-danger btn-sm" >
                                             <i class="fa fa-fw fa-trash-alt"></i>
                                         </button>
-
-{{--                                        <a class="btn btn-sm btn-alt-primary js-tooltip-enabled" href="{{ route('products.show', $product->id) }}" data-toggle="tooltip" title="" data-original-title="View">--}}
-{{--                                            <i class="fa fa-fw fa-eye"></i>--}}
-{{--                                        </a>--}}
                                     </div>
 
                                 </td>

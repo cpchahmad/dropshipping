@@ -40,9 +40,9 @@
 @endsection
 
 @section('content')
-    <!-- Hero -->
+
     <div class="bg-body-light">
-        <div class="content content-full">
+        <div class="content content-full py-2">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
 
                 <h1 class="flex-sm-fill h3 my-2">
@@ -65,6 +65,18 @@
 
     <!-- Page Content -->
     <div class="content">
+
+        <form class="js-form-icon-search push" action="" method="get">
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="search" class="form-control" placeholder="Search by Product Title" value="{{$search}}" name="search" required >
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+                        <a class="btn btn-danger" href="/admin/products"> <i class="fa fa-times"></i> Clear </a>
+                    </div>
+                </div>
+            </div>
+        </form>
 
         @role('outsource_team')
         <div class="row mt-1 d-flex justify-content-end mr-1">
@@ -96,11 +108,11 @@
                                 <table class="table table-striped table-vcenter table-bordered">
                                     <thead>
                                     <tr>
-                                        <th class="text-center" style="width: 10px">Product</th>
-                                        <th class="text-center" style="width: 20px">Variants</th>
-                                        <th class="text-center" style="width: 20px">Details</th>
+                                        <th class="text-left" style="width: 10px">Product</th>
+                                        <th class="text-left" style="width: 260px">Variants</th>
+                                        <th class="text-left" style="width: 20px">Details</th>
                                         <th class="text-center" style="width: 5px">Add Vendor</th>
-                                        <th class="text-center" style="width: 50px">Added Vendors</th>
+                                        <th class="text-left" style="width: 50px">Added Vendors</th>
 
                                     </tr>
                                     </thead>
@@ -109,7 +121,9 @@
                                         <tr>
                                             <td class="">
                                                 <div class="text-left pt-3">
-                                                    <img src="{{ $product->img }}" alt="No Image Availble" style="width: 70px; height: auto">
+                                                    <a href="{{ $product->img }}" target="_blank">
+                                                        <img src="{{ $product->img }}" alt="No Image Availble" style="width: 90px; height: auto">
+                                                    </a>
                                                 </div>
                                                 <div class=" d-flex flex-column " style="font-size: 12px !important;">
                                                     <span class="font-weight-bolder" style="font-size: 14px !important;">{{ $product->title}}</span>
@@ -120,7 +134,7 @@
                                                 {{ $product->variant_details}}
                                             </td>
                                             <td class="" style="font-size: 12px !important;">
-                                                <span><strong style="font-size: 14px !important">Description:</strong>{!! $product->body_html  !!}</span><br>
+                                                <span class="w-50"><strong style="font-size: 14px !important">Description:</strong>{!! $product->body_html  !!}</span><br>
                                                 <span><strong style="font-size: 14px !important">Vendor:</strong> {{ $product->vendor }}</span><br>
                                                 <span><strong style="font-size: 14px !important">Type:</strong> {{ $product->product_type }}</span><br>
                                                 <span><strong style="font-size: 14px !important">Tags:</strong> {{ $product->tags }}</span><br>

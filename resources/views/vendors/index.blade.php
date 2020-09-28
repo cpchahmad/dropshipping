@@ -23,7 +23,7 @@
 @section('content')
     <!-- Hero -->
     <div class="bg-body-light">
-        <div class="content content-full">
+        <div class="content content-full py-2">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
 
                 <h1 class="flex-sm-fill h3 my-2">
@@ -79,13 +79,15 @@
                                             <a href="{{ $vendor->url }}" target=_blank" >Visit Website</a>
                                         @endif
                                     </td>
-                                    <td class="d-flex justify-content-end">
-                                        <button type="button" data-toggle="modal" data-target="#editModal{{ $vendor->id }}" class="btn btn-success btn-sm mx-1" >
-                                            <i class="fa fa-fw fa-pen"></i>
-                                        </button>
-                                        <button type="button" data-toggle="modal" data-target="#deleteModal{{ $vendor->id }}" class="btn btn-danger btn-sm mx-1" >
-                                            <i class="fa fa-fw fa-trash-alt"></i>
-                                        </button>
+                                    <td class="d-flex justify-content-end ">
+                                       <div class="btn-group">
+                                           <button type="button" data-toggle="modal" data-target="#editModal{{ $vendor->id }}" class="btn btn-success btn-sm" >
+                                               <i class="fa fa-fw fa-pen"></i>
+                                           </button>
+                                           <button type="button" data-toggle="modal" data-target="#deleteModal{{ $vendor->id }}" class="btn btn-danger btn-sm" >
+                                               <i class="fa fa-fw fa-trash-alt"></i>
+                                           </button>
+                                       </div>
 
 
                                         <div class="modal fade" id="editModal{{$vendor->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -155,6 +157,10 @@
                             @endforeach
 
                     </tbody>
+
+                    <div class="d-flex justify-content-end">
+                        {{ $vendors->links() }}
+                    </div>
                 </table>
                 @else
                     No data!

@@ -14,7 +14,7 @@ class VendorsController extends Controller
      */
     public function index()
     {
-        $vendors = Vendor::all();
+        $vendors = Vendor::orderBy('updated_at', 'DESC')->paginate(20);
 
         return view('vendors.index')->with('vendors', $vendors);
     }

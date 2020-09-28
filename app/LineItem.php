@@ -40,7 +40,6 @@ class LineItem extends Model
 
             if($product->image == null) {
 
-                dd('yes');
                 return "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
             }
             else {
@@ -49,6 +48,24 @@ class LineItem extends Model
             }
 
         }
+    }
+
+    public function getVendorChkAttribute() {
+        $varient = ShopifyVarient::find($this->variant_id);
+        $vendor_details = null;
+
+        if($varient) {
+            $product = $varient->shopify_product()->first();
+            $vendor_details = ProductVendorDetail::where('shopify_product_id', $product->id)->get();
+
+            if($vendor_details != null) {
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
     }
 
     public function getVendorsAttribute() {

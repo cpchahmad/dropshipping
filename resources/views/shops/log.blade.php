@@ -27,7 +27,7 @@
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
 
                 <h1 class="flex-sm-fill h3 my-2">
-                    Customers
+                    Logs
                 </h1>
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
@@ -35,61 +35,43 @@
                             <a class="link-fx" href="/dashboard">Dashboard</a>
                         </li>
                         <li class="breadcrumb-item" aria-current="page">
-                            <a class="link-fx" href="{{ route('admin.customers') }}">Customers</a>
+                            <a class="link-fx" href="{{ route('admin.logs') }}">Logs</a>
                         </li>
                     </ol>
                 </nav>
             </div>
-       </div>
+        </div>
     </div>
     <!-- END Hero -->
 
     <!-- Page Content -->
     <div class="content">
 
+
         <!-- Dynamic Table Full -->
         <div class="block mt-3">
             <div class="block-header">
-                <h3 class="block-title">Customers</h3>
+                <h3 class="block-title">Logs</h3>
             </div>
             <div class="block-content block-content-full">
                 <!-- DataTables init on table by adding .js-dataTable-full class, functionality is initialized in js/pages/tables_datatables.js -->
-                @if(count($customers)>0)
-                    <table class="table table-striped table-vcenter">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Orders count</th>
-                            <th>Total Spent</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($customers as $customer)
-                        <tr>
-                            <td class="font-w600">
-                                <a href="/admin/orders?customer={{ $customer['id'] }}">
-                                    {{ $customer['first_name']}}, {{ $customer['last_name'] }}
-                                </a>
-                            </td>
-                            <td class="font-w600">
-                                {{ $customer['orders_count'] }}
-                            </td>
-                            <td class="font-w600">
-                                ${{ $customer['total_spent'] }}
-                            </td>
-                            <td class="font-w600 text-right">
-                                <a href="/admin/orders?customer={{ $customer['id'] }}" class="btn btn-primary btn-sm">View Orders</a>
-                            </td>
-                        </tr>
+                @if(count($logs)>0)
+                    <ul class="list-group px-1 list-unstyled">
+
+                        @foreach($logs as $log)
+                            <li class="pb-3">
+                                    <span class="badge badge-success">{{ $log->user->name }}</span>
+                                    <strong>{{ $log->type }} </strong>{{ $log->item }}
+                                    {{ $log->date }}
+{{--                                    {{ $log->location }}--}}
+                            </li>
                         @endforeach
-                    </tbody>
-                </table>
+                    </ul>
                 @else
-                    <p>No data!</p>
+                    <p class="p-3">No data!</p>
                 @endif
                 <div class="d-flex justify-content-end">
-                    {{ $customers->links() }}
+                    {{ $logs->links() }}
                 </div>
             </div>
         </div>

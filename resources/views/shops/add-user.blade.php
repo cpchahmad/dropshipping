@@ -13,7 +13,7 @@
 @section('content')
     <!-- Hero -->
     <div class="bg-body-light">
-        <div class="content content-full">
+        <div class="content content-full py-2">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
                 <h1 class="flex-sm-fill h3 my-2">
                     Add User
@@ -43,7 +43,7 @@
         <!-- Dynamic Table Full -->
         <div class="block mt-3">
             <div class="block-header">
-                <h3 class="block-title">User Table</h3>
+                <h3 class="block-title">Users</h3>
             </div>
             <div class="block-content block-content-full">
                 <!-- DataTables init on table by adding .js-dataTable-full class, functionality is initialized in js/pages/tables_datatables.js -->
@@ -62,7 +62,7 @@
                         @foreach($users as $user)
                             <tr>
                                 <td class="font-w600">
-                                    {{ $user->name}}
+                                    <a href="{{ route('admin.show.user', $user->id) }}" > {{ $user->name}}</a>
                                 </td>
                                 <td class="font-w600">
                                     {{ $user->email}}
@@ -70,19 +70,20 @@
                                 <td class="font-w600">
                                     {{ $user->role }}
                                 </td>
-                                <td>
-                                    <div class="row justify-content-end mr-2">
-                                        <button type="button" data-toggle="modal" data-target="#editModal{{ $user->id }}" class="btn btn-success btn-sm mx-1" >
-                                            <i class="fa fa-fw fa-pen-alt"></i>
-                                        </button>
-
-                                        <button type="button" data-toggle="modal" data-target="#deleteModal{{ $user->id }}" class="btn btn-danger btn-sm mx-1" >
-                                            <i class="fa fa-fw fa-trash-alt"></i>
-                                        </button>
-
+                                <td class="d-flex justify-content-end">
+                                    <div class="btn-group">
                                         <a class="btn btn-sm btn-alt-primary js-tooltip-enabled" href="{{ route('admin.show.user', $user->id) }}" data-toggle="tooltip" title="" data-original-title="View">
                                             <i class="fa fa-fw fa-eye"></i>
                                         </a>
+                                        <button type="button" data-toggle="modal" data-target="#editModal{{ $user->id }}" class="btn btn-success btn-sm" >
+                                            <i class="fa fa-fw fa-pen-alt"></i>
+                                        </button>
+
+                                        <button type="button" data-toggle="modal" data-target="#deleteModal{{ $user->id }}" class="btn btn-danger btn-sm" >
+                                            <i class="fa fa-fw fa-trash-alt"></i>
+                                        </button>
+
+
 
                                         <div class="modal fade" id="deleteModal{{$user->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
@@ -189,6 +190,9 @@
 
                         </tbody>
                     </table>
+                    <div class="d-flex justify-content-end">
+                        {{ $users->links() }}
+                    </div>
                 @else
                     No data!
                 @endif

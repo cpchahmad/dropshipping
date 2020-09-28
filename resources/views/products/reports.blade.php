@@ -155,7 +155,7 @@
 @section('content')
     <!-- Hero -->
     <div class="bg-body-light">
-        <div class="content content-full">
+        <div class="content content-full py-2">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
 
                 <h1 class="flex-sm-fill h3 my-2">
@@ -259,7 +259,7 @@
 
                                 </tbody>
                                 @else
-                                    <p  class="text-center"> No Top Products Based on Stores Found </p>
+                                    <p  class="text-center"> No Top Products Found </p>
                                 @endif
                             </table>
                     </div>
