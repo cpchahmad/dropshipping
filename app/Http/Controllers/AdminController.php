@@ -672,13 +672,13 @@ class AdminController extends Controller
 
     public function createWebhooks(Request $request) {
         $api = ShopsController::config();
-//        $product_array = [
-//            "webhook"=> [
-//                "topic"=> "products/update",
-//                "address"=> "https://phpstack-176572-1491780.cloudwaysapps.com/webhook/product/create",
-//                "format"=> "json",
-//            ]
-//        ];
+        $product_array = [
+            "webhook"=> [
+                "topic"=> "products/update",
+                "address"=> "https://phpstack-176572-1491780.cloudwaysapps.com/webhook/product/create",
+                "format"=> "json",
+            ]
+        ];
         $order_array = [
             "webhook"=> [
                 "topic"=> "orders/updated",
@@ -686,7 +686,7 @@ class AdminController extends Controller
                 "format"=> "json",
             ]
         ];
-       // $api->rest('POST', '/admin/webhooks.json', $product_array, [], true);
+        $api->rest('POST', '/admin/webhooks.json', $product_array, [], true);
         $api->rest('POST', '/admin/webhooks.json', $order_array, [], true);
     }
 
@@ -698,9 +698,7 @@ class AdminController extends Controller
 
     public function productCreateWebhook(){
         $input = file_get_contents('php://input');
-        $webhook = new Webhook();
-        $webhook->input = $input;
-        $webhook->save();
+dd($input);
         $product = json_decode($input, true);
         $this->createProduct($product);
     }
