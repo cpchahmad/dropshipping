@@ -697,9 +697,12 @@ class AdminController extends Controller
     }
 
     public function productCreateWebhook(Request $request){
-        $input = file_get_contents('php://input');
-        $product = json_decode($input, true);
-        $this->createProduct($product);
+//        $input = file_get_contents('php://input');
+//        $product = json_decode($input, true);
+//        $this->createProduct($product);
+            $webhook = new Webhook();
+            $webhook->input = 'aa';
+            $webhook->save();
     }
 
     public function orderCreateWebhook(Request $request){
