@@ -22,34 +22,27 @@
     <!-- Page Content -->
     <div class="content">
         <div class="row">
-            <div class="col-md-6 col-xl-5">
-                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="javascript:void(0)">
-                    <div class="block-content block-content-full">
-                        <div class="font-size-sm font-w600 text-uppercase text-muted">Visitors</div>
-                        <div class="font-size-h2 font-w400 text-dark">120,580</div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-6 col-xl-5">
-                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="javascript:void(0)">
+            <div class="col-md-4">
+                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="/admin/products">
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Products</div>
-                        <div class="font-size-h2 font-w400 text-dark">120,12</div>
+                        <div class="font-size-h2 font-w400 text-dark">{{ $products }}</div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-6 col-xl-5">
-                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="javascript:void(0)">
+            <div class="col-md-4">
+                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="/admin/customers">
                     <div class="block-content block-content-full">
-                        <div class="font-size-sm font-w600 text-uppercase text-muted">Visitors</div>
-                        <div class="font-size-h2 font-w400 text-dark">120,580</div>
+                        <div class="font-size-sm font-w600 text-uppercase text-muted">Customers</div>
+                        <div class="font-size-h2 font-w400 text-dark">{{ $customers }}</div>
                     </div>
                 </a>
-            </div>    <div class="col-md-6 col-xl-5">
-                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="javascript:void(0)">
+            </div>
+            <div class="col-md-4">
+                <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="/admin/orders">
                     <div class="block-content block-content-full">
-                        <div class="font-size-sm font-w600 text-uppercase text-muted">Visitors</div>
-                        <div class="font-size-h2 font-w400 text-dark">120,580</div>
+                        <div class="font-size-sm font-w600 text-uppercase text-muted">Orders</div>
+                        <div class="font-size-h2 font-w400 text-dark">1{{ $orders }}</div>
                     </div>
                 </a>
             </div>

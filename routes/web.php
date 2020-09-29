@@ -56,7 +56,7 @@ Route::get('/store/orders', 'AdminController@storeOrders');
 Route::get('/store/products', 'AdminController@storeProducts');
 Route::get('/store/customers', 'AdminController@storeCustomers');
 
-Route::get('/dashboard', 'HomeController@Hom')->name('dashboard');
+Route::get('/dashboard', 'HomeController@index')->name('dashboard');
 Route::get('/config', 'ShopsController@config');
 
 

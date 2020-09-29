@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\ShopifyCustomer;
+use App\ShopifyOrder;
+use App\ShopifyProduct;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
@@ -24,7 +27,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-
-        return view('dashboard');
+        $products = ShopifyProduct::count();
+        $customers = ShopifyCustomer::count();
+        $orders = ShopifyOrder::count();
+        return view('dashboard')->with([
+            'products' => $products,
+            'orders' => $orders,
+            'customers' => $customers,
+        ]);
     }
 }
