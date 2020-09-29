@@ -56,9 +56,9 @@ class LineItem extends Model
 
         if($varient) {
             $product = $varient->shopify_product()->first();
-            $vendor_details = ProductVendorDetail::where('shopify_product_id', $product->id)->get();
+            $vendor_details = ProductVendorDetail::where('shopify_product_id', $product->id)->count();
 
-            if($vendor_details != null) {
+            if(($vendor_details)) {
                 return true;
             }
             else{

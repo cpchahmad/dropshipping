@@ -103,9 +103,9 @@
                             <h3 class="block-title">Shopify Products</h3>
                         </div>
                         <div class="block-content block-content-full">
-                            <div class="w-50">
+                            <div class="">
                                 @if(count($products)>0)
-                                    <table class="table table-striped table-vcenter table-bordered w-75">
+                                    <table class="table table-striped table-vcenter table-bordered ">
                                         <thead>
                                         <tr>
                                             <th class="text-left" style="width: 10px">Product</th>

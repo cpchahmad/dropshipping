@@ -9,12 +9,14 @@ use App\OrderVendor;
 use App\Product;
 use App\ProductImage;
 use App\ProductVendorDetail;
+use App\Shop;
 use App\ShopifyCustomer;
 use App\ShopifyOrder;
 use App\ShopifyProduct;
 use App\ShopifyVarient;
 use App\User;
 use App\Vendor;
+use App\Webhook;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -104,161 +106,70 @@ class AdminController extends Controller
         ]);
 
         foreach ($orders['body']['container']['orders'] as $order) {
-
-                if(ShopifyOrder::where('id', $order['id'])->exists()) {
-                    $o = ShopifyOrder::find($order['id']);
-                }
-                else {
-                    $o = new ShopifyOrder();
-                }
-
-                if(array_key_exists("shipping_address",$order)) {
-                    $o->shipping_address = json_encode($order['shipping_address']);
-                }
-
-                if(array_key_exists("billing_address",$order)) {
-                    $o->billing_address = json_encode($order['billing_address']);
-                }
-
-                if(array_key_exists("customer",$order)) {
-                    $o->customer = $order['customer']['id'];
-                }
-                if(count($order["fulfillments"])>0) {
-                    $o->fulfillments = json_encode($order['fulfillments']);
-                }
-
-                $o->id = $order['id'];
-                $o->total_line_item_price = $order['total_line_items_price'];
-                $o->total_price = $order['total_price'];
-                $o->currency = $order['currency'];
-                $o->name = $order['name'];
-                $o->fulfillment_status = $order['fulfillment_status'];
-                $o->financial_status = $order['financial_status'];
-                $o->processed_at = date('Y-m-d h:i:s',strtotime($order['created_at']));
-                $o->line_items = json_encode($order['line_items']);
-                $o->line_items = json_encode($order['line_items']);
-                $o->shipping_lines = json_encode($order['shipping_lines']);
-                $o->notes = $order['note'];
-                $o->save();
-
-                $line_item_obj = json_decode($o->line_items);
-
-                $line_items_count = count($line_item_obj);
-
-                if($line_items_count !=0) {
-                    foreach ($line_item_obj as $item) {
-                        $line = new LineItem();
-                        $line->id = $item->id;
-                        $line->variant_id = $item->variant_id;
-                        $line->title = $item->title;
-                        $line->quantity = $item->quantity;
-                        $line->sku = $item->sku;
-                        $line->product_id = $item->product_id;
-                        $line->price = $item->price;
-                        $line->shopify_order_id = $order['id'];
-                        $line->save();
-                    }
-                }
-
+            $this->createOrder($order);
         }
-
         if (isset($orders['link']['next'])) {
             $this->storeOrders($orders['link']['next']);
         }
     }
 
-//    public static function storeOrders() {
-//        $api = ShopsController::config();
-//        $orders = [];
-//
-//
-//        $response = $api->rest('GET', '/admin/orders/count.json', null, [],true);
-//
-//
-//        if(!$response['errors']) {
-//            $count = $response['body']['container']['count'];
-//            $iterations = ceil($count / 50);
-//            $next = '';
-//
-//            for ($i = 1; $i <= $iterations; $i++) {
-//                if ($i == 1) {
-//                    $order_response = $api->rest('GET', '/admin/orders.json');
-//                } else {
-//                    $order_response = $api->rest('GET', '/admin/orders.json', ['page_info' => $next]);
-//                }
-//
-//                if(!$order_response['errors']) {
-//                    if($order_response['link'] != null){
-//                        $next = $order_response['link']['next'];
-//                    }
-//                    $orders =  array_merge($orders,$order_response['body']['container']['orders']);
-//                }
-//            }
-//        }
-//
-//        foreach ($orders as $order) {
-//
-//            if(ShopifyOrder::where('id', $order['id'])->exists()) {
-//                $o = ShopifyOrder::find($order['id']);
-//            }
-//            else {
-//                $o = new ShopifyOrder();
-//            }
-//
-//                if(array_key_exists("shipping_address",$order)) {
-//                    $o->shipping_address = json_encode($order['shipping_address']);
-//                }
-//
-//                if(array_key_exists("billing_address",$order)) {
-//                    $o->billing_address = json_encode($order['billing_address']);
-//                }
-//
-//                if(array_key_exists("customer",$order)) {
-//                    $o->customer = json_encode($order['customer']);
-//                }
-//                if(count($order["fulfillments"])>0) {
-//                    $o->fulfillments = json_encode($order['fulfillments']);
-//                }
-//
-//                $o->id = $order['id'];
-//                $o->total_line_item_price = $order['total_line_items_price'];
-//                $o->total_price = $order['total_price'];
-//                $o->currency = $order['currency'];
-//                $o->name = $order['name'];
-//                $o->fulfillment_status = $order['fulfillment_status'];
-//                $o->financial_status = $order['financial_status'];
-//
-//
-//
-//                $o->processed_at = date('Y-m-d h:i:s',strtotime($order['created_at']));
-//                $o->line_items = json_encode($order['line_items']);
-//                $o->line_items = json_encode($order['line_items']);
-//                $o->shipping_lines = json_encode($order['shipping_lines']);
-//                $o->notes = $order['note'];
-//                $o->save();
-//
-//                $line_item_obj = json_decode($o->line_items);
-//
-//                $line_items_count = count($line_item_obj);
-//
-//                if($line_items_count !=0) {
-//                    foreach ($line_item_obj as $item) {
-//                        $line = new LineItem();
-//                        $line->id = $item->id;
-//                        $line->variant_id = $item->variant_id;
-//                        $line->title = $item->title;
-//                        $line->quantity = $item->quantity;
-//                        $line->sku = $item->sku;
-//                        $line->product_id = $item->product_id;
-//                        $line->price = $item->price;
-//                        $line->shopify_order_id = $order['id'];
-////                        $line->vendor = $item->vendor;
-//                        $line->save();
-//                    }
-//                }
-//        }
-//
-//    }
+    public function createOrder($order) {
+
+        if(ShopifyOrder::where('id', $order['id'])->exists()) {
+            $o = ShopifyOrder::find($order['id']);
+        }
+        else {
+            $o = new ShopifyOrder();
+        }
+
+        if(array_key_exists("shipping_address",$order)) {
+            $o->shipping_address = json_encode($order['shipping_address']);
+        }
+
+        if(array_key_exists("billing_address",$order)) {
+            $o->billing_address = json_encode($order['billing_address']);
+        }
+
+        if(array_key_exists("customer",$order)) {
+            $o->customer = $order['customer']['id'];
+        }
+        if(count($order["fulfillments"])>0) {
+            $o->fulfillments = json_encode($order['fulfillments']);
+        }
+
+        $o->id = $order['id'];
+        $o->total_line_item_price = $order['total_line_items_price'];
+        $o->total_price = $order['total_price'];
+        $o->currency = $order['currency'];
+        $o->name = $order['name'];
+        $o->fulfillment_status = $order['fulfillment_status'];
+        $o->financial_status = $order['financial_status'];
+        $o->processed_at = date('Y-m-d h:i:s',strtotime($order['created_at']));
+        $o->line_items = json_encode($order['line_items']);
+        $o->line_items = json_encode($order['line_items']);
+        $o->shipping_lines = json_encode($order['shipping_lines']);
+        $o->notes = $order['note'];
+        $o->save();
+
+        $line_item_obj = json_decode($o->line_items);
+
+        $line_items_count = count($line_item_obj);
+
+        if($line_items_count !=0) {
+            foreach ($line_item_obj as $item) {
+                $line = new LineItem();
+                $line->id = $item->id;
+                $line->variant_id = $item->variant_id;
+                $line->title = $item->title;
+                $line->quantity = $item->quantity;
+                $line->sku = $item->sku;
+                $line->product_id = $item->product_id;
+                $line->price = $item->price;
+                $line->shopify_order_id = $order['id'];
+                $line->save();
+            }
+        }
+    }
 
     public function storeCustomers($next = null)
     {
@@ -269,221 +180,135 @@ class AdminController extends Controller
             'page_info' => $next
         ]);
 
-
-       // $products = $this->helper->getContent($products);
-
         foreach ($customers['body']['container']['customers'] as $customer) {
-
-                if(ShopifyCustomer::where('id', $customer['id'])->exists()) {
-                    $c = ShopifyCustomer::find($customer['id']);
-                }
-                else {
-                    $c = new ShopifyCustomer();
-                }
-
-                $c->id = $customer['id'];
-                $c->email = $customer['email'];
-                $c->first_name = $customer['first_name'];
-                $c->last_name = $customer['last_name'];
-                $c->orders_count = $customer['orders_count'];
-                $c->state = $customer['state'];
-                $c->total_spent = $customer['total_spent'];
-                $c->last_order_id = $customer['last_order_id'];
-                $c->note = $customer['note'];
-                $c->verified_email = $customer['verified_email'];
-                $c->phone = $customer['phone'];
-                $c->tags = $customer['tags'];
-                $c->last_order_name = $customer['last_order_name'];
-                $c->currency = $customer['currency'];
-                if(array_key_exists("default_address",$customer)) {
-                    $c->default_address = json_encode($customer['default_address']);
-                }
-                $c->addresses = json_encode($customer['addresses']);
-                $c->save();
-
-
+            $this->createCustomer($customer);
         }
+
         if (isset($customers['link']['next'])) {
             $this->storeCustomers($customers['link']['next']);
         }
 
     }
 
-//    public static function storeCustomers() {
-//        $api = ShopsController::config();
-//        $customers = [];
-//
-//        $customer_response = $api->rest('GET', '/admin/customers.json', ['page_info' => "eyJkaXJlY3Rpb24iOiJuZXh0IiwibGFzdF9pZCI6MzU3Mjg0NzkzNTU3NCwibGFzdF92YWx1ZSI6MTYwMDI3MjQyNzAwMH0"]);
-//        //dd($customer_response);
-//        $customers = $customer_response['body']['container']['customers'];
-//
-//       // eyJsYXN0X2lkIjozNTgxOTA0OTc4MDA2LCJsYXN0X3ZhbHVlIjoxNjAwNjgzNzQ2MDAwLCJkaXJlY3Rpb24iOiJuZXh0In0
-//        // eyJkaXJlY3Rpb24iOiJuZXh0IiwibGFzdF9pZCI6MzU3Mjg0NzkzNTU3NCwibGFzdF92YWx1ZSI6MTYwMDI3MjQyNzAwMH0
-//     //   $response = $api->rest('GET', '/admin/customers/count.json', null, [],true);
-//
-//
-////        if(!$response['errors']) {
-////            $count = $response['body']['container']['count'];
-////            $iterations = ceil($count / 50);
-////            $next = '';
-////            for ($i = 1; $i <= $iterations; $i++) {
-////                if ($i == 1) {
-////                    $customer_response = $api->rest('GET', '/admin/customers.json');
-////                } else {
-////                    $customer_response = $api->rest('GET', '/admin/customers.json', ['page_info' => $next]);
-////                }
-////
-////                if(!$customer_response['errors']) {
-////                    if($customer_response['link'] != null){
-////                        $next = $customer_response['link']['next'];
-////
-////                    }
-////                    $customers =  array_merge($customers,$customer_response['body']['container']['customers']);
-////                }
-////            }
-////
-////        }
-//
-//
-//
-//        foreach ($customers as $customer) {
-//
-//            if(ShopifyCustomer::where('id', $customer['id'])->exists()) {
-//                $c = ShopifyCustomer::find($customer['id']);
-//            }
-//            else {
-//                $c = new ShopifyCustomer();
-//            }
-//
-//            $c->id = $customer['id'];
-//            $c->email = $customer['email'];
-//            $c->first_name = $customer['first_name'];
-//            $c->last_name = $customer['last_name'];
-//            $c->orders_count = $customer['orders_count'];
-//            $c->state = $customer['state'];
-//            $c->total_spent = $customer['total_spent'];
-//            $c->last_order_id = $customer['last_order_id'];
-//            $c->note = $customer['note'];
-//            $c->verified_email = $customer['verified_email'];
-//            $c->phone = $customer['phone'];
-//            $c->tags = $customer['tags'];
-//            $c->last_order_name = $customer['last_order_name'];
-//            $c->currency = $customer['currency'];
-//            if(array_key_exists("default_address",$customer)) {
-//                $c->default_address = json_encode($customer['default_address']);
-//            }
-//            $c->addresses = json_encode($customer['addresses']);
-//            $c->save();
-//
-//        }
-//
-//    }
-    public static function storeProducts() {
+    public function createCustomer($customer) {
+        if(ShopifyCustomer::where('id', $customer['id'])->exists()) {
+            $c = ShopifyCustomer::find($customer['id']);
+        }
+        else {
+            $c = new ShopifyCustomer();
+        }
+
+        $c->id = $customer['id'];
+        $c->email = $customer['email'];
+        $c->first_name = $customer['first_name'];
+        $c->last_name = $customer['last_name'];
+        $c->orders_count = $customer['orders_count'];
+        $c->state = $customer['state'];
+        $c->total_spent = $customer['total_spent'];
+        $c->last_order_id = $customer['last_order_id'];
+        $c->note = $customer['note'];
+        $c->verified_email = $customer['verified_email'];
+        $c->phone = $customer['phone'];
+        $c->tags = $customer['tags'];
+        $c->last_order_name = $customer['last_order_name'];
+        $c->currency = $customer['currency'];
+        if(array_key_exists("default_address",$customer)) {
+            $c->default_address = json_encode($customer['default_address']);
+        }
+        $c->addresses = json_encode($customer['addresses']);
+        $c->save();
+    }
+
+
+    public function storeProducts($next = null)
+    {
         $api = ShopsController::config();
-        $products = [];
 
-        $response = $api->rest('GET', '/admin/products/count.json', null, [],true);
+        $products = $api->rest('GET', '/admin/products.json', [
+            'limit' => 250,
+            'page_info' => $next
+        ]);
 
+        foreach ($products['body']['container']['products'] as $product) {
+            $this->createProduct($product);
+        }
 
-        if(!$response['errors']) {
-            $count = $response['body']['container']['count'];
-            $iterations = ceil($count / 50);
-            $next = '';
+        if (isset($products['link']['next'])) {
+            $this->storeProducts($products['link']['next']);
+        }
+    }
 
+    public function createProduct($product) {
 
-            for ($i = 1; $i <= $iterations; $i++) {
-                if ($i == 1) {
-                    $product_response = $api->rest('GET', '/admin/products.json');
-                } else {
-                    $product_response = $api->rest('GET', '/admin/products.json', ['page_info' => $next]);
-                }
+        if(ShopifyProduct::where('id', $product['id'])->exists()) {
+            $p = ShopifyProduct::find($product['id']);
+        }
+        else {
+            $p = new ShopifyProduct();
+        }
 
-                if(!$product_response['errors']) {
-                    if($product_response['link'] != null){
-                        $next = $product_response['link']['next'];
-                    }
+        $p->id = $product['id'];
+        $p->title =  $product['title'];
+        $p->body_html = $product['body_html'];
+        $p->vendor =  $product['vendor'];
+        $p->product_type =  $product['product_type'];
+        $p->handle = $product['handle'];
+        $p->published_at = $product['published_at'];
+        $p->template_suffix = $product['template_suffix'];
+        $p->published_scope = $product['published_scope'];
+        $p->tags =json_encode($product['tags']);
+        $p->variants = json_encode($product['variants']);
+        $p->options = json_encode($product['options']);
+        $p->images = json_encode($product['images']);
+        $p->image = json_encode($product['image']);
+        $p->save();
 
-                    $products =  array_merge($products,$product_response['body']['container']['products']);
-
-                }
+        if($p->variants){
+            $variants = json_decode($p->variants);
+            foreach ($variants as $variant) {
+                ShopifyVarient::create([
+                    'id' => $variant->id,
+                    'shopify_product_id'=> $variant->product_id,
+                    'title'=> $variant->title,
+                    'price'=> $variant->price,
+                    'sku'=> $variant->sku,
+                    'position'=> $variant->position,
+                    'inventory_policy'=> $variant->inventory_policy,
+                    'compare_at_price'=> $variant->compare_at_price,
+                    'fulfillment_service'=> $variant->fulfillment_service,
+                    'inventory_management'=> $variant->inventory_management,
+                    'option1'=> $variant->option1,
+                    'option2'=> $variant->option2,
+                    'option3'=> $variant->option3,
+                    'taxable'=> $variant->taxable,
+                    'barcode'=> $variant->barcode,
+                    'grams'=> $variant->grams,
+                    'image_id'=> $variant->image_id,
+                    'weight'=> $variant->weight,
+                    'weight_unit'=> $variant->weight_unit,
+                    'inventory_item_id'=> $variant->inventory_item_id,
+                    'inventory_quantity'=> $variant->inventory_quantity,
+                    'old_inventory_quantity'=> $variant->old_inventory_quantity,
+                    'requires_shipping'=> $variant->requires_shipping,
+                ]);
             }
         }
 
-        foreach ($products as $product) {
+        if($p->images){
+            $images = json_decode($p->images);
 
-
-
-            if(ShopifyProduct::where('id', $product['id'])->exists()) {
-                $p = ShopifyProduct::find($product['id']);
+            foreach ($images as $image) {
+                ProductImage::create([
+                    'shopify_id' => $image->id,
+                    'product_id'=> $image->product_id,
+                    'position'=> $image->position,
+                    'alt'=> $image->alt,
+                    'width'=> $image->width,
+                    'height'=> $image->height,
+                    'src'=> $image->src,
+                    'variant_ids' => json_encode($image->variant_ids),
+                ]);
             }
-            else{
-                $p = new ShopifyProduct();
-            }
-
-
-                $p->id = $product['id'];
-                $p->title =  $product['title'];
-                $p->body_html = $product['body_html'];
-                $p->vendor =  $product['vendor'];
-                $p->product_type =  $product['product_type'];
-                $p->handle = $product['handle'];
-                $p->published_at = $product['published_at'];
-                $p->template_suffix = $product['template_suffix'];
-                $p->published_scope = $product['published_scope'];
-                $p->tags =json_encode($product['tags']);
-                $p->variants = json_encode($product['variants']);
-                $p->options = json_encode($product['options']);
-                $p->images = json_encode($product['images']);
-                $p->image = json_encode($product['image']);
-                $p->save();
-
-                if($p->variants){
-                    $variants = json_decode($p->variants);
-                    foreach ($variants as $variant) {
-                        ShopifyVarient::create([
-                            'id' => $variant->id,
-                            'shopify_product_id'=> $variant->product_id,
-                            'title'=> $variant->title,
-                            'price'=> $variant->price,
-                            'sku'=> $variant->sku,
-                            'position'=> $variant->position,
-                            'inventory_policy'=> $variant->inventory_policy,
-                            'compare_at_price'=> $variant->compare_at_price,
-                            'fulfillment_service'=> $variant->fulfillment_service,
-                            'inventory_management'=> $variant->inventory_management,
-                            'option1'=> $variant->option1,
-                            'option2'=> $variant->option2,
-                            'option3'=> $variant->option3,
-                            'taxable'=> $variant->taxable,
-                            'barcode'=> $variant->barcode,
-                            'grams'=> $variant->grams,
-                            'image_id'=> $variant->image_id,
-                            'weight'=> $variant->weight,
-                            'weight_unit'=> $variant->weight_unit,
-                            'inventory_item_id'=> $variant->inventory_item_id,
-                            'inventory_quantity'=> $variant->inventory_quantity,
-                            'old_inventory_quantity'=> $variant->old_inventory_quantity,
-                            'requires_shipping'=> $variant->requires_shipping,
-                        ]);
-                    }
-                }
-
-                if($p->images){
-                    $images = json_decode($p->images);
-
-                    foreach ($images as $image) {
-                        ProductImage::create([
-                            'shopify_id' => $image->id,
-                            'product_id'=> $image->product_id,
-                            'position'=> $image->position,
-                            'alt'=> $image->alt,
-                            'width'=> $image->width,
-                            'height'=> $image->height,
-                            'src'=> $image->src,
-                            'variant_ids' => json_encode($image->variant_ids),
-                        ]);
-                    }
-                }
         }
     }
 
@@ -843,6 +668,50 @@ class AdminController extends Controller
 
         return view('shops.log')->with('logs', $logs);
     }
+
+
+    public function createWebhooks(Request $request) {
+        $api = ShopsController::config();
+//        $product_array = [
+//            "webhook"=> [
+//                "topic"=> "products/update",
+//                "address"=> "https://phpstack-176572-1491780.cloudwaysapps.com/webhook/product/create",
+//                "format"=> "json",
+//            ]
+//        ];
+        $order_array = [
+            "webhook"=> [
+                "topic"=> "orders/updated",
+                "address"=> "https://phpstack-176572-1491780.cloudwaysapps.com/webhook/order/create",
+                "format"=> "json",
+            ]
+        ];
+       // $api->rest('POST', '/admin/webhooks.json', $product_array, [], true);
+        $api->rest('POST', '/admin/webhooks.json', $order_array, [], true);
+    }
+
+    public function getWebhooks() {
+        $api = ShopsController::config();
+        $response = $api->rest('GET', '/admin/webhooks.json', null, [], true);
+        dd($response);
+    }
+
+    public function productCreateWebhook(){
+        $input = file_get_contents('php://input');
+        $webhook = new Webhook();
+        $webhook->input = $input;
+        $webhook->save();
+        $product = json_decode($input, true);
+        $this->createProduct($product);
+    }
+
+    public function orderCreateWebhook(){
+        $input = file_get_contents('php://input');
+        $order = json_decode($input, true);
+        $this->createOrder($order);
+    }
+
+
 
 
 
