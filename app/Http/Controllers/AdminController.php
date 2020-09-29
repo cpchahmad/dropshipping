@@ -701,7 +701,7 @@ class AdminController extends Controller
 //        $product = json_decode($input, true);
 //        $this->createProduct($product);
             $webhook = new Webhook();
-            $webhook->input = 'aa';
+            $webhook->content = 'aa';
             $webhook->save();
     }
 
