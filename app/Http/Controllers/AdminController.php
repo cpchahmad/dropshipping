@@ -696,14 +696,13 @@ class AdminController extends Controller
         dd($response);
     }
 
-    public function productCreateWebhook(){
+    public function productCreateWebhook(Request $request){
         $input = file_get_contents('php://input');
-dd($input);
         $product = json_decode($input, true);
         $this->createProduct($product);
     }
 
-    public function orderCreateWebhook(){
+    public function orderCreateWebhook(Request $request){
         $input = file_get_contents('php://input');
         $order = json_decode($input, true);
         $this->createOrder($order);

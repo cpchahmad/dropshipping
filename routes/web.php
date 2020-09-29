@@ -56,7 +56,7 @@ Route::get('/store/orders', 'AdminController@storeOrders');
 Route::get('/store/products', 'AdminController@storeProducts');
 Route::get('/store/customers', 'AdminController@storeCustomers');
 
-Route::get('/dashboard', 'HomeController@index')->name('dashboard');
+Route::get('/dashboard', 'HomeController@Hom')->name('dashboard');
 Route::get('/config', 'ShopsController@config');
 
 
@@ -68,7 +68,7 @@ Route::get('/dummy', function () {
 Route::get('create/webhooks', 'AdminController@createWebhooks');
 Route::get('get/webhooks', 'AdminController@getWebhooks');
 
-Route::any('webhook/product/create', 'AdminController@productCreateWebhook');
+Route::post('webhook/product/create', 'AdminController@productCreateWebhook');
 Route::post('webhook/product/delete', 'AdminController@productDeleteWebhook');
 Route::post('webhook/order/create', 'AdminController@orderCreateWebhook');
 Route::post('webhook/order/fulfilled', 'AdminController@orderFulfilledWebhook');
