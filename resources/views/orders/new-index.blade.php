@@ -313,7 +313,7 @@
                                                     </div>
 
                                                     <div class="block-content font-size-sm pb-2 tracking" style="display: none">
-                                                        <h5>Tracking number</h5>
+                                                        <h5>Tracking Information</h5>
                                                         <input type="text" name="tracking_number" class="form-control mb-2" placeholder="Enter tracking number..">
                                                         <input type="text" name="tracking_url" class="form-control mb-2" placeholder="Enter tracking url..">
                                                         <select name="shipping_carrier" class="form-control status_select">

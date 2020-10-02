@@ -14,6 +14,7 @@ use App\ShopifyCustomer;
 use App\ShopifyOrder;
 use App\ShopifyProduct;
 use App\ShopifyVarient;
+use App\Tracking;
 use App\User;
 use App\Vendor;
 use App\Webhook;
@@ -489,7 +490,7 @@ class AdminController extends Controller
                     "tracking_number"=> $request->tracking_number,
                     "tracking_url"=> $request->tracking_url,
                     "tracking_company"=> $request->shipping_carrier,
-                    "location_id" => '6122438719'
+                    "location_id" => '8749154419'
                 ]
               ];
 
@@ -756,43 +757,43 @@ class AdminController extends Controller
         $this->createOrder($order);
     }
 
-    public function addTracking(Request $request, $id) {
-        $order = ShopifyOrder::find($id);
+    public function addTracking(Request $request) {
 
-        $order->fulfillment_status = 'fulfilled';
-        $order->save();
+        if(Tracking::count() > 0) {
+            Tracking::truncate();
+        }
+        $tracking = new Tracking();
+        $tracking->tracking_number = $request->tracking_number;
+        $tracking->tracking_url = $request->tracking_url;
+        $tracking->tracking_company = $request->shipping_carrier;
+        $tracking->location_id = '6122438719';
+        $tracking->save();
 
-            Log::create([
-                'user_id' => Auth::user()->id,
-                'attempt_time' => Carbon::now()->toDateTimeString(),
-                'attempt_location_ip' => $request->getClientIp(),
-                'type' => 'Order Tracking Added',
-                'shopify_order_id' => $order->id
-            ]);
-
-            $api = ShopsController::config();
-            $fulfillment_array_to_be_passed = [
-                "fulfillment"=> [
-                    "tracking_number"=> $request->tracking_number,
-                    "tracking_url"=> $request->tracking_url,
-                    "tracking_company"=> $request->shipping_carrier,
-                    "location_id" => '6122438719'
-                ]
-            ];
-
-            $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $fulfillment_array_to_be_passed, [],true);
-
-            if(!$response['errors']) {
-                return redirect()->back()->with('success', 'Order Tracking Added successfully!');
-            }
-            else {
-                return redirect()->back()->with('error', 'Request cannot be proceed');
-            }
-
+        return response()->json(['data'=> 'success', 'tracking'=> $tracking]);
     }
 
 
     public function fulfillOrders(Request $request) {
+
+
+        if(isset($request->tracking_number)) {
+            $fulfillment_array_to_be_passed = [
+                "fulfillment"=> [
+                    "tracking_number"=> $request->tracking_number,
+                    "tracking_url"=> $request->tracking_url,
+                    "tracking_company"=> $request->tracking_company,
+                    "location_id" => '8749154419'
+                ]
+            ];
+        }
+        else {
+            $fulfillment_array_to_be_passed = [
+                "fulfillment"=> [
+                    "tracking_number"=> null,
+                    "location_id" => '8749154419'
+                ]
+            ];
+        }
         $orders = $request->orders;
 
         foreach ($orders as $id) {
@@ -801,21 +802,15 @@ class AdminController extends Controller
             $order->save();
 
             $api = ShopsController::config();
-            $fulfillment_array_to_be_passed = [
-                "fulfillment"=> [
-                    "tracking_number"=> null,
-                    "location_id" => '6122438719'
-                ]
-            ];
-
             $response = $api->rest('POST', 'admin/orders/'.$id.'/fulfillments.json', $fulfillment_array_to_be_passed, [],true);
 
             if($response['errors']) {
-                return redirect()->back()->with('error', 'Request cannot be proceed for order #'.$order->name);
+                dd($response);
+                return redirect(route('admin.orders'))->with('error', 'Request cannot be proceed for order #'.$order->name);
             }
         }
 
-        return redirect()->back()->with('success', 'Orders Fulfilled Successfully!');
+        return redirect(route('admin.orders'))->with('success', 'Orders Fulfilled Successfully!');
     }
 
 

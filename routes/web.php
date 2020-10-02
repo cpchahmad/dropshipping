@@ -49,7 +49,7 @@ Route::get('/admin/show/user/{id}', 'AdminController@showUser')->name('admin.sho
 Route::delete('/admin/delete/user/{id}', 'AdminController@deleteUser')->name('admin.delete.user');
 Route::put('/admin/edit/user/{id}', 'AdminController@editUser')->name('admin.edit.user');
 Route::post('/admin/change/order/status/{id}', 'AdminController@changeOrderStatus')->name('admin.change.order.status');
-Route::post('/admin/add/order/tracking/{id}', 'AdminController@addTracking')->name('admin.add.tracking');
+Route::post('/admin/add/order/tracking', 'AdminController@addTracking')->name('admin.add.tracking');
 Route::post('/admin/fulfill/orders', 'AdminController@fulfillOrders')->name('admin.fulfill.orders');
 Route::post('/admin/store/order/notes/{id}', 'AdminController@storeOrderNotes')->name('admin.store.order.notes');
 Route::post('/admin/store/order/vendor', 'AdminController@storeOrderVendor')->name('admin.store.order.vendor');
