@@ -28,10 +28,62 @@
                     case "Fulfilled":
                         $('.tracking').show();
                         break;
-
-
                 }
             });
+        });
+
+        $('.check-order-all').change(function () {
+            unset_bulk_array()
+
+
+            if($(this).is(':checked')){
+                $('.bulk-div').show();
+                $(this).parent().parent().parent().parent().next().find('input.check-order').prop('checked',true);
+            }
+            else{
+                $('.bulk-div').hide();
+                $(this).parent().parent().parent().parent().next().find('input.check-order').prop('checked',false);
+
+            }
+
+            set_bulk_array();
+
+        });
+        $('.check-order').change(function () {
+            if($(this).is(':checked')){
+                $('.bulk-div').show();
+                unset_bulk_array();
+                set_bulk_array();
+            }
+            else{
+                unset_bulk_array();
+                set_bulk_array();
+                if($('.check-order:checked').length === 0){
+                    $('.bulk-div').hide();
+                }
+
+            }
+
+        });
+        function set_bulk_array() {
+            var values = [];
+            $('.check-order:checked').each(function () {
+                values.push($(this).val());
+            });
+            $('#bulk-fullfillment').find('input:hidden[name=orders]').val(values);
+
+        }
+        function unset_bulk_array() {
+            $('#bulk-fullfillment').find('input:hidden[name=orders]').val('');
+
+        }
+        $('.bulk-fulfill-btn').click(function () {
+            $('#bulk-fullfillment').submit();
+        });
+
+        $(".filter-btn").click(function(){
+            console.log(324);
+            $(".filters").slideToggle();
         });
     </script>
 @endsection
@@ -63,7 +115,7 @@
     <!-- Page Content -->
     <div class="content">
 
-        <form class="js-form-icon-search push" action="" method="get">
+        <form class="js-form-icon-search push mb-0" action="" method="get">
             <div class="form-group">
                 <div class="input-group">
                     <input type="search" class="form-control" placeholder="Search by Order ID" value="{{$search}}" name="search" required >
@@ -75,38 +127,92 @@
             </div>
         </form>
 
-        <div class="bg-white p-3 push">
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-primary btn-lg filter-btn">
+                <i class="fa fa-filter"></i>Filters
+            </button>
+        </div>
+        <div class="bg-white p-3 push filters mt-3" style="display: none">
             <!-- Navigation -->
-            <div id="horizontal-navigation-hover-normal" class="d-none d-lg-block mt-2 mt-lg-0">
+            <div id="horizontal-navigation-hover-normal" class=" mt-2 mt-lg-0">
                 <ul class="nav-main nav-main-horizontal nav-main-hover">
-                    <li class="nav-main-item">
-                        <a class="nav-main-link @if($status == 'unfulfilled') active @endif" href="?status=unfulfilled">
-                            <i class="nav-main-link-icon fa fa-flag-checkered"></i>
-                            <span class="nav-main-link-name">Unfulfilled</span>
-                            <span class="nav-main-link-badge badge badge-pill badge-warning">{{$all_orders->where('fulfillment_status', null)->count()}}</span>
-                        </a>
-                    </li>
-                    <li class="nav-main-item">
-                        <a class="nav-main-link @if($status == 'fulfilled') active @endif " href="?status=fulfilled">
-                            <i class="nav-main-link-icon fa fa-star"></i>
-                            <span class="nav-main-link-name">Fulfilled</span>
-                            <span class="nav-main-link-badge badge badge-pill badge-success">{{$all_orders->whereIN('fulfillment_status',['fulfilled'])->count()}}</span>
-                        </a>
-                    </li>
-                    <li class="nav-main-item">
-                        <a class="nav-main-link @if($status == 'completed') active @endif " href="?status=completed">
-                            <i class="nav-main-link-icon fa fa-check-circle"></i>
-                            <span class="nav-main-link-name">Completed</span>
-                            <span class="nav-main-link-badge badge badge-pill " style="background: darkslategray;color: white;">{{$all_orders->whereIN('fulfillment_status',['completed'])->count()}}</span>
-                        </a>
-                    </li>
-                    <li class="nav-main-item">
-                        <a class="nav-main-link @if($status == 'cancelled') active @endif " href="?status=cancelled">
-                            <i class="nav-main-link-icon fa fa-times-circle"></i>
-                            <span class="nav-main-link-name">Cancelled</span>
-                            <span class="nav-main-link-badge badge badge-pill badge-danger" >{{$all_orders->whereIN('fulfillment_status',['cancelled'])->count()}}</span>
-                        </a>
-                    </li>
+                    <div class="col-md-6">
+                        <h5>Fulfillment Status</h5>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'unfulfilled') active @endif" href="?status=unfulfilled">
+                                <i class="nav-main-link-icon fa fa-flag-checkered"></i>
+                                <span class="nav-main-link-name">Unfulfilled</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-danger">{{$all_orders->where('fulfillment_status', null)->count()}}</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'fulfilled') active @endif " href="?status=fulfilled">
+                                <i class="nav-main-link-icon fa fa-star"></i>
+                                <span class="nav-main-link-name">Fulfilled</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-success">{{$all_orders->whereIN('fulfillment_status',['fulfilled'])->count()}}</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'partial') active @endif " href="?status=partial">
+                                <i class="nav-main-link-icon fa fa-spinner"></i>
+                                <span class="nav-main-link-name">Partially Fulfilled</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-warning" style="color: white;">{{$all_orders->whereIN('fulfillment_status',['partial'])->count()}}</span>
+                            </a>
+                        </li>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Financial Status</h5>
+
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'paid') active @endif " href="?status=paid">
+                                <i class="nav-main-link-icon fa fa-check-circle"></i>
+                                <span class="nav-main-link-name">Paid</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-success" style="color: white;">{{$all_orders->whereIN('financial_status',['paid'])->count()}}</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'partially_refunded') active @endif " href="?status=partially_refunded">
+                                <i class="nav-main-link-icon fa fa-question-circle"></i>
+                                <span class="nav-main-link-name">Partially Refunded</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-warning" style="color: white;">{{$all_orders->whereIN('financial_status',['partially_refunded'])->count()}}</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'authorized') active @endif " href="?status=authorized">
+                                <i class="nav-main-link-icon fa fa-check-circle"></i>
+                                <span class="nav-main-link-name">Authorized</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-primary" style="color: white;">{{$all_orders->whereIN('financial_status',['authorized'])->count()}}</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'pending') active @endif " href="?status=pending">
+                                <i class="nav-main-link-icon fa fa-spinner"></i>
+                                <span class="nav-main-link-name">Pending</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-warning" style="color: white;">{{$all_orders->whereIN('financial_status',['pending'])->count()}}</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'partially_paid') active @endif " href="?status=partially_paid">
+                                <i class="nav-main-link-icon fa fa-spinner"></i>
+                                <span class="nav-main-link-name">Partially Paid</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-dark" style="color: white;">{{$all_orders->whereIN('financial_status',['partially_paid'])->count()}}</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'refunded') active @endif " href="?status=refunded">
+                                <i class="nav-main-link-icon fa fa-times-circle"></i>
+                                <span class="nav-main-link-name">Refunded</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-danger" style="color: white;">{{$all_orders->whereIN('financial_status',['refunded'])->count()}}</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link @if($status == 'voided') active @endif " href="?status=voided">
+                                <i class="nav-main-link-icon fa fa-question-circle"></i>
+                                <span class="nav-main-link-name">Voided</span>
+                                <span class="nav-main-link-badge badge badge-pill badge-primary" style="color: white;">{{$all_orders->whereIN('financial_status',['voided'])->count()}}</span>
+                            </a>
+                        </li>
+                    </div>
                 </ul>
             </div>
             <!-- END Navigation -->
@@ -114,26 +220,38 @@
 
         <!-- Dynamic Table Full -->
         <div class="block mt-3">
-            <div class="block-header">
-                <h3 class="block-title">Orders</h3>
-            </div>
             <div class="block-content block-content-full">
+                <div class="block-header bulk-div px-0 justify-content-end" style="display: none">
+                    <button class="btn btn-outline-primary btn-sm btn-lg bulk-fulfill-btn">Bulk Fulfillment</button>
+                </div>
                 @if(count($orders)> 0)
                     <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
+                            <th>
+                                <div class="custom-control custom-checkbox d-inline-block">
+                                    <input type="checkbox" class="custom-control-input check-order-all" id="check-all" name="check-all">
+                                    <label class="custom-control-label" for="check-all"></label>
+                                </div>
+                            </th>
                             <th class="text-center" style="width: 80px;">Order</th>
-                            <th class="">Products</th>
-                            <th class="text-center" style="width: 120px;">Status</th>
-                            <th class="" style="width: 120px;">Shipping Method</th>
-                            <th class="" style="width: 150px;">Shipping Address</th>
-                            <th class="text-center" style="width: 40px;">Notes</th>
+                            <th class="text-center">Products</th>
+                            <th class="text-center" style="width: 140px;">Status</th>
+                            <th class="text-center" style="width: 120px;">Shipping Method</th>
+                            <th class="text-center" style="width: 150px;">Shipping Address</th>
+                            <th class="text-center" style="width: 280px;">Notes</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($orders as $order)
+                        @foreach($orders as $index =>$order)
                         <tr>
-                            <td class="" style="font-size: 12px !important;">
+                            <td>
+                                <div class="custom-control custom-checkbox d-inline-block">
+                                    <input type="checkbox" class="custom-control-input check-order" id="row_{{$index}}" name="check_order[]" value="{{$order->id}}">
+                                    <label class="custom-control-label" for="row_{{$index}}"></label>
+                                </div>
+                            </td>
+                            <td class="text-center" style="font-size: 12px !important;">
                                 <a class="d-block font-weight-bold" style="font-size: 14px !important;">#{{ $order->name }}</a>
                                 {{ $order->date }}
                             </td>
@@ -148,13 +266,13 @@
                                             @csrf
                                             <div class="col-2">
                                                 <a href="{{ $item->img }}" target="_blank">
-                                                    <img src='{{ $item->img }}' alt='No img' class="img-fluid" style='width: 80%; height: auto;'>
+                                                    <img src='{{ $item->img }}' alt='No img' class="img-fluid" style="width: 100px; height: auto;">
                                                 </a>
                                             </div>
                                             <div class=' col-6'>
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                 <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>
-                                                @if($order->ful_check)
+                                                @if($order->ful_check && $item->vendor_chk)
                                                     <span class="d-block font-weight-bolder">Vendors: </span>
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
                                                     {{ $item->vendors }}
@@ -170,7 +288,7 @@
                                     @endforeach
 
                             </td>
-                            <td class="" style="font-size: 12px !important;">
+                            <td class="align-middle" style="font-size: 12px !important;">
                                 <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Change Status</button>
 
                                 <div class="modal" id="updateModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
@@ -265,16 +383,19 @@
                                 </div>
 
                             </td>
-                            <td class="" style="font-size: 12px !important;">
+                            <td class="text-center align-middle" style="font-size: 12px !important;">
                                 {{ $order->shipping_method }}
                             </td>
-                            <td class="" style="font-size: 12px !important;">
+                            <td class="align-middle" style="font-size: 12px !important;">
                                 {{ $order->ship_add }}
                             </td>
-                            <td class="font-w600 text-center">
+                            <td class="font-w600 text-center align-middle" @if($order->notes_check) style="background: #fff3ce"  @endif>
                                 <button type="button" class="btn btn-sm btn-light push border-dark" style="border-radius: 100%" data-toggle="modal" data-target="#notesModal{{$order->id}}">
                                     <i class="si si-note "></i>
                                 </button>
+                                @if(!(is_null($order->notes)))
+                                    <p style="font-size: 12px !important;">{{ $order->notes }}</p>
+                                @endif
 
                                 <div class="modal" id="notesModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
                                     <div class="modal-dialog modal-md" role="document">
@@ -312,7 +433,7 @@
                     <p>No Data!</p>
                 @endif
                 <div class="d-flex justify-content-end">
-                    {{ $orders->links() }}
+                    {{ $orders->appends(request()->input())->links() }}
                 </div>
             </div>
         </div>
@@ -320,4 +441,9 @@
 
     </div>
     <!-- END Page Content -->
+
+    <form action="{{route('app.orders.bulk.fulfillment')}}" id="bulk-fullfillment" method="post">
+        @csrf
+        <input type="hidden" name="orders" class="">
+    </form>
 @endsection

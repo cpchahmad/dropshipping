@@ -19,6 +19,7 @@ class ShopifyOrder extends Model
       'shipping_address',
       'billing_address',
       'processed_at',
+      'processing_method',
     ];
 
     protected $casts = [
@@ -52,7 +53,15 @@ class ShopifyOrder extends Model
         return $this->fulfillment_status ? 'badge badge-success' : 'badge badge-warning';
     }
     public function getFulfillmentAttribute() {
-        return $this->fulfillment_status ? 'Fulfilled' : 'Unfulfilled';
+        if($this->fulfillment_status == 'fulfilled') {
+            return $this->fulfillment_status;
+        }
+        else if($this->fulfillment_status == 'partial'){
+            return $this->fulfillment_status;
+        }
+        else {
+            return 'unfulfilled';
+        }
     }
 
     public function getFulCheckAttribute() {
@@ -398,6 +407,10 @@ class ShopifyOrder extends Model
             }
 
         }
+    }
+
+    public function getNotesCheckAttribute() {
+        return $this->notes== "" ? false : true;
     }
 
 

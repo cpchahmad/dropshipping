@@ -66,7 +66,8 @@ class AdminController extends Controller
 
     public function getOrders(Request $request) {
 
-        $orders = ShopifyOrder::whereIn('financial_status', ['paid', 'partially_refunded'])->newQuery();
+//        $orders = ShopifyOrder::whereIn('financial_status', ['paid', 'partially_refunded','authorized','pending', 'partially_paid', 'refunded', 'voided'])->newQuery();
+        $orders = ShopifyOrder::whereIn('currency', ['USD',])->newQuery();
 
         if ($request->has('search')) {
             $orders->where('name', 'LIKE', '%' . $request->input('search') . '%');
@@ -75,11 +76,31 @@ class AdminController extends Controller
             if($request->input('status') == 'unfulfilled'){
                 $orders->where('fulfillment_status', null);
             }
+            else if($request->input('status') == 'paid'){
+                $orders->where('financial_status', 'paid')->get();
+            }
+            else if($request->input('status') == 'partially_refunded'){
+                $orders->where('financial_status', 'partially_refunded');
+            }
+            else if($request->input('status') == 'authorized'){
+                $orders->where('financial_status', 'authorized');
+            }
+            else if($request->input('status') == 'pending'){
+                $orders->where('financial_status', 'pending');
+            }
+            else if($request->input('status') == 'partially_paid'){
+                $orders->where('financial_status', 'partially_paid');
+            }
+            else if($request->input('status') == 'refunded'){
+                $orders->where('financial_status', 'refunded');
+            }
+            else if($request->input('status') == 'voided'){
+                $orders->where('financial_status', 'voided');
+            }
             else
             {
                 $orders->where('fulfillment_status', $request->input('status'));
             }
-
         }
         if($request->query('customer')){
             $customer_id = $request->query('customer');
@@ -110,6 +131,29 @@ class AdminController extends Controller
         }
         if (isset($orders['link']['next'])) {
             $this->storeOrders($orders['link']['next']);
+        }
+    }
+
+    public function showBulkFulfillments(Request $request)
+    {
+        $orders_array = explode(',', $request->input('orders'));
+
+        if (count($orders_array) > 0) {
+            $orders = ShopifyOrder::whereIn('id', $orders_array)->newQuery();
+
+            $orders->whereHas('line_items', function ($q) {
+                $q->where('quantity', '>', 0);
+            });
+            $orders = $orders->get();
+
+            $total_quantity = 0;
+            $fulfillable_quantity = 0;
+
+            return view('orders.bulk-fulfillment')->with([
+                'orders' => $orders,
+            ]);
+        } else {
+            return redirect()->back();
         }
     }
 
@@ -144,6 +188,7 @@ class AdminController extends Controller
         $o->name = $order['name'];
         $o->fulfillment_status = $order['fulfillment_status'];
         $o->financial_status = $order['financial_status'];
+        $o->processing_method = $order['processing_method'];
         $o->processed_at = date('Y-m-d h:i:s',strtotime($order['created_at']));
         $o->line_items = json_encode($order['line_items']);
         $o->line_items = json_encode($order['line_items']);
@@ -709,6 +754,68 @@ class AdminController extends Controller
         $input = file_get_contents('php://input');
         $order = json_decode($input, true);
         $this->createOrder($order);
+    }
+
+    public function addTracking(Request $request, $id) {
+        $order = ShopifyOrder::find($id);
+
+        $order->fulfillment_status = 'fulfilled';
+        $order->save();
+
+            Log::create([
+                'user_id' => Auth::user()->id,
+                'attempt_time' => Carbon::now()->toDateTimeString(),
+                'attempt_location_ip' => $request->getClientIp(),
+                'type' => 'Order Tracking Added',
+                'shopify_order_id' => $order->id
+            ]);
+
+            $api = ShopsController::config();
+            $fulfillment_array_to_be_passed = [
+                "fulfillment"=> [
+                    "tracking_number"=> $request->tracking_number,
+                    "tracking_url"=> $request->tracking_url,
+                    "tracking_company"=> $request->shipping_carrier,
+                    "location_id" => '6122438719'
+                ]
+            ];
+
+            $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $fulfillment_array_to_be_passed, [],true);
+
+            if(!$response['errors']) {
+                return redirect()->back()->with('success', 'Order Tracking Added successfully!');
+            }
+            else {
+                return redirect()->back()->with('error', 'Request cannot be proceed');
+            }
+
+    }
+
+
+    public function fulfillOrders(Request $request) {
+        $orders = $request->orders;
+
+        foreach ($orders as $id) {
+            $order = ShopifyOrder::find($id);
+            $order->fulfillment_status = 'fulfilled';
+            $order->save();
+
+            $api = ShopsController::config();
+            $fulfillment_array_to_be_passed = [
+                "fulfillment"=> [
+                    "tracking_number"=> null,
+                    "location_id" => '6122438719'
+                ]
+            ];
+
+            $response = $api->rest('POST', 'admin/orders/'.$id.'/fulfillments.json', $fulfillment_array_to_be_passed, [],true);
+
+            if($response['errors']) {
+                return redirect()->back()->with('error', 'Request cannot be proceed for order #'.$order->name);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Orders Fulfilled Successfully!');
     }
 
 

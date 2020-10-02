@@ -22,6 +22,7 @@ class CreateShopifyOrdersTable extends Migration
             $table->longText('customer')->nullable();
             $table->string('financial_status')->nullable();
             $table->string('fulfillment_status')->nullable();
+            $table->string('processing_method')->nullable();
             $table->longText('line_items')->nullable();
             $table->longText('shipping_address')->nullable();
             $table->timestamp('processed_at')->nullable();
