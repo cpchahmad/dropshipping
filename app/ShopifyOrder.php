@@ -73,6 +73,15 @@ class ShopifyOrder extends Model
         }
     }
 
+    public function getIsUnfulfilledAttribute() {
+        if(is_null($this->fulfillment_status) || $this->fulfillment_status == "partial") {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
 
     public function getPaymentStatusAttribute() {
         if($this->financial_status == "paid") {

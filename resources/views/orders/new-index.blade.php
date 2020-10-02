@@ -246,10 +246,12 @@
                         @foreach($orders as $index =>$order)
                         <tr>
                             <td>
-                                <div class="custom-control custom-checkbox d-inline-block">
-                                    <input type="checkbox" class="custom-control-input check-order" id="row_{{$index}}" name="check_order[]" value="{{$order->id}}">
-                                    <label class="custom-control-label" for="row_{{$index}}"></label>
-                                </div>
+                                @if($order->is_unfulfilled)
+                                    <div class="custom-control custom-checkbox d-inline-block">
+                                        <input type="checkbox" class="custom-control-input check-order" id="row_{{$index}}" name="check_order[]" value="{{$order->id}}">
+                                        <label class="custom-control-label" for="row_{{$index}}"></label>
+                                    </div>
+                                @endif
                             </td>
                             <td class="text-center" style="font-size: 12px !important;">
                                 <a class="d-block font-weight-bold" style="font-size: 14px !important;">#{{ $order->name }}</a>
