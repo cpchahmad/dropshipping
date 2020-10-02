@@ -801,6 +801,14 @@ class AdminController extends Controller
             $order->fulfillment_status = 'fulfilled';
             $order->save();
 
+            Log::create([
+                'user_id' => Auth::user()->id,
+                'attempt_time' => Carbon::now()->toDateTimeString(),
+                'attempt_location_ip' => $request->getClientIp(),
+                'type' => 'Order Status Changed',
+                'shopify_order_id' => $order->id
+            ]);
+
             $api = ShopsController::config();
             $response = $api->rest('POST', 'admin/orders/'.$id.'/fulfillments.json', $fulfillment_array_to_be_passed, [],true);
 
