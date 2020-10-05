@@ -72,7 +72,6 @@ class LineItem extends Model
             $vendor_details = ProductVendorDetail::where('shopify_product_id', $product->id)->get();
 
             if($vendor_details != null) {
-                echo "<span class=\"d-block font-weight-bolder\">Vendors: </span>";
                 foreach ($vendor_details as $details) {
                     echo "
                         <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
