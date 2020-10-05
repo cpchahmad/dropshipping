@@ -68,7 +68,7 @@ class AdminController extends Controller
     public function getOrders(Request $request) {
 
 //        $orders = ShopifyOrder::whereIn('financial_status', ['paid', 'partially_refunded','authorized','pending', 'partially_paid', 'refunded', 'voided'])->newQuery();
-        $orders = ShopifyOrder::whereIn('currency', ['USD',])->newQuery();
+        $orders = ShopifyOrder::with('line_items')->whereIn('currency', ['USD'])->newQuery();
 
         if ($request->has('search')) {
             $orders->where('name', 'LIKE', '%' . $request->input('search') . '%');
