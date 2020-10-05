@@ -196,7 +196,6 @@ class AdminController extends Controller
         $o->processing_method = $order['processing_method'];
         $o->processed_at = date('Y-m-d h:i:s',strtotime($order['created_at']));
         $o->line_items = json_encode($order['line_items']);
-        $o->line_items = json_encode($order['line_items']);
         $o->shipping_lines = json_encode($order['shipping_lines']);
         $o->notes = $order['note'];
         $o->save();
@@ -677,7 +676,7 @@ class AdminController extends Controller
         $price = 0;
         foreach ($orders as $order) {
 
-            foreach ($order->line_items()->get() as $item) {
+            foreach ($order->items as $item) {
                 $vendor = $item->vendor;
                 if($vendor != null) {
                     $vendors = json_decode($vendor);
