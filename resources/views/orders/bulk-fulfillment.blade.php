@@ -117,7 +117,7 @@
                                                         {{ $order->name }}
                                                     </td>
                                                     <td style="width: 50%; font-size: 15px !important;">
-                                                        @foreach($order->line_items()->get() as $item)
+                                                        @foreach($order->items as $item)
                                                             <span class="pb-2 d-block">-: x<strong>{{$item->quantity}}</strong> {{$item->title}} <strong>SKU: </strong>{{$item->sku}}</span>
                                                         @endforeach
                                                     </td>

@@ -146,7 +146,7 @@ class AdminController extends Controller
         if (count($orders_array) > 0) {
             $orders = ShopifyOrder::whereIn('id', $orders_array)->newQuery();
 
-            $orders->whereHas('line_items', function ($q) {
+            $orders->whereHas('items', function ($q) {
                 $q->where('quantity', '>', 0);
             });
             $orders = $orders->get();

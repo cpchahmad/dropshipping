@@ -53,8 +53,8 @@ class ShopifyProduct extends Model
         return $this->belongsToMany(Vendor::class);
     }
 
-    public function vendors_details() {
-        return $this->belongsToMany(ProductVendorDetail::class);
+    public function product_vendor_detail() {
+        return $this->hasMany(ProductVendorDetail::class);
     }
 
 

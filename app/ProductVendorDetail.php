@@ -21,4 +21,5 @@ class ProductVendorDetail extends Model
 
         return $vendor->name;
     }
+
 }
