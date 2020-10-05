@@ -272,17 +272,17 @@
                                             <div class=' col-6'>
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                 <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>
-                                                @if($order->ful_check && $item->vendor_chk)
-                                                    <span class="d-block font-weight-bolder">Vendors: </span>
-                                                    <input type="hidden" value="{{ $item->id }}" name="line[]">
-                                                    {{ $item->vendors }}
-                                                @endif
+{{--                                                @if($order->ful_check && $item->vendor_chk)--}}
+{{--                                                    <span class="d-block font-weight-bolder">Vendors: </span>--}}
+{{--                                                    <input type="hidden" value="{{ $item->id }}" name="line[]">--}}
+{{--                                                    {{ $item->vendors }}--}}
+{{--                                                @endif--}}
                                             </div>
                                             <div class="text-right col-4">
                                                 <p class="font-weight-bold">x{{$item->quantity}}</p>
-                                                @if($order->ful_check && $item->vendor_chk)
-                                                    <button type="submit" class="btn btn-dark btn-sm">Save</button>
-                                                @endif
+{{--                                                @if($order->ful_check && $item->vendor_chk)--}}
+{{--                                                    <button type="submit" class="btn btn-dark btn-sm">Save</button>--}}
+{{--                                                @endif--}}
                                             </div>
                                         </form>
                                     @endforeach
