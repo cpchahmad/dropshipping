@@ -42,7 +42,7 @@
                 <a class="block block-rounded block-link-pop border-left border-primary border-4x" href="/admin/orders">
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Orders</div>
-                        <div class="font-size-h2 font-w400 text-dark">1{{ $orders }}</div>
+                        <div class="font-size-h2 font-w400 text-dark">{{ $orders }}</div>
                     </div>
                 </a>
             </div>

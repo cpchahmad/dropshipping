@@ -112,6 +112,7 @@ class AdminController extends Controller
 
         return view('orders.new-index')->with([
 
+
             'orders' => $orders,
             'search' => $request->input('search'),
             'status' => $request->input('status')
@@ -126,12 +127,14 @@ class AdminController extends Controller
             'page_info' => $next
         ]);
 
+
         foreach ($orders['body']['container']['orders'] as $order) {
             $this->createOrder($order);
         }
 
         if (isset($orders['link']['next'])) {
-            $this->storeOrders($orders['link']['next']);
+            echo $orders['link']['next'] . "<br>";
+           // $this->storeOrders($orders['link']['next']);
         }
     }
 
