@@ -270,7 +270,7 @@
 {{--                                                <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">--}}
 {{--                                            </div>--}}
                                             <div class=' col-8'>
-                                                <span class="d-block font-weight-lighter">{{$item->title}}</span>
+                                                <span class="d-block font-weight-lighter">{{$item->id}}</span>
                                                 <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>
                                                 @if($order->ful_check)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">

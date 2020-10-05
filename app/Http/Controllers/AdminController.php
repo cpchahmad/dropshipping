@@ -200,25 +200,26 @@ class AdminController extends Controller
         $o->notes = $order['note'];
         $o->save();
 
-        $line_item_obj = json_decode($o->line_items);
 
-        $line_items_count = count($line_item_obj);
-
-        if($line_items_count !=0) {
-            foreach ($line_item_obj as $item) {
-
-                $line = new LineItem();
-                $line->id = $item->id;
-                $line->variant_id = $item->variant_id;
-                $line->title = $item->title;
-                $line->quantity = $item->quantity;
-                $line->sku = $item->sku;
-                $line->product_id = $item->product_id;
-                $line->price = $item->price;
-                $line->shopify_order_id = $order['id'];
-                $line->save();
+        foreach ($order['line_items'] as $item) {
+            if(LineItem::where('id', $item['id'])->exists()) {
+                $line = LineItem::find($item['id']);
             }
+            else {
+                $line = new LineItem();
+            }
+
+            $line->id = $item['id'];
+            $line->variant_id = $item['variant_id'];
+            $line->title = $item['title'];
+            $line->quantity = $item['quantity'];
+            $line->sku = $item['sku'];
+            $line->product_id = $item['product_id'];
+            $line->price = $item['price'];
+            $line->shopify_order_id = $order['id'];
+            $line->save();
         }
+
     }
 
     public function storeCustomers($next = null)
