@@ -318,31 +318,38 @@ class AdminController extends Controller
         if($p->variants){
             $variants = json_decode($p->variants);
             foreach ($variants as $variant) {
-                ShopifyVarient::create([
-                    'id' => $variant->id,
-                    'shopify_product_id'=> $variant->product_id,
-                    'title'=> $variant->title,
-                    'price'=> $variant->price,
-                    'sku'=> $variant->sku,
-                    'position'=> $variant->position,
-                    'inventory_policy'=> $variant->inventory_policy,
-                    'compare_at_price'=> $variant->compare_at_price,
-                    'fulfillment_service'=> $variant->fulfillment_service,
-                    'inventory_management'=> $variant->inventory_management,
-                    'option1'=> $variant->option1,
-                    'option2'=> $variant->option2,
-                    'option3'=> $variant->option3,
-                    'taxable'=> $variant->taxable,
-                    'barcode'=> $variant->barcode,
-                    'grams'=> $variant->grams,
-                    'image_id'=> $variant->image_id,
-                    'weight'=> $variant->weight,
-                    'weight_unit'=> $variant->weight_unit,
-                    'inventory_item_id'=> $variant->inventory_item_id,
-                    'inventory_quantity'=> $variant->inventory_quantity,
-                    'old_inventory_quantity'=> $variant->old_inventory_quantity,
-                    'requires_shipping'=> $variant->requires_shipping,
-                ]);
+                if(ShopifyVarient::where('id', $variant->id)->exists()) {
+                    $var = ShopifyVarient::find($variant->id);
+                }
+                else {
+                    $var = new ShopifyVarient();
+                }
+
+                $var->id = $variant->id;
+                $var->shopify_product_id= $variant->product_id;
+                $var->title= $variant->title;
+                $var->price= $variant->price;
+                $var->sku= $variant->sku;
+                $var->position= $variant->position;
+                $var->inventory_policy= $variant->inventory_policy;
+                $var->compare_at_price= $variant->compare_at_price;
+                $var->fulfillment_service= $variant->fulfillment_service;
+                $var->inventory_management= $variant->inventory_management;
+                $var->option1= $variant->option1;
+                $var->option2= $variant->option2;
+                $var->option3= $variant->option3;
+                $var->taxable= $variant->taxable;
+                $var->barcode= $variant->barcode;
+                $var->grams= $variant->grams;
+                $var->image_id= $variant->image_id;
+                $var->weight= $variant->weight;
+                $var->weight_unit= $variant->weight_unit;
+                $var->inventory_item_id= $variant->inventory_item_id;
+                $var->inventory_quantity= $variant->inventory_quantity;
+                $var->old_inventory_quantity= $variant->old_inventory_quantity;
+                $var->requires_shipping= $variant->requires_shipping;
+                $var->save();
+
             }
         }
 
