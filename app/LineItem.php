@@ -16,7 +16,7 @@ class LineItem extends Model
 
     public function getImgAttribute() {
 
-        $varient = $this->shopify_variant;
+        $varient = ShopifyVarient::find($this->variant_id);
         $image_src = "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
         if($varient){
             $image_id = $varient->image_id;
