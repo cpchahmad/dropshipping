@@ -266,9 +266,9 @@
                                     @foreach($order->items as $item)
                                         <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">
                                             @csrf
-{{--                                            <div class="col-2">--}}
-{{--                                                    <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">--}}
-{{--                                            </div>--}}
+                                            <div class="col-2">
+                                                    <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">
+                                            </div>
                                             <div class=' col-6'>
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                 <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>
