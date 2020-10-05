@@ -11,7 +11,7 @@ class LineItem extends Model
     }
 
     public function shopify_variant() {
-        return $this->hasOne(ShopifyVarient::class);
+        return $this->belongsTo(ShopifyVarient::class);
     }
 
     public function getImgAttribute() {
