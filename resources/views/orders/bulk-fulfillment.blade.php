@@ -111,7 +111,6 @@
                                         <tbody style="font-size: 15px !important;">
                                         @foreach($orders as $order)
                                             <input type="hidden" name="orders[]" value="{{ $order->id }}">
-
                                                 <tr>
                                                     <td class="text-center align-middle">
                                                         {{ $order->name }}

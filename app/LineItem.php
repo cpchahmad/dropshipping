@@ -71,7 +71,8 @@ class LineItem extends Model
             $product = $varient->shopify_product;
             $vendor_details = $product->product_vendor_detail;
 
-            if($vendor_details != null) {
+            if(count($vendor_details)>0) {
+                echo "<span class=\"d-block font-weight-bolder\">Vendors: </span>";
                 foreach ($vendor_details as $details) {
                     echo "
                         <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
