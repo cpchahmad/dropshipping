@@ -659,41 +659,36 @@ class AdminController extends Controller
         $graph_two_order_values = $ordersQ->pluck('total_sum')->toArray();
 
         // Top products
-        $top_products_stores = ShopifyProduct::join('line_items', function ($join) {
-                    $join->on('line_items.product_id', '=', 'shopify_products.id')
-                        ->join('shopify_orders', function ($o) {
-                            $o->on('line_items.shopify_order_id', '=', 'shopify_orders.id')
-                                ->where('shopify_orders.financial_status', '=', 'paid');
-                        });
-        })->select('shopify_products.*', DB::raw('sum(line_items.quantity) as sold'), DB::raw('sum(line_items.price) as selling_cost'))
-            ->groupBy('shopify_products.id' )
-            ->orderBy('sold', 'DESC')
-            ->get()
-            ->take(5);
+//        $top_products_stores = ShopifyProduct::join('shopify_varients', function ($join) {
+//                    $join->on('shopify_varients.shopify_product_id', '=', 'shopify_products.id')
+//                        ->join('line_items', function ($o) {
+//                            $o->on('shopify_varients.id', '=', 'line_items.variant_id')
+//                                ->join('shopify_orders', function ($o) {
+//                                    $o->on('line_items.shopify_order_id', '=', 'shopify_orders.id')
+//                                        ->where('shopify_orders.financial_status', '=', 'paid');
+//                                });
+//                        });
+//        })->select('shopify_products.*', DB::raw('sum(line_items.quantity) as sold'), DB::raw('sum(line_items.price) as selling_cost'))
+//            ->groupBy('shopify_products.id' )
+//            ->orderBy('sold', 'DESC')
+//            ->get()
+//            ->take(5);
 
 
 
         // Vendor cost calculation
-        $orders = ShopifyOrder::all();
         $price = 0;
-        foreach ($orders as $order) {
 
-            foreach ($order->items as $item) {
-                $vendor = $item->vendor;
-                if($vendor != null) {
-                    $vendors = json_decode($vendor);
-                    foreach ($vendors as $vendor) {
-                        $ven = Vendor::where('name', $vendor)->first();
-                        $vendor_details = ProductVendorDetail::where('vendor_id', $ven->id)->first();
-                        $price += $vendor_details->product_price;
-                    }
+        foreach (LineItem::whereNotNull('vendor')->get() as $item) {
+            $vendor = $item->vendor;
+                $vendors = json_decode($vendor);
+                foreach ($vendors as $vendor) {
+                    $ven = Vendor::where('name', $vendor)->first();
+                    $vendor_details = ProductVendorDetail::where('vendor_id', $ven->id)->first();
+                    $price += $vendor_details->product_price;
                 }
-                else {
-                    $price +=0;
-                }
-            }
-
         }
+
         $cost =  number_format($price, 2);
 
 
@@ -702,7 +697,7 @@ class AdminController extends Controller
             'graph_one_labels' => $graph_one_order_dates,
             'graph_one_values' => $graph_one_order_values,
             'graph_two_values' => $graph_two_order_values,
-            'top_products_stores' => $top_products_stores,
+//            'top_products_stores' => $top_products_stores,
             'cost' => $cost
         ]);
 

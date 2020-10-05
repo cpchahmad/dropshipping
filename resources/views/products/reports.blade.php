@@ -225,46 +225,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12">
-                <div class="block block-rounded">
-                    <div class="block-header block-header-default">
-                        <h3 class="block-title">Top Selling Products</h3>
-                    </div>
-                    <div class="block-content ">
-                        @if(count($top_products_stores) > 0)
-                            <table class="table table-striped table-hover table-borderless table-vcenter">
-                                <thead>
-                                <tr class="text-uppercase">
-                                    <th class="font-w700">Product</th>
-                                    <th class="d-none d-sm-table-cell font-w700 text-center" style="width: 80px;">Quantity</th>
-                                    <th class="font-w700 text-center" style="width: 60px;">Sales</th>
-                                </tr>
-                                </thead>
-                                <tbody>
 
-                                @foreach($top_products_stores as $product)
-                                    <tr>
-                                        <td class="font-w600">
-                                            <img class="img-avatar img-avatar32" style="margin-right: 5px" src="{{ $product->img }}" alt="">
-                                            <a>{{$product->title}}</a>
-                                        </td>
-                                        <td class="d-none d-sm-table-cell text-center">
-                                            {{$product->sold}}
-                                        </td>
-                                        <td class="">
-                                            ${{number_format($product->selling_cost,2)}}
-                                        </td>
-                                    </tr>
-                                @endforeach
-
-                                </tbody>
-                                @else
-                                    <p  class="text-center"> No Top Products Found </p>
-                                @endif
-                            </table>
-                    </div>
-                </div>
-            </div>
         </div>
 
 
