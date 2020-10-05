@@ -107,7 +107,7 @@ class AdminController extends Controller
             $orders->where('customer', $customer_id)->get();
         }
 
-        $all_orders = ShopifyOrder::all();
+      //  $all_orders = ShopifyOrder::all();
         $orders = $orders->orderBy('updated_at', 'ASC')->paginate(30);
 
         dd($orders);
