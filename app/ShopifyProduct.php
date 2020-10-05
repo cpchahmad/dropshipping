@@ -57,6 +57,7 @@ class ShopifyProduct extends Model
         return $this->belongsToMany(ProductVendorDetail::class);
     }
 
+
     public function getVariantDetailsAttribute() {
 
 

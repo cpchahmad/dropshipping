@@ -10,10 +10,14 @@ class LineItem extends Model
         return $this->belongsTo(ShopifyOrder::class, '');
     }
 
+    public function shopify_variant() {
+        return $this->belongsTo(ShopifyVarient::class, 'variant_id');
+    }
+
 
     public function getImgAttribute() {
 
-        $varient = ShopifyVarient::find($this->variant_id);
+        $varient = $this->shopify_variant;
         $image_src = "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
         if($varient){
             $image_id = $varient->image_id;
@@ -43,7 +47,8 @@ class LineItem extends Model
     }
 
     public function getVendorChkAttribute() {
-        $varient = ShopifyVarient::find($this->variant_id);
+        $varient = $this->shopify_variant;
+
         $vendor_details = null;
 
         if($varient) {
