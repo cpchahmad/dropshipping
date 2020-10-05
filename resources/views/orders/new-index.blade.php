@@ -262,32 +262,31 @@
                                 @role('admin')
                                     <span class="text-left font-weight-bold text-uppercase ml-4" style="font-size: 15px;">${{ $order->total_price }}</span>
                                 @endrole
-{{--                                {{ $order->line_details }}--}}
-{{--                                    @foreach($order->line_items()->get() as $item)--}}
-{{--                                        <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">--}}
-{{--                                            @csrf--}}
-{{--                                            <div class="col-2">--}}
-{{--                                                <a href="{{ $item->img }}" target="_blank">--}}
-{{--                                                    <img src='{{ $item->img }}' alt='No img' class="img-fluid" style="width: 100px; height: auto;">--}}
-{{--                                                </a>--}}
-{{--                                            </div>--}}
-{{--                                            <div class=' col-6'>--}}
-{{--                                                <span class="d-block font-weight-lighter">{{$item->title}}</span>--}}
-{{--                                                <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>--}}
-{{--                                                @if($order->ful_check && $item->vendor_chk)--}}
-{{--                                                    <span class="d-block font-weight-bolder">Vendors: </span>--}}
-{{--                                                    <input type="hidden" value="{{ $item->id }}" name="line[]">--}}
-{{--                                                    {{ $item->vendors }}--}}
-{{--                                                @endif--}}
-{{--                                            </div>--}}
-{{--                                            <div class="text-right col-4">--}}
-{{--                                                <p class="font-weight-bold">x{{$item->quantity}}</p>--}}
-{{--                                                @if($order->ful_check && $item->vendor_chk)--}}
-{{--                                                    <button type="submit" class="btn btn-dark btn-sm">Save</button>--}}
-{{--                                                @endif--}}
-{{--                                            </div>--}}
-{{--                                        </form>--}}
-{{--                                    @endforeach--}}
+                                    @foreach($order->line_items()->get() as $item)
+                                        <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">
+                                            @csrf
+                                            <div class="col-2">
+                                                <a href="{{ $item->img }}" target="_blank">
+                                                    <img src='{{ $item->img }}' alt='No img' class="img-fluid" style="width: 100px; height: auto;">
+                                                </a>
+                                            </div>
+                                            <div class=' col-6'>
+                                                <span class="d-block font-weight-lighter">{{$item->title}}</span>
+                                                <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>
+                                                @if($order->ful_check && $item->vendor_chk)
+                                                    <span class="d-block font-weight-bolder">Vendors: </span>
+                                                    <input type="hidden" value="{{ $item->id }}" name="line[]">
+                                                    {{ $item->vendors }}
+                                                @endif
+                                            </div>
+                                            <div class="text-right col-4">
+                                                <p class="font-weight-bold">x{{$item->quantity}}</p>
+                                                @if($order->ful_check && $item->vendor_chk)
+                                                    <button type="submit" class="btn btn-dark btn-sm">Save</button>
+                                                @endif
+                                            </div>
+                                        </form>
+                                    @endforeach
 
                             </td>
                             <td class="align-middle" style="font-size: 12px !important;">
