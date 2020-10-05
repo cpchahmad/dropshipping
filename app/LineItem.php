@@ -7,12 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class LineItem extends Model
 {
     public function shopify_order() {
-        $this->belongsTo(ShopifyOrder::class, '');
+        return $this->belongsTo(ShopifyOrder::class, '');
+    }
+
+    public function shopify_variant() {
+        return $this->hasOne(ShopifyVarient::class);
     }
 
     public function getImgAttribute() {
 
-        $varient = ShopifyVarient::find($this->variant_id);
+        $varient = $this->shopify_variant;
         $image_src = "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
         if($varient){
             $image_id = $varient->image_id;
@@ -63,7 +67,6 @@ class LineItem extends Model
                 return false;
             }
         }
-
     }
 
     public function getVendorsAttribute() {
