@@ -30,7 +30,6 @@ class LineItem extends Model
                 $image_src  = $img->src;
             }
         }
-
         return $image_src;
     }
 

@@ -67,7 +67,7 @@ class AdminController extends Controller
 
     public function getOrders(Request $request) {
 
-        $orders = ShopifyOrder::with(['items'])->newQuery();
+        $orders = ShopifyOrder::with(['items.shopify_variant'])->newQuery();
 
         if ($request->has('search')) {
             $orders->where('name', 'LIKE', '%' . $request->input('search') . '%');
@@ -206,9 +206,7 @@ class AdminController extends Controller
 
         if($line_items_count !=0) {
             foreach ($line_item_obj as $item) {
-                if($item->variant_id) {
 
-                }
                 $line = new LineItem();
                 $line->id = $item->id;
                 $line->variant_id = $item->variant_id;
