@@ -67,7 +67,7 @@ class AdminController extends Controller
 
     public function getOrders(Request $request) {
 
-        $orders = ShopifyOrder::with('line_items')->newQuery();
+        $orders = ShopifyOrder::with('items')->newQuery();
 
         if ($request->has('search')) {
             $orders->where('name', 'LIKE', '%' . $request->input('search') . '%');
@@ -106,6 +106,8 @@ class AdminController extends Controller
             $customer_id = $request->query('customer');
             $orders->where('customer', $customer_id)->get();
         }
+
+
 
       //  $all_orders = ShopifyOrder::all();
         $orders = $orders->orderBy('updated_at', 'ASC')->paginate(30);

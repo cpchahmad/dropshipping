@@ -18,7 +18,6 @@ class LineItem extends Model
             $image_id = $varient->image_id;
             $image = ProductImage::where('shopify_id', $image_id)->first();
             if($image){
-
                 $image_src = $image->src;
             }
             else{
@@ -39,7 +38,6 @@ class LineItem extends Model
         else{
 
             if($product->image == null) {
-
                 return "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
             }
             else {

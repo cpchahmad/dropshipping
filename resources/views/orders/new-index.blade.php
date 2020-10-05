@@ -262,7 +262,8 @@
                                 @role('admin')
                                     <span class="text-left font-weight-bold text-uppercase ml-4" style="font-size: 15px;">${{ $order->total_price }}</span>
                                 @endrole
-                                    @foreach($order->line_items()->get() as $item)
+
+                                    @foreach($order->items as $item)
                                         <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">
                                             @csrf
                                             <div class="col-2">

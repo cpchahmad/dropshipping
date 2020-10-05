@@ -36,7 +36,7 @@ class ShopifyOrder extends Model
         return $this->belongsTo(ShopifyCustomer::class);
     }
 
-    public function line_items() {
+    public function items() {
         return $this->hasMany(LineItem::class);
     }
 
