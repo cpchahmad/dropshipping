@@ -130,8 +130,10 @@ class AdminController extends Controller
         foreach ($orders['body']['container']['orders'] as $order) {
             $this->createOrder($order);
         }
+
         if (isset($orders['link']['next'])) {
-            $this->storeOrders($orders['link']['next']);
+            echo $orders['link']['next'];
+            //$this->storeOrders($orders['link']['next']);
         }
     }
 
@@ -231,7 +233,8 @@ class AdminController extends Controller
         }
 
         if (isset($customers['link']['next'])) {
-            $this->storeCustomers($customers['link']['next']);
+            echo $customers['link']['next'];
+            //$this->storeCustomers($customers['link']['next']);
         }
 
     }
