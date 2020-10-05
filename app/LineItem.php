@@ -10,9 +10,6 @@ class LineItem extends Model
         return $this->belongsTo(ShopifyOrder::class, '');
     }
 
-    public function shopify_variant() {
-        return $this->belongsTo(ShopifyVarient::class);
-    }
 
     public function getImgAttribute() {
 
@@ -25,8 +22,8 @@ class LineItem extends Model
                 $image_src = $image->src;
             }
             else{
-                $product_id = $varient->shopify_product_id;
-                $image_src = $this->getImageAttribute($product_id);
+                $img = json_decode($varient->shopify_product->image);
+                $image_src  = $img->src;
             }
         }
 
@@ -40,15 +37,8 @@ class LineItem extends Model
             return "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
         }
         else{
-
-            if($product->image == null) {
-                return "https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png";
-            }
-            else {
-                $image = json_decode($product->image);
-                return $image->src;
-            }
-
+            $image = json_decode($product->image);
+            return $image->src;
         }
     }
 
