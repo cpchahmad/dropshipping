@@ -132,8 +132,7 @@ class AdminController extends Controller
         }
 
         if (isset($orders['link']['next'])) {
-            echo $orders['link']['next'];
-            //$this->storeOrders($orders['link']['next']);
+            $this->storeOrders($orders['link']['next']);
         }
     }
 
@@ -233,8 +232,8 @@ class AdminController extends Controller
         }
 
         if (isset($customers['link']['next'])) {
-            echo $customers['link']['next'];
-            //$this->storeCustomers($customers['link']['next']);
+            echo $customers['link']['next'] . "<br>";
+            $this->storeCustomers($customers['link']['next']);
         }
 
     }
@@ -723,14 +722,14 @@ class AdminController extends Controller
         $api = ShopsController::config();
         $product_array = [
             "webhook"=> [
-                "topic"=> "products/update",
+                "topic"=> "customers/create",
                 "address"=> "https://phpstack-176572-1491780.cloudwaysapps.com/webhook/product/create",
                 "format"=> "json",
             ]
         ];
         $order_array = [
             "webhook"=> [
-                "topic"=> "orders/updated",
+                "topic"=> "customers/update",
                 "address"=> "https://phpstack-176572-1491780.cloudwaysapps.com/webhook/order/create",
                 "format"=> "json",
             ]
@@ -759,6 +758,8 @@ class AdminController extends Controller
         $order = json_decode($input, true);
         $this->createOrder($order);
     }
+
+
 
     public function addTracking(Request $request) {
 

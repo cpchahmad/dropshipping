@@ -55,5 +55,11 @@ class ShopifyCron extends Command
             $admin->createProduct($product);
         }
 
+        $customers = $api->rest('GET', '/admin/customers.json', null, [], true);
+
+        foreach ($customers['body']['container']['customers'] as $customer) {
+            $admin->createCustomer($customer);
+        }
+
     }
 }

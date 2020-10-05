@@ -75,6 +75,7 @@ Route::get('get/webhooks', 'AdminController@getWebhooks');
 Route::post('webhook/product/create', 'AdminController@productCreateWebhook');
 Route::post('webhook/product/delete', 'AdminController@productDeleteWebhook');
 Route::post('webhook/order/create', 'AdminController@orderCreateWebhook');
+Route::post('webhook/customer/create', 'AdminController@customerCreateWebhook');
 Route::post('webhook/order/fulfilled', 'AdminController@orderFulfilledWebhook');
 
 
