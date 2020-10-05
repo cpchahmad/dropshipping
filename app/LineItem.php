@@ -51,7 +51,7 @@ class LineItem extends Model
         $vendor_details = null;
 
         if($varient) {
-            $product = $varient->shopify_product()->first();
+            $product = $varient->shopify_product;
             $vendor_details = ProductVendorDetail::where('shopify_product_id', $product->id)->count();
 
             if(($vendor_details)) {
@@ -64,14 +64,15 @@ class LineItem extends Model
     }
 
     public function getVendorsAttribute() {
-        $varient = ShopifyVarient::find($this->variant_id);
+        $varient = $this->shopify_variant;
         $vendor_details = null;
 
         if($varient) {
-            $product = $varient->shopify_product()->first();
+            $product = $varient->shopify_product;
             $vendor_details = ProductVendorDetail::where('shopify_product_id', $product->id)->get();
 
             if($vendor_details != null) {
+                echo "<span class=\"d-block font-weight-bolder\">Vendors: </span>";
                 foreach ($vendor_details as $details) {
                     echo "
                         <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
