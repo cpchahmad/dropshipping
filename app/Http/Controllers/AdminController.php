@@ -110,7 +110,7 @@ class AdminController extends Controller
 
 
       //  $all_orders = ShopifyOrder::all();
-        $orders = $orders->orderBy('updated_at', 'ASC')->paginate(30);
+        $orders = $orders->orderBy('updated_at', 'ASC')->paginate(10);
 
 
         return view('orders.new-index')->with([
