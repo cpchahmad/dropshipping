@@ -49,8 +49,8 @@ class ShopifyProduct extends Model
         return $this->hasMany(ShopifyVarient::class, 'shopify_product_id');
    }
 
-    public function vendors() {
-        return $this->belongsToMany(Vendor::class);
+    public function product_vendor_details() {
+        return $this->hasMany(ProductVendorDetail::class);
     }
 
     public function product_vendor_detail() {
@@ -81,11 +81,14 @@ class ShopifyProduct extends Model
                         <div class='d-flex align-items-center  py-2'>
                             <div>
                                 <a href='$image_src' target='_blank'>
-                                    <img src='$image_src' alt='No img' class=\"img-fluid\" style='width: 70px; height: auto;'>
+                                    <img src='$image_src' alt='No img' class=\"img-fluid hover-img\" style='width: 70px; height: auto;'>
                                 </a>
                             </div>
                             <div class='ml-2 text-left'>
-                                <span class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->title</span><br>
+                                <span class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->title</span>
+                                <span class='d-block'>$varient->option1</span>
+                                <span class='d-block'>$varient->option2</span>
+                                <span class='d-block'>$varient->option3</span>
                                 <span>SKU: $varient->sku</span><br>
                                 <span><strong>$$varient->price</strong></span>
                             </div>
@@ -97,11 +100,14 @@ class ShopifyProduct extends Model
                         <div class='d-flex align-items-center border-bottom py-2'>
                             <div>
                                 <a href='$image_src' target='_blank'>
-                                    <img src='$image_src' alt='No img' class=\"img-fluid\" style='width: 70px; height: auto;'>
+                                    <img src='$image_src' alt='No img' class=\"img-fluid hover-img\" style='width: 70px; height: auto;'>
                                 </a>
                             </div>
                             <div class='ml-2 text-left'>
-                                <span class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->title</span><br>
+                                <span class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">Title: $varient->title</span>
+                                <span class='d-block'>$varient->option1</span>
+                                <span class='d-block'>$varient->option2</span>
+                                <span class='d-block'>$varient->option3</span>
                                 <span>SKU: $varient->sku</span><br>
                                 <span><strong>$$varient->price</strong></span>
                             </div>

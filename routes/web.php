@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ShopsController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 
@@ -29,7 +30,7 @@ Route::get('/delete/variant/image/{id}', 'ProductsController@deleteVariantImage'
 Route::get('/delete/variant/{id}', 'ProductsController@deleteProductVariant')->name('delete.product.variant');
 Route::get('/product/variant/update/{id}', 'ProductsController@updateProductVariant')->name('update.product.variant');
 Route::put('/product/variant/edit/{id}', 'ProductsController@updateVariant')->name('edit.product.variant');
-Route::resource('vendors', 'VendorsController');
+Route::resource('expenses', 'ExpenseController');
 
 // Admin Routes
 Route::get('/admin/customers', 'AdminController@getCustomers')->name('admin.customers');
@@ -52,6 +53,7 @@ Route::post('/admin/change/order/status/{id}', 'AdminController@changeOrderStatu
 Route::post('/admin/add/order/tracking', 'AdminController@addTracking')->name('admin.add.tracking');
 Route::post('/admin/fulfill/orders', 'AdminController@fulfillOrders')->name('admin.fulfill.orders');
 Route::post('/admin/store/order/notes/{id}', 'AdminController@storeOrderNotes')->name('admin.store.order.notes');
+Route::post('/admin/store/order/shipping/price/{id}', 'AdminController@addOrderShippingPrice')->name('admin.store.order.shipping.price');
 Route::post('/admin/store/order/vendor', 'AdminController@storeOrderVendor')->name('admin.store.order.vendor');
 Route::post('/orders/bulk-fulfillments', 'AdminController@showBulkFulfillments')->name('app.orders.bulk.fulfillment');
 
@@ -79,3 +81,8 @@ Route::post('webhook/customer/create', 'AdminController@customerCreateWebhook');
 Route::post('webhook/order/fulfilled', 'AdminController@orderFulfilledWebhook');
 
 
+Route::get('/test', function() {
+    $api = ShopsController::config();
+    $response = $api->rest('GET', '/admin/products/4897691598934/variants.json', null, [], true);
+    dd($response);
+});

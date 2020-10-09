@@ -23,12 +23,14 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400italic,600,700%7COpen+Sans:300,400,400italic,600,700">
         <link rel="stylesheet" id="css-main" href="{{ asset('css/oneui.css') }}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
-
-
-
-        <!-- You can include a specific file from public/css/themes/ folder to alter the default color theme of the template. eg: -->
-        <!-- <link rel="stylesheet" id="css-theme" href="{{ asset('/css/themes/amethyst.css') }}"> -->
+        <style>
+            .hover-img {
+                transition: transform .4s; /* Animation */
+            }
+            .hover-img:hover {
+                transform: scale(2); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+            }
+        </style>
         @yield('css_after')
 
         <!-- Scripts -->
@@ -189,11 +191,25 @@
                             </a>
                         </li>
 
-                        <li class="nav-main-item">
-                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('vendors.index') }}">
-                                <i class="nav-main-link-icon fa fa-store"></i>
-                                <span class="nav-main-link-name">Vendors</span>
+                        <li class="nav-main-item open">
+                            <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+                                <i class="nav-main-link-icon si si-layers"></i>
+                                <span class="nav-main-link-name">Expenses</span>
                             </a>
+                            <ul class="nav-main-submenu">
+                                <li class="nav-main-item">
+                                    <a class="nav-main-link" href="{{route('expenses.create')}}">
+                                        <i class="nav-main-link-icon si si-bag"></i>
+                                        <span class="nav-main-link-name">Expense</span>
+                                    </a>
+                                </li>
+                                <li class="nav-main-item">
+                                    <a class="nav-main-link" href="{{route('expenses.index')}}">
+                                        <i class="nav-main-link-icon si si-bag"></i>
+                                        <span class="nav-main-link-name">Categories</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
                         <li class="nav-main-item">

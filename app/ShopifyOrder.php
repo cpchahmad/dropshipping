@@ -26,18 +26,25 @@ class ShopifyOrder extends Model
         'processed_at' => 'date:hh:mm'
     ];
 
-    public function getDateAttribute() {
-        $str = $this->processed_at;
-        $date = strtotime($str);
-        return date('d/M/Y h:i:s', $date);
-    }
-
     public function shopify_customer() {
         return $this->belongsTo(ShopifyCustomer::class);
+    }
+    public function shopify_order_notes() {
+        return $this->hasMany(ShopifyOrderNote::class);
     }
 
     public function items() {
         return $this->hasMany(LineItem::class);
+    }
+
+    public function shipping_prices() {
+        return $this->hasMany(ShippingPrice::class);
+    }
+
+    public function getDateAttribute() {
+        $str = $this->processed_at;
+        $date = strtotime($str);
+        return date('d/M/Y h:i:s', $date);
     }
 
     public function getCustomerNameAttribute() {
@@ -168,11 +175,11 @@ class ShopifyOrder extends Model
             $address_obj = json_decode($address_obj);
             echo "
                 <div class='d-flex flex-column'>
-                     <span>$address_obj->first_name</span>
-                     <span>$address_obj->phone</span>
+                     <span>$address_obj->first_name, $address_obj->last_name</span>
+                     <span>$address_obj->company</span>
                      <span>$address_obj->address1</span>
-                     <span>$address_obj->city</span>
-                     <span>$address_obj->country</span>
+                     <span>$address_obj->address2</span>
+                     <span>$address_obj->city, $address_obj->province, $address_obj->country</span>
                 </div>
 
             ";
@@ -419,7 +426,24 @@ class ShopifyOrder extends Model
     }
 
     public function getNotesCheckAttribute() {
-        return $this->notes== "" ? false : true;
+        if($this->notes == null && $this->shopify_order_notes->count() === 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    public function getBgAttribute() {
+        if($this->fulfillment_status == 'fulfilled') {
+            return "#b6ecce4f";
+        }
+        else if($this->fulfillment_status == 'partial'){
+            return "#edf1a9a1";
+        }
+        else {
+            return '#f9f9f9';
+        }
     }
 
 

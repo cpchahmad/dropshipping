@@ -52,7 +52,7 @@ class LineItem extends Model
 
         if($varient) {
             $product = $varient->shopify_product;
-            $vendor_details = $product->product_vendor_detail->count();
+            $vendor_details = $product->product_vendor_details->count();
 
             if($vendor_details) {
                 return true;
@@ -69,7 +69,7 @@ class LineItem extends Model
 
         if($varient) {
             $product = $varient->shopify_product;
-            $vendor_details = $product->product_vendor_detail;
+            $vendor_details = $product->product_vendor_details;
 
             if(count($vendor_details)>0) {
                 echo "<span class=\"d-block font-weight-bolder\">Vendors: </span>";
@@ -78,18 +78,18 @@ class LineItem extends Model
                         <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
                             <div class='row d-flex'>
                                 <div class='mr-2'>
-                                    <input type='checkbox' class='from-control' name='vendors[]' value='$details->id'>
+                                    <input type='checkbox' class='from-control' name='vendors[]' value='$details->id' $details->checkbox ? checked : '' >
                                     <input type='hidden' value='$details->shopify_product_id'>
-                                    <input type='hidden' value='$details->vendor_id'>
+                                    <input type='hidden' value='$details->id'>
                                 </div>
                                 <div class='mr-2'>
-                                    $details->vendor_name
+                                    $details->name
                                 </div>
                                 <div class='font-weight-bold mr-2'>
                                     <span class=>$".number_format($details->product_price, 2)."</span>
                                 </div>
                                 <div class='font-weight-bold'>
-                                    <a href='$details->product_link' target='_blank'>Place Order</a>
+                                    <a href='$details->url' target='_blank'>Place Order</a>
                                 </div>
                             </div>
 

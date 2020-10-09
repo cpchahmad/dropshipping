@@ -9,9 +9,11 @@ use App\OrderVendor;
 use App\Product;
 use App\ProductImage;
 use App\ProductVendorDetail;
+use App\ShippingPrice;
 use App\Shop;
 use App\ShopifyCustomer;
 use App\ShopifyOrder;
+use App\ShopifyOrderNote;
 use App\ShopifyProduct;
 use App\ShopifyVarient;
 use App\Tracking;
@@ -108,9 +110,7 @@ class AdminController extends Controller
         }
 
 
-
-      //  $all_orders = ShopifyOrder::all();
-        $orders = $orders->orderBy('updated_at', 'ASC')->paginate(10);
+        $orders = $orders->paginate(10);
 
 
         return view('orders.new-index')->with([
@@ -373,53 +373,32 @@ class AdminController extends Controller
 
     public function addVendorForProduct(Request $request, $id) {
 
-        $vendor_id_array = [];
         $product_price_array = [];
         $product_link_array = [];
-        $notes_array = [];
-        $flag = false;
-        $create_flag = false;
+        $vendor_name_array = [];
+        $moq_array = [];
+        $lead_time_array = [];
 
-        $vendor_id_array = array_merge($vendor_id_array, $request->vendor_id);
+
         $product_price_array = array_merge($product_price_array, $request->product_price);
         $product_link_array = array_merge($product_link_array, $request->product_link);
-        $notes_array = array_merge($notes_array, $request->product_notes);
+        $vendor_name_array = array_merge($vendor_name_array, $request->vendor_name);
+        $moq_array = array_merge($moq_array, $request->moq);
+        $lead_time_array = array_merge($lead_time_array, $request->leads_time);
 
-        for($i =0; $i< count($vendor_id_array); $i++) {
 
-            $vendor = ProductVendorDetail::where('shopify_product_id', $id)->where('vendor_id', $vendor_id_array[$i])->first();
-            if($vendor == null) {
 
-                if($product_price_array[$i] == null && $product_link_array[$i] == null) {
-
-                }
-                else{
-                    ProductVendorDetail::create([
-                        'shopify_product_id' => $id,
-                        'vendor_id' =>  $vendor_id_array[$i],
-                        'product_price' => $product_price_array[$i],
-                        'product_link' => $product_link_array[$i],
-                        'notes' => $notes_array[$i],
-                    ]);
-                    $create_flag = true;
-                }
-            }
-            else {
-//                $vendor->update([
-//                    'shopify_product_id' => $id,
-//                    'vendor_id' =>  $vendor_id_array[$i],
-//                    'product_price' => $product_price_array[$i],
-//                    'product_link' => $product_link_array[$i],
-//                    'notes' => $notes_array[$i],
-//                ]);
-//
-                $flag = true;
-            }
+        for($i =0; $i< count($vendor_name_array); $i++) {
+            ProductVendorDetail::create([
+                'shopify_product_id' => $id,
+                'name' =>  $vendor_name_array[$i],
+                'cost' => $product_price_array[$i],
+                'url' => $product_link_array[$i],
+                'moq' => $moq_array[$i],
+                'leads_time' => $lead_time_array[$i],
+            ]);
         }
 
-        if($flag && !$create_flag) {
-            return redirect()->back()->with('error', 'Nothing new to add!');
-        }
 
         return redirect()->back()->with('success', 'Vendors added successfully!');
 
@@ -483,42 +462,69 @@ class AdminController extends Controller
 
     public function changeOrderStatus(Request $request, $id) {
 
+        dd($request->all());
+
         $order = ShopifyOrder::find($id);
+        $fulfillable_quantities = $request->input('item_fulfill_quantity');
+
 
         if($request->status == 'Fulfilled') {
             $order->fulfillment_status = 'fulfilled';
-            $order->save();
+           // $order->save();
 
-            Log::create([
-                'user_id' => Auth::user()->id,
-                'attempt_time' => Carbon::now()->toDateTimeString(),
-                'attempt_location_ip' => $request->getClientIp(),
-                'type' => 'Order Status Changed',
-                'shopify_order_id' => $order->id
-            ]);
+//            Log::create([
+//                'user_id' => Auth::user()->id,
+//                'attempt_time' => Carbon::now()->toDateTimeString(),
+//                'attempt_location_ip' => $request->getClientIp(),
+//                'type' => 'Order Status Changed',
+//                'shopify_order_id' => $order->id
+//            ]);
 
+            if(is_null($request->tracking_number) && is_null($request->tracking_url)) {
+                $data = [
+                    "fulfillment" => [
+                        "location_id" => "8749154419",
+                        "tracking_number"=> null,
+                        "line_items" => [
+
+                        ]
+                    ]
+                ];
+            }
+            else {
+                $data = [
+                    "fulfillment" => [
+                        "location_id" => "8749154419",
+                        "tracking_number"=> $request->tracking_number,
+                        "tracking_url"=> $request->tracking_url,
+                        "tracking_company"=> $request->shipping_carrier,
+                        "line_items" => [
+
+                        ]
+                    ]
+                ];
+            }
+
+
+            foreach ($request->input('item_id') as $index => $item) {
+                $line_item = LineItem::find($item);
+                if ($line_item != null && $fulfillable_quantities[$index] > 0) {
+                    array_push($data['fulfillment']['line_items'], [
+                        "id" => $line_item->variant_id,
+                        "quantity" => $fulfillable_quantities[$index],
+                    ]);
+                }
+            }
             $api = ShopsController::config();
-            $fulfillment_array_to_be_passed = [
-                "fulfillment"=> [
-                    "tracking_number"=> $request->tracking_number,
-                    "tracking_url"=> $request->tracking_url,
-                    "tracking_company"=> $request->shipping_carrier,
-                    "location_id" => '8749154419'
-                ]
-              ];
-
-            $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $fulfillment_array_to_be_passed, [],true);
+            $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $data, [],true);
 
             if(!$response['errors']) {
-                return redirect()->back()->with('success', 'Order status changed successfully!');
+//                return $this->set_fulfilments($request, $id, $fulfillable_quantities, $order, $response);
+//                return redirect()->back()->with('success', 'Order status changed successfully!');
             }
             else {
                 return redirect()->back()->with('error', 'Request cannot be proceed');
             }
-
-            return redirect()->back()->with('success', 'Order status changed successfully!');
-
-
         }
 
         if($request->status == 'Unfulfilled') {
@@ -526,26 +532,60 @@ class AdminController extends Controller
             $order->save();
             return redirect()->back()->with('success', 'Order status Updated successfully!');
         }
-
-        if($request->status == 'Paid') {
-            $order->financial_status = 'paid';
-            $order->save();
-            return redirect()->back()->with('success', 'Order status Updated successfully!');
-        }
-
-        if($request->status == 'Unpaid') {
-            $order->financial_status = 'pending';
-            $order->save();
-            return redirect()->back()->with('success', 'Order status Updated successfully!');
-        }
-
     }
 
-    public function storeOrderNotes(Request $request, $id) {
-        $order = ShopifyOrder::find($id);
+//    public function set_fulfilments(Request $request, $id, $fulfillable_quantities, $order, $response): \Illuminate\Http\RedirectResponse
+//    {
+//        foreach ($request->input('item_id') as $index => $item) {
+//            $line_item = LineItem::find($item);
+//            if ($line_item != null && $fulfillable_quantities[$index] > 0) {
+//                if ($fulfillable_quantities[$index] == $line_item->fulfillable_quantity) {
+//                    $line_item->fulfillment_status = 'fulfilled';
+//
+//                } else if ($fulfillable_quantities[$index] < $line_item->fulfillable_quantity) {
+//                    $line_item->fulfillment_status = 'partially-fulfilled';
+//                }
+//                $line_item->fulfillable_quantity = $line_item->fulfillable_quantity - $fulfillable_quantities[$index];
+//            }
+//            $line_item->save();
+//        }
+//        $order->status = $order->getStatus($order);
+//        $order->save();
+//
+//
+//        foreach ($request->input('item_id') as $index => $item) {
+//            if ($fulfillable_quantities[$index] > 0) {
+//                $fulfillment_line_item = new FulfillmentLineItem();
+//                $fulfillment_line_item->fulfilled_quantity = $fulfillable_quantities[$index];
+//                $fulfillment_line_item->order_fulfillment_id = $fulfillment->id;
+//                $fulfillment_line_item->order_line_item_id = $item;
+//                $fulfillment_line_item->save();
+//
+//            }
+//        }
+//        if($order->admin_shopify_id != null) {
+//            $this->admin_maintainer->admin_order_fullfillment($order, $request, $fulfillment);
+//        }
+//        $this->notify->generate('Order','Order Fulfillment',$order->name.' line items fulfilled',$order);
+//
+//        $manager = User::find(Auth::id());
+//        $ml = new ManagerLog();
+//        $ml->message = 'Order '.$order->name.' line-items fulfillment by Manager processed successfully on ' . now()->format('d M, Y h:i a');
+//        $ml->status = "Order Fulfillment";
+//        $ml->manager_id = $manager->id;
+//        $ml->save();
+//
+//        return redirect()->route('sales_managers.order.view', $id)->with('success', 'Order Line Items Marked as Fulfilled Successfully!');
+//    }
 
-        $order->notes = $request->notes;
-        $order->save();
+
+    public function storeOrderNotes(Request $request, $id) {
+
+        $notes = new ShopifyOrderNote();
+
+        $notes->notes = $request->notes;
+        $notes->shopify_order_id = $request->id;
+        $notes->save();
 
         return redirect()->back()->with('success', "Notes Added Successfully!");
     }
@@ -611,13 +651,12 @@ class AdminController extends Controller
                     $vendorDetail = ProductVendorDetail::find($vendor);
 
 
-                    $order_vendor->vendor_id = $vendorDetail->vendor_id;
+                    $order_vendor->vendor_id = $vendorDetail->id;
                     $order_vendor->vendor_product_id = $vendorDetail->shopify_product_id;
                     $order_vendor->line_id = $line;
                     $order_vendor->save();
 
-                    $vendor = Vendor::find($vendorDetail->vendor_id);
-                    array_push($vendor_array, $vendor->name);
+                    array_push($vendor_array, $vendorDetail->id);
 
                 }
 
@@ -690,9 +729,8 @@ class AdminController extends Controller
             $vendor = $item->vendor;
                 $vendors = json_decode($vendor);
                 foreach ($vendors as $vendor) {
-                    $ven = Vendor::where('name', $vendor)->first();
-                    $vendor_details = ProductVendorDetail::where('vendor_id', $ven->id)->first();
-                    $price += $vendor_details->product_price;
+                    $vendor_details = ProductVendorDetail::where('id', $vendor)->first();
+                    $price += $vendor_details->cost;
                 }
         }
 
@@ -829,6 +867,27 @@ class AdminController extends Controller
         }
 
         return redirect(route('admin.orders'))->with('success', 'Orders Fulfilled Successfully!');
+    }
+
+    public function addOrderShippingPrice(Request $request, $id) {
+        $order = ShopifyOrder::find($id);
+
+        if($request->shipping_currency == 'usd') {
+            ShippingPrice::create([
+                'shipping_price' => $request->shipping_price,
+                'shipping_currency' => $request->shipping_currency,
+                'shopify_order_id' => $id,
+            ]);
+        }
+        else{
+            ShippingPrice::create([
+                'shipping_price' => ((double) $request->shipping_price) * 6.6,
+                'shipping_currency' => $request->shipping_currency,
+                'shopify_order_id' => $id,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Shipping Price added sucessfully!');
     }
 
 

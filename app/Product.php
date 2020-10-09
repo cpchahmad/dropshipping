@@ -74,7 +74,7 @@ class Product extends Model
                     echo "
                         <div class='d-flex align-items-center py-2'>
                             <div>
-                            <img src=\"$image_src\" alt='No img' class=\"img-fluid\" style='width: 50px; height: auto;'>
+                            <img src=\"$image_src\" alt='No img' class=\"img-fluid hover-img\" style='width: 50px; height: auto;'>
                             </div>
                             <div class='ml-2 text-left'>
                                 <p class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->variant_title (<strong>SKU:</strong> $varient->variant_sku)</p>
@@ -87,7 +87,7 @@ class Product extends Model
                     echo "
                         <div class='d-flex align-items-center border-bottom py-2'>
                             <div>
-                            <img src=\"$image_src\" alt='No img' class=\"img-fluid\" style='width: 50px; height: auto;'>
+                            <img src=\"$image_src\" alt='No img' class=\"img-fluid hover-img\" style='width: 50px; height: auto;'>
                             </div>
                             <div class='ml-2 text-left'>
                                 <p class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->variant_title (<strong>SKU:</strong> $varient->variant_sku)</p>

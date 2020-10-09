@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVendorsTable extends Migration
+class CreateShippingPricesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateVendorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('vendors', function (Blueprint $table) {
+        Schema::create('shipping_prices', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->string('url')->nullable();
-            $table->string('cost')->nullable();
-            $table->string('moq')->nullable();
-            $table->string('leadstime')->nullable();
+            $table->bigInteger('shopify_order_id')->nullable();
+            $table->string('shipping_price')->nullable();
+            $table->string('shipping_currency')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ class CreateVendorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('vendors');
+        Schema::dropIfExists('shipping_prices');
     }
 }

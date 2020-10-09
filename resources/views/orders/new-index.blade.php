@@ -236,15 +236,16 @@
                             </th>
                             <th class="text-center" style="width: 80px;">Order</th>
                             <th class="text-center">Products</th>
-                            <th class="text-center" style="width: 140px;">Status</th>
                             <th class="text-center" style="width: 120px;">Shipping Method</th>
+                            <th class="text-center" style="width: 100px;">Shipping Price</th>
                             <th class="text-center" style="width: 150px;">Shipping Address</th>
-                            <th class="text-center" style="width: 280px;">Notes</th>
+                            <th class="text-center" style="width: 260px;">Notes</th>
+                            <th class="text-center" style="width: 140px;"></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($orders as $index =>$order)
-                        <tr>
+                        <tr style="background: {{ $order->bg }}">
                             <td>
                                 @if($order->is_unfulfilled)
                                     <div class="custom-control custom-checkbox d-inline-block">
@@ -266,8 +267,8 @@
                                     @foreach($order->items as $item)
                                         <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">
                                             @csrf
-                                            <div class="col-2">
-                                                <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">
+                                            <div class="col-3">
+                                                <img src="{{ $item->img }}" alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto;">
                                             </div>
                                             <div class=' col-6'>
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
@@ -277,7 +278,7 @@
                                                     {{ $item->vendors }}
                                                 @endif
                                             </div>
-                                            <div class="text-right col-4">
+                                            <div class="text-right col-3">
                                                 <p class="font-weight-bold">x{{$item->quantity}}</p>
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <button type="submit" class="btn btn-dark btn-sm">Save</button>
@@ -287,11 +288,76 @@
                                     @endforeach
 
                             </td>
+                            <td class="text-center align-middle" style="font-size: 12px !important;">
+                                {{ $order->shipping_method }}
+                            </td>
+                            <td class="text-left align-middle" style="font-size: 12px !important;">
+                                @if($order->shipping_prices()->count() > 0)
+                                   <ul class="pl-3">
+                                       @foreach($order->shipping_prices as $price)
+                                           <li class="pl-0">{{ number_format($price->shipping_price,2) }} {{ $price->shipping_currency }}</li>
+                                       @endforeach
+                                   </ul>
+                                @else
+                                    Not Added Yet!
+                                @endif
+                            </td>
                             <td class="align-middle" style="font-size: 12px !important;">
-                                <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Change Status</button>
+                                {{ $order->ship_add }}
+                            </td>
+                            <td class="font-w600 text-center align-middle" @if($order->notes_check) style="background: #fff3ce"  @endif>
+                                <button type="button" class="btn btn-sm btn-light push border-dark" style="border-radius: 100%" data-toggle="modal" data-target="#notesModal{{$order->id}}">
+                                    <i class="si si-note "></i>
+                                </button>
+                                <div class="text-left">
+                                    @if(!(is_null($order->notes)))
+                                        <li style="font-size: 12px !important;">{{ $order->notes }}</li>
+                                    @endif
+                                    @if(count($order->shopify_order_notes)>0)
+                                        @foreach($order->shopify_order_notes as $note)
+                                            <li style="font-size: 12px !important;">{{ $note->notes }}</li>
+                                        @endforeach
+                                    @endif
+                                </div>
 
-                                <div class="modal" id="updateModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
+
+
+                                <div class="modal" id="notesModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
                                     <div class="modal-dialog modal-md" role="document">
+                                        <div class="modal-content">
+                                            <div class="block block-themed block-transparent mb-0">
+                                                <div class="block-header bg-primary-dark">
+                                                    <h3 class="block-title">Enter some notes {{ $order->name }}</h3>
+                                                    <div class="block-options">
+                                                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                                                            <i class="fa fa-fw fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <form action="{{ route('admin.store.order.notes', $order->id) }}" method="POST">
+                                                    @csrf
+                                                    <div class="block-content font-size-sm pb-2">
+                                                        <textarea name="notes" class="form-control" id="" cols="25" rows="8" placeholder="Enter some notes"></textarea>
+                                                    </div>
+                                                    <div class="block-content block-content-full text-right">
+                                                        <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-check mr-1"></i>Add</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                            <td class="align-middle" style="font-size: 12px !important;">
+                               <div class="btn-group-vertical">
+                                   <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Change Status</button>
+                                   <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#priceModal{{$order->id}}">Add Shipping Price</button>
+                               </div>
+
+                               <div class="modal" id="updateModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="block block-themed block-transparent mb-0">
                                                 <div class="block-header bg-primary-dark">
@@ -305,13 +371,41 @@
                                                 <form action="{{ route('admin.change.order.status', $order->id) }}" method="POST">
                                                     @csrf
                                                     <div class="block-content font-size-sm pb-2">
-                                                            <select name="status" class="form-control status_select">
-                                                                <option value="Unfulfilled">Unfulfilled</option>
-                                                                <option value="Fulfilled" >Fulfilled</option>
-                                                            </select>
+                                                        <select name="status" class="form-control status_select">
+                                                            <option value="Unfulfilled">Unfulfilled</option>
+                                                            <option value="Fulfilled" >Fulfilled</option>
+                                                        </select>
                                                     </div>
 
                                                     <div class="block-content font-size-sm pb-2 tracking" style="display: none">
+                                                        <h5>Quantity to fulfill</h5>
+                                                        <ul class="list-unstyled">
+                                                            @foreach($order->items as $item)
+                                                                <li class='row d-flex align-items-center py-2 border-bottom ' action="{{ route('admin.store.order.vendor') }}" method="POST">
+                                                                    @csrf
+                                                                    <div class="col-2">
+                                                                        <input type="hidden" name="item_id[]" value="{{ $item->id }}">
+                                                                        <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">
+                                                                    </div>
+                                                                    <div class=' col-6'>
+                                                                        <span class="d-block font-weight-lighter">{{$item->title}}</span>
+                                                                        <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>
+                                                                    </div>
+                                                                    <div class="text-right col-4">
+                                                                        <div class="form-group">
+                                                                            <div class="input-group">
+                                                                                <input type="number" class="form-control" min="1" name="item_fulfill_quantity[]" value="{{ $item->quantity }}">
+                                                                                <div class="input-group-append">
+                                                                                <span class="input-group-text">
+                                                                                    of {{ $item->quantity }}
+                                                                                </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                <li/>
+                                                            @endforeach
+                                                        </ul>
                                                         <h5>Tracking Information</h5>
                                                         <input type="text" name="tracking_number" class="form-control mb-2" placeholder="Enter tracking number..">
                                                         <input type="text" name="tracking_url" class="form-control mb-2" placeholder="Enter tracking url..">
@@ -372,46 +466,36 @@
                                                         </select>
                                                     </div>
                                                     <div class="block-content block-content-full text-right">
-                                                    <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-check mr-1"></i>Change</button>
-                                                </div>
+                                                        <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-check mr-1"></i>Change</button>
+                                                    </div>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                            </td>
-                            <td class="text-center align-middle" style="font-size: 12px !important;">
-                                {{ $order->shipping_method }}
-                            </td>
-                            <td class="align-middle" style="font-size: 12px !important;">
-                                {{ $order->ship_add }}
-                            </td>
-                            <td class="font-w600 text-center align-middle" @if($order->notes_check) style="background: #fff3ce"  @endif>
-                                <button type="button" class="btn btn-sm btn-light push border-dark" style="border-radius: 100%" data-toggle="modal" data-target="#notesModal{{$order->id}}">
-                                    <i class="si si-note "></i>
-                                </button>
-                                @if(!(is_null($order->notes)))
-                                    <p style="font-size: 12px !important;">{{ $order->notes }}</p>
-                                @endif
-
-                                <div class="modal" id="notesModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
+                                <div class="modal" id="priceModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
                                     <div class="modal-dialog modal-md" role="document">
                                         <div class="modal-content">
                                             <div class="block block-themed block-transparent mb-0">
                                                 <div class="block-header bg-primary-dark">
-                                                    <h3 class="block-title">Enter some notes {{ $order->name }}</h3>
+                                                    <h3 class="block-title">Enter Shipping Price for {{ $order->name }}</h3>
                                                     <div class="block-options">
                                                         <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
                                                             <i class="fa fa-fw fa-times"></i>
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <form action="{{ route('admin.store.order.notes', $order->id) }}" method="POST">
+                                                <form action="{{ route('admin.store.order.shipping.price', $order->id) }}" method="POST">
                                                     @csrf
                                                     <div class="block-content font-size-sm pb-2">
-                                                        <textarea name="notes" class="form-control" id="" cols="25" rows="8" placeholder="Enter some notes"></textarea>
+                                                        <input type="text" name="shipping_price" class="form-control" placeholder="Enter Shipping price..">
+                                                        <select name="shipping_currency" id="" class="form-control mt-3">
+                                                            <option value="" selected disabled>-- Select currency --</option>
+                                                            <option value="usd">USD</option>
+                                                            <option value="rmb">RMB</option>
+                                                        </select>
                                                     </div>
                                                     <div class="block-content block-content-full text-right">
                                                         <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Close</button>
@@ -422,7 +506,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </td>
                         </tr>
                         @endforeach

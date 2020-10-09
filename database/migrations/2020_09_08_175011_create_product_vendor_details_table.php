@@ -16,10 +16,11 @@ class CreateProductVendorDetailsTable extends Migration
         Schema::create('product_vendor_details', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('shopify_product_id');
-            $table->bigInteger('vendor_id');
-            $table->string('product_price')->nullable();
-            $table->string('product_link')->nullable();
-            $table->string('notes')->nullable();
+            $table->string('name')->nullable();
+            $table->string('url')->nullable();
+            $table->string('cost')->nullable();
+            $table->string('moq')->nullable();
+            $table->string('leads_time')->nullable();
             $table->timestamps();
         });
     }
