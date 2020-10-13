@@ -44,8 +44,11 @@ class User extends Authenticatable
         if($role_array[0] == 'shipping_team') {
             return 'Shipping Team';
         }
-        else{
+        else if($role_array[0] == 'outsource_team'){
             return 'Source Team';
+        }
+        else {
+            return 'Admin';
         }
 
     }

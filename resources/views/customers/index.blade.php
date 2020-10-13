@@ -69,7 +69,7 @@
                         <tr>
                             <td class="font-w600">
                                 <a href="/admin/orders?customer={{ $customer['id'] }}">
-                                    {{ $customer['first_name']}}, {{ $customer['last_name'] }}
+                                    {{ $customer['first_name']}} {{ $customer['last_name'] }}
                                 </a>
                             </td>
                             <td class="font-w600">

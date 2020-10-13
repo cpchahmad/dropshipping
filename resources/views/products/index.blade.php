@@ -197,8 +197,8 @@
                                 <td class="" style="font-size: 12px !important;">
                                     <span><strong style="font-size: 14px !important">Description:</strong>{!! $product->description  !!}</span><br>
                                     <span><strong style="font-size: 14px !important">Outsource Team:</strong> {{ $product->source_name }}</span><br>
-                                    <span><strong style="font-size: 14px !important">Price:</strong> ${{ $product->price }}</span><br>
-                                    <span><strong style="font-size: 14px !important">Compare at Price:</strong> ${{ $product->compare_price }}</span><br>
+                                    <span><strong style="font-size: 14px !important">Price:</strong> ${{ number_format($product->price,2) }}</span><br>
+                                    <span><strong style="font-size: 14px !important">Compare at Price:</strong> ${{ number_format($product->compare_price,2) }}</span><br>
                                     <span><strong style="font-size: 14px !important">Tags:</strong> {{ $product->product_tags }}</span><br>
                                     <span><strong style="font-size: 14px !important">Weight:</strong> {{ $product->weight }} {{ $product->unit }}</span><br>
                                 </td>

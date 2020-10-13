@@ -78,7 +78,7 @@ class Product extends Model
                             </div>
                             <div class='ml-2 text-left'>
                                 <p class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->variant_title (<strong>SKU:</strong> $varient->variant_sku)</p>
-                                <span>$$varient->variant_price</span>
+                                <span>$".number_format($varient->variant_price,2)."</span>
                             </div>
                         </div>
                     ";
@@ -91,7 +91,7 @@ class Product extends Model
                             </div>
                             <div class='ml-2 text-left'>
                                 <p class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->variant_title (<strong>SKU:</strong> $varient->variant_sku)</p>
-                                <span>$$varient->variant_price</span>
+                                <span>$".number_format($varient->variant_price,2)."</span>
                             </div>
                         </div>
                     ";

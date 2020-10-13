@@ -47,6 +47,18 @@
     <!-- Page Content -->
     <div class="content">
 
+        <form class="js-form-icon-search push" action="" method="get">
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="search" class="form-control" placeholder="Search Logs By Type" value="{{$search}}" name="search" required >
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+                        <a class="btn btn-danger" href="/admin/users/logs"> <i class="fa fa-times"></i> Clear </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+
 
         <!-- Dynamic Table Full -->
         <div class="block mt-3">
@@ -61,9 +73,10 @@
                         @foreach($logs as $log)
                             <li class="pb-3">
                                     <span class="badge badge-success">{{ $log->user->name }}</span>
+                                    <strong>[{{ $log->user->role }}]</strong>
                                     <strong>{{ $log->type }} </strong>{{ $log->item }}
                                     {{ $log->date }}
-                                    {{ $log->location }}
+{{--                                    {{ $log->location }}--}}
                             </li>
                         @endforeach
                     </ul>

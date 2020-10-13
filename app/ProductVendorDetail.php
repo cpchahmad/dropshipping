@@ -26,6 +26,7 @@ class ProductVendorDetail extends Model
     }
 
     public function getCheckboxAttribute() {
+//        dd(OrderVendor::all()->pluck('vendor_id')->toArray());
         if(in_array($this->id, OrderVendor::all()->pluck('vendor_id')->toArray())) {
             return true;
         }

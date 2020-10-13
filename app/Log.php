@@ -29,14 +29,17 @@ class Log extends Model
         if($this->type == "Product Updated" || $this->type == "Product Added") {
             $product = Product::find($this->shopify_product_id);
 
-            echo "
+            if($product !== null) {
+                echo "
                 <a href='/admin/products?search=$product->title' target='_blank' style='font-size: 12px !important;'>
                     $product->title
                 </a>
             ";
+            }
+
         }
 
-        if($this->type == "Order Status Changed") {
+        if($this->type == "Order Status Changed" || $this->type == "Order Shipping Price added" || $this->type == "Order Notes Added") {
             $order = ShopifyOrder::find($this->shopify_order_id);
 
             echo "

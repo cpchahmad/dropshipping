@@ -587,6 +587,14 @@ class AdminController extends Controller
         $notes->shopify_order_id = $request->id;
         $notes->save();
 
+        Log::create([
+            'user_id' => Auth::user()->id,
+            'attempt_time' => Carbon::now()->toDateTimeString(),
+            'attempt_location_ip' => $request->getClientIp(),
+            'type' => 'Order Notes Added',
+            'shopify_order_id' => $notes->shopify_order_id
+        ]);
+
         return redirect()->back()->with('success', "Notes Added Successfully!");
     }
 
@@ -647,9 +655,14 @@ class AdminController extends Controller
                 $vendor_array = array();
 
                 foreach ($request->vendors as $vendor) {
-                    $order_vendor = new OrderVendor();
                     $vendorDetail = ProductVendorDetail::find($vendor);
 
+                    if(OrderVendor::where(['vendor_id' => $vendorDetail->id])->exists()) {
+                        $order_vendor = OrderVendor::where(['vendor_id' => $vendorDetail->id])->first();
+                    }
+                    else {
+                        $order_vendor = new OrderVendor();
+                    }
 
                     $order_vendor->vendor_id = $vendorDetail->id;
                     $order_vendor->vendor_product_id = $vendorDetail->shopify_product_id;
@@ -663,6 +676,14 @@ class AdminController extends Controller
                 $line_item = LineItem::find($line);
                 $line_item->vendor = $vendor_array;
                 $line_item->save();
+
+                Log::create([
+                    'user_id' => Auth::user()->id,
+                    'attempt_time' => Carbon::now()->toDateTimeString(),
+                    'attempt_location_ip' => $request->getClientIp(),
+                    'type' => 'Vendor added to order',
+                    'shopify_order_id' => $line_item->shopify_order_id
+                ]);
             }
 
             return redirect()->back()->with('success', 'Vendors added');
@@ -755,10 +776,14 @@ class AdminController extends Controller
     }
 
     public function getLogs(Request $request) {
+        if ($request->has('search')) {
+            $logs = Log::where('type', 'LIKE', '%' . $request->input('search') . '%')->orderBy('updated_at', 'DESC')->paginate(20);
+        }
+        else {
+            $logs = Log::orderBy('updated_at', 'DESC')->paginate(30);
+        }
 
-        $logs = Log::orderBy('updated_at', 'DESC')->paginate(30);
-
-        return view('shops.log')->with('logs', $logs);
+        return view('shops.log')->with('logs', $logs)->with('search', $request->input('search'));
     }
 
 
@@ -886,6 +911,15 @@ class AdminController extends Controller
                 'shopify_order_id' => $id,
             ]);
         }
+
+        Log::create([
+            'user_id' => Auth::user()->id,
+            'attempt_time' => Carbon::now()->toDateTimeString(),
+            'attempt_location_ip' => $request->getClientIp(),
+            'type' => 'Order Shipping Price added',
+            'shopify_order_id' => $order->id
+        ]);
+
 
         return redirect()->back()->with('success', 'Shipping Price added sucessfully!');
     }

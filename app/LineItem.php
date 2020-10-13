@@ -72,30 +72,31 @@ class LineItem extends Model
             $vendor_details = $product->product_vendor_details;
 
             if(count($vendor_details)>0) {
-                echo "<span class=\"d-block font-weight-bolder\">Vendors: </span>";
-                foreach ($vendor_details as $details) {
-                    echo "
-                        <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
-                            <div class='row d-flex'>
-                                <div class='mr-2'>
-                                    <input type='checkbox' class='from-control' name='vendors[]' value='$details->id' $details->checkbox ? checked : '' >
-                                    <input type='hidden' value='$details->shopify_product_id'>
-                                    <input type='hidden' value='$details->id'>
-                                </div>
-                                <div class='mr-2'>
-                                    $details->name
-                                </div>
-                                <div class='font-weight-bold mr-2'>
-                                    <span class=>$".number_format($details->product_price, 2)."</span>
-                                </div>
-                                <div class='font-weight-bold'>
-                                    <a href='$details->url' target='_blank'>Place Order</a>
-                                </div>
-                            </div>
-
-                        </li>
-                    ";
-                }
+                return $vendor_details;
+//                echo "<span class=\"d-block font-weight-bolder\">Vendors: </span>";
+//                foreach ($vendor_details as $details) {
+//                    echo "
+//                        <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
+//                            <div class='row d-flex'>
+//                                <div class='mr-2'>
+//                                    <input type='checkbox' class='from-control' name='vendors[]' value='$details->id'>
+//                                    <input type='hidden' value='$details->shopify_product_id'>
+//                                    <input type='hidden' value='$details->id'>
+//                                </div>
+//                                <div class='mr-2'>
+//                                    $details->name
+//                                </div>
+//                                <div class='font-weight-bold mr-2'>
+//                                    <span class=>$".number_format($details->product_price, 2)."</span>
+//                                </div>
+//                                <div class='font-weight-bold'>
+//                                    <a href='$details->url' target='_blank'>Place Order</a>
+//                                </div>
+//                            </div>
+//
+//                        </li>
+//                    ";
+//                }
             }
         }
 
