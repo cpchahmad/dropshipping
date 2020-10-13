@@ -76,7 +76,7 @@
                                     <strong>[{{ $log->user->role }}]</strong>
                                     <strong>{{ $log->type }} </strong>{{ $log->item }}
                                     {{ $log->date }}
-{{--                                    {{ $log->location }}--}}
+                                    {{ $log->location }}
                             </li>
                         @endforeach
                     </ul>
