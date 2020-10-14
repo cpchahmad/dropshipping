@@ -40,7 +40,6 @@ class ExpenseController extends Controller
 
         $this->validate($request, [
             'title' => 'required',
-            'notes' => 'required',
             'price' => 'required',
             'category' => 'required',
             'currency' => 'required',
@@ -101,7 +100,6 @@ class ExpenseController extends Controller
 
         $this->validate($request, [
             'title' => 'required',
-            'notes' => 'required',
             'price' => 'required',
             'category' => 'required',
             'currency' => 'required',
