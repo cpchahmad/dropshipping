@@ -47,7 +47,7 @@ class ExpenseController extends Controller
 
         $expense->title = $request->title;
         $expense->notes = $request->notes;
-        $expense->category = $request->category;
+        $expense->category_id = $request->category;
         $expense->currency = $request->currency;
 
         if($request->currency == 'rmb') {
@@ -107,7 +107,7 @@ class ExpenseController extends Controller
 
         $expense->title = $request->title;
         $expense->notes = $request->notes;
-        $expense->category = $request->category;
+        $expense->category_id = $request->category;
         $expense->currency = $request->currency;
 
         if($request->currency == 'rmb') {

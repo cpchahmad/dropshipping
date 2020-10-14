@@ -237,8 +237,9 @@
                             <th class="text-center" style="width: 80px;">Order</th>
                             <th class="text-center">Products</th>
                             <th class="text-center" style="width: 100px;">Shipping Price</th>
+                            <th class="text-center" style="width: 100px;">Order Tracking Information</th>
                             <th class="text-center" style="width: 150px;">Shipping Address</th>
-                            <th class="text-center" style="width: 260px;">Notes</th>
+                            <th class="text-center" style="width: 220px;">Notes</th>
                             <th class="text-center" style="width: 140px;"></th>
                         </tr>
                     </thead>
@@ -277,7 +278,8 @@
                                             <div class="col-6">
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                 @if(isset($item->shopify_variant->title))<span class="d-block font-weight-boldA">{{$item->shopify_variant->title}}</span>@endif
-                                                <span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>
+                                                @if(!(is_null($item->sku)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
+                                                @if(!(is_null($item->fulfillment_response)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">This Line is fulfilled in: </span> {{$item->fulfillment_response}}</span>@endif
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
                                                     <span class="d-block font-weight-bolder">Vendors: </span>
@@ -325,8 +327,10 @@
                                             <div class="col-6">
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                 @if(isset($item->shopify_variant->title))<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
-                                                <span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>
-                                                @if($order->ful_check && $item->vendor_chk)
+                                                @if(!(is_null($item->sku)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
+                                                @if(!(is_null($item->fulfillment_response)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">This Line is fulfilled in: </span> {{$item->fulfillment_response}}</span>@endif
+
+                                            @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
                                                     <span class="d-block font-weight-bolder">Vendors: </span>
 
@@ -381,6 +385,19 @@
                                     Not Added Yet!
                                 @endif
                             </td>
+                            <td class="text-left align-middle" style="font-size: 12px !important;">
+                                @if($order->order_tracking()->count() > 0)
+                                    <ul class="pl-3">
+                                            <li class="pl-0">
+                                                {{ $order->order_tracking->tracking_number }} <br>
+                                                <a href="{{ $order->order_tracking->tracking_url }}" class="text-white">{{ $order->order_tracking->tracking_url }}</a> <br>
+                                                {{ $order->order_tracking->tracking_company }} <br>
+                                            </li>
+                                    </ul>
+                                @else
+                                    Not Added Yet!
+                                @endif
+                            </td>
                             <td class="align-middle" style="font-size: 12px !important;">
                                 {{ $order->ship_add }}
                             </td>
@@ -431,7 +448,9 @@
                             </td>
                             <td class="align-middle" style="font-size: 12px !important;">
                                <div class="btn-group-vertical">
-                                   <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Mark as Fulfilled</button>
+                                   @if($order->status_check)
+                                        <button type="button" class="btn btn-sm btn-primary push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Mark as Fulfilled</button>
+                                   @endif
                                </div>
 
                                <div class="modal" id="updateModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
@@ -453,7 +472,8 @@
                                                         <h5>Quantity to fulfill</h5>
                                                         <ul class="list-unstyled">
                                                             @foreach($order->items as $item)
-                                                                <li class='row d-flex align-items-center py-2 border-bottom ' action="{{ route('admin.store.order.vendor') }}" method="POST">
+                                                                @if($item->fulfillment_status !=='fulfilled')
+                                                                    <li class='row d-flex align-items-center py-2 border-bottom ' action="{{ route('admin.store.order.vendor') }}" method="POST">
                                                                     @csrf
                                                                     <div class="col-2">
                                                                         <input type="hidden" name="item_id[]" value="{{ $item->id }}">
@@ -466,7 +486,7 @@
                                                                     <div class="text-right col-4">
                                                                         <div class="form-group">
                                                                             <div class="input-group">
-                                                                                <input type="number" class="form-control" name="item_fulfill_quantity[]" value="{{ $item->fulfillable_quantity }}">
+                                                                                <input type="number" class="form-control" name="item_fulfill_quantity[]" min="1" max="{{ $item->fulfillable_quantity }}" value="{{ $item->fulfillable_quantity }}">
                                                                                 <div class="input-group-append">
                                                                                 <span class="input-group-text">
                                                                                     of {{ $item->fulfillable_quantity }}
@@ -476,6 +496,7 @@
                                                                         </div>
                                                                     </div>
                                                                 <li/>
+                                                                @endif
                                                             @endforeach
                                                         </ul>
                                                         <h5>Tracking Information</h5>

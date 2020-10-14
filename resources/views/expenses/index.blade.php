@@ -52,7 +52,6 @@
                             <th>Name</th>
                             <th>Notes</th>
                             <th>Price in USD</th>
-                            <th>Price in RMB</th>
                             <th>Category</th>
                             <th></th>
                         </tr>
@@ -68,13 +67,11 @@
                                     {{ $expense->notes}}
                                 </td>
                                 <td class="font-w600">
-                                    ${{ $expense->usd_price}}
+                                    ${{ $expense->usd_price}} {{ $expense->rmb_price ? '(RMB '.$expense->rmb_price.')': ''}}
                                 </td>
+
                                 <td class="font-w600">
-                                    {{ $expense->rmb_price ? 'RMB '.$expense->rmb_price : ''}}
-                                </td>
-                                <td class="font-w600">
-                                    {{ $expense->category_name }}
+                                    {{ $expense->category->category_name }}
                                 </td>
                                 <td class="d-flex justify-content-end">
                                     <div class="btn-group">

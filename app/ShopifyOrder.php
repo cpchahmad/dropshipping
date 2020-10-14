@@ -41,6 +41,10 @@ class ShopifyOrder extends Model
         return $this->hasMany(ShippingPrice::class);
     }
 
+    public function order_tracking() {
+        return $this->hasOne(OrderTracking::class);
+    }
+
     public function getDateAttribute() {
         $str = $this->processed_at;
         $date = strtotime($str);
@@ -68,6 +72,15 @@ class ShopifyOrder extends Model
         }
         else {
             return 'unfulfilled';
+        }
+    }
+
+    public function getStatusCheckAttribute() {
+        if($this->fulfillment_status == 'fulfilled') {
+            return false;
+        }
+        else {
+            return true;
         }
     }
 
@@ -175,7 +188,7 @@ class ShopifyOrder extends Model
             $address_obj = json_decode($address_obj);
             echo "
                 <div class='d-flex flex-column'>
-                     <span>$address_obj->first_name, $address_obj->last_name</span>
+                     <span>$address_obj->first_name $address_obj->last_name</span>
                      <span>$address_obj->company</span>
                      <span>$address_obj->address1</span>
                      <span>$address_obj->address2</span>

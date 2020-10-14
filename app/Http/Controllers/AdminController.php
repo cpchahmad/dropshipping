@@ -6,6 +6,7 @@ use App\Expense;
 use App\LineItem;
 use App\Log;
 use App\LoginDetails;
+use App\OrderTracking;
 use App\OrderVendor;
 use App\Product;
 use App\ProductImage;
@@ -219,7 +220,7 @@ class AdminController extends Controller
             $line->price = $item['price'];
             $line->shopify_order_id = $order['id'];
             $line->fulfillable_quantity = $item['fulfillable_quantity'];
-            $line->fulfillment_status = $item['fulfillment_status'];
+
             $line->save();
         }
 
@@ -520,6 +521,13 @@ class AdminController extends Controller
                         ]
                     ]
                 ];
+
+                $tracking = new OrderTracking();
+                $tracking->tracking_number = $request->tracking_number;
+                $tracking->tracking_url = $request->tracking_url;
+                $tracking->tracking_company = $request->shipping_carrier;
+                $tracking->shopify_order_id = $id;
+                $tracking->save();
             }
 
 
