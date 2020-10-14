@@ -37,7 +37,7 @@
         <script>window.Laravel = {!! json_encode(['csrfToken' => csrf_token(),]) !!};</script>
     </head>
     <body>
-        <div id="page-container" class="sidebar-o enable-page-overlay sidebar-dark side-scroll page-header-fixed">
+        <div id="page-container" class="sidebar-o enable-page-overlay sidebar-dark side-scroll page-header-fixed sidebar-mini"">
             <!-- Side Overlay-->
             <aside id="side-overlay" class="font-size-sm">
                 <!-- Side Header -->
@@ -77,7 +77,7 @@
                 <div class="content-header bg-white-5">
                     <!-- Logo -->
                     <a class="font-w600 text-dual" href="/">
-                        DropShipping
+                        D
                     </a>
                     <!-- END Logo -->
 
@@ -278,7 +278,7 @@
                     <div class="d-flex align-items-center">
                         <!-- Toggle Sidebar -->
                         <!-- Layout API, functionality initialized in Template._uiApiLayout()-->
-                        <button type="button" class="btn btn-sm btn-dual mr-2 d-lg-none" data-toggle="layout" data-action="sidebar_toggle">
+                        <button type="button" class="btn btn-sm btn-dual mr-2 d-lg-none" id="side-btn" data-toggle="layout" data-action="sidebar_toggle">
                             <i class="fa fa-fw fa-bars"></i>
                         </button>
                         <!-- END Toggle Sidebar -->
@@ -473,6 +473,8 @@
             @if(Session::has('error'))
                 toastr.error("{{ Session::get('error') }}") ;
             @endif
+
+
         </script>
 
         <!-- Laravel Scaffolding JS -->
