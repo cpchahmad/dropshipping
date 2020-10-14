@@ -23,6 +23,8 @@ class CreateLineItemsTable extends Migration
             $table->string('price')->nullable();
             $table->bigInteger('shopify_order_id')->nullable();
             $table->string('vendor')->nullable();
+            $table->string('fulfillable_quantity')->nullable();
+            $table->string('fulfillment_status')->nullable();
             $table->timestamps();
         });
     }

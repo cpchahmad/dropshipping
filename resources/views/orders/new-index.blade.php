@@ -236,7 +236,6 @@
                             </th>
                             <th class="text-center" style="width: 80px;">Order</th>
                             <th class="text-center">Products</th>
-                            <th class="text-center" style="width: 120px;">Shipping Method</th>
                             <th class="text-center" style="width: 100px;">Shipping Price</th>
                             <th class="text-center" style="width: 150px;">Shipping Address</th>
                             <th class="text-center" style="width: 260px;">Notes</th>
@@ -245,7 +244,7 @@
                     </thead>
                     <tbody>
                         @foreach($orders as $index =>$order)
-                        <tr style="background: {{ $order->bg }}">
+                        <tr style="background: {{ $order->bg }}; color: {{ $order->color }}">
                             <td>
                                 @if($order->is_unfulfilled)
                                     <div class="custom-control custom-checkbox d-inline-block">
@@ -263,16 +262,22 @@
                                 @role('admin')
                                     <span class="text-left font-weight-bold text-uppercase ml-4" style="font-size: 15px;">${{ $order->total_price }}</span>
                                 @endrole
-
+                                    @php
+                                        $counter = 0;
+                                    @endphp
                                     @foreach($order->items as $item)
-                                        <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">
+                                        @if($counter == count( $order->items ) - 1)
+                                            <form class='row d-flex align-items-center py-2' action="{{ route('admin.store.order.vendor') }}" method="POST">
                                             @csrf
                                             <div class="col-3">
-                                                <img src="{{ $item->img }}" alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto;">
+                                                <a href='{{ $item->img }}' target='_blank'>
+                                                    <img src="{{ $item->img }}" alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto; z-index: 9999;">
+                                                </a>
                                             </div>
-                                            <div class=' col-6'>
-                                                <span class="d-block font-weight-lighter">{{$item->title}}</span>
-                                                <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>
+                                            <div class="col-6">
+                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-lighter"><span class="font-weight-bold">Variant Title: </span>{{$item->shopify_variant->title}}</span>@endif
+                                                <span class="d-block font-weight-lighter"><span class="font-weight-bold">Product Title: </span>{{$item->title}}</span>
+                                                <span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
                                                     <span class="d-block font-weight-bolder">Vendors: </span>
@@ -281,7 +286,7 @@
                                                         <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
                                                             <div class='row d-flex'>
                                                                 <div class='mr-2'>
-                                                                    <input type='checkbox' class='from-control' name='vendors[]' value='{{ $details->id }}'
+                                                                    <input type='radio' class='from-control' name='vendors[]' value='{{ $details->id }}'
                                                                     @if($details->checkbox)
                                                                         checked
                                                                     @endif>
@@ -309,11 +314,61 @@
                                                 @endif
                                             </div>
                                         </form>
+                                        @else
+                                            <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">
+                                            @csrf
+                                            <div class="col-3">
+                                                <a href='{{ $item->img }}' target='_blank'>
+                                                    <img src="{{ $item->img }}" alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto;">
+                                                </a>
+                                            </div>
+                                            <div class="col-6">
+                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-lighter"><span class="font-weight-bold">Variant Title: </span>{{$item->shopify_variant->title}}</span>@endif
+                                                <span class="d-block font-weight-lighter"><span class="font-weight-bold">Product Title: </span>{{$item->title}}</span>
+                                                <span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>
+                                                @if($order->ful_check && $item->vendor_chk)
+                                                    <input type="hidden" value="{{ $item->id }}" name="line[]">
+                                                    <span class="d-block font-weight-bolder">Vendors: </span>
+
+                                                    @foreach ($item->shopify_variant->shopify_product->product_vendor_details as $details)
+                                                        <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
+                                                            <div class='row d-flex'>
+                                                                <div class='mr-2'>
+                                                                    <input type='radio' class='from-control' name='vendors[]' value='{{ $details->id }}'
+                                                                           @if($details->checkbox)
+                                                                           checked
+                                                                        @endif>
+                                                                    <input type='hidden' value='{{ $details->shopify_product_id }}'>
+                                                                    <input type='hidden' value='{{ $details->id }}'>
+                                                                </div>
+                                                                <div class='mr-2'>
+                                                                    {{ $details->name }}
+                                                                </div>
+                                                                <div class='font-weight-bold mr-2'>
+                                                                    <span class=>${{ number_format($details->cost, 2) }}</span>
+                                                                </div>
+                                                                <div class='font-weight-bold'>
+                                                                    <a href='{{ $details->url }}' target='_blank'>Place Order</a>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                            <div class="text-right col-3">
+                                                <p class="font-weight-bold">x{{$item->quantity}}</p>
+                                                @if($order->ful_check && $item->vendor_chk)
+                                                    <button type="submit" class="btn btn-dark btn-sm">Save</button>
+                                                @endif
+                                            </div>
+                                        </form>
+                                        @endif
+
+                                        @php
+                                            $counter++;
+                                        @endphp
                                     @endforeach
 
-                            </td>
-                            <td class="text-center align-middle" style="font-size: 12px !important;">
-                                {{ $order->shipping_method }}
                             </td>
                             <td class="text-left align-middle" style="font-size: 12px !important;">
                                 @if($order->shipping_prices()->count() > 0)
@@ -329,17 +384,17 @@
                             <td class="align-middle" style="font-size: 12px !important;">
                                 {{ $order->ship_add }}
                             </td>
-                            <td class="font-w600 text-center align-middle" @if($order->notes_check) style="background: #fff3ce"  @endif>
+                            <td class="font-w600 text-center align-middle" @if($order->notes_check) style="background: yellow"  @endif>
                                 <button type="button" class="btn btn-sm btn-light push border-dark" style="border-radius: 100%" data-toggle="modal" data-target="#notesModal{{$order->id}}">
                                     <i class="si si-note "></i>
                                 </button>
                                 <div class="text-left">
-                                    @if(!(is_null($order->notes)))
-                                        <li style="font-size: 12px !important;">{{ $order->notes }}</li>
+                                    @if(!(is_null($order->notes)) && $order->notes !== '')
+                                        <li style="font-size: 12px !important; color: #575757;">{{ $order->notes }}</li>
                                     @endif
                                     @if(count($order->shopify_order_notes)>0)
                                         @foreach($order->shopify_order_notes as $note)
-                                            <li style="font-size: 12px !important;">{{ $note->notes }}</li>
+                                            <li style="font-size: 12px !important; color: #575757;">{{ $note->notes }}</li>
                                         @endforeach
                                     @endif
                                 </div>
@@ -376,7 +431,7 @@
                             </td>
                             <td class="align-middle" style="font-size: 12px !important;">
                                <div class="btn-group-vertical">
-                                   <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Change Status</button>
+                                   <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Mark as Fulfilled</button>
                                    <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#priceModal{{$order->id}}">Add Shipping Price</button>
                                </div>
 
@@ -394,14 +449,8 @@
                                                 </div>
                                                 <form action="{{ route('admin.change.order.status', $order->id) }}" method="POST">
                                                     @csrf
-                                                    <div class="block-content font-size-sm pb-2">
-                                                        <select name="status" class="form-control status_select">
-                                                            <option value="Unfulfilled">Unfulfilled</option>
-                                                            <option value="Fulfilled" >Fulfilled</option>
-                                                        </select>
-                                                    </div>
 
-                                                    <div class="block-content font-size-sm pb-2 tracking" style="display: none">
+                                                    <div class="block-content font-size-sm pb-2 tracking">
                                                         <h5>Quantity to fulfill</h5>
                                                         <ul class="list-unstyled">
                                                             @foreach($order->items as $item)
@@ -487,6 +536,16 @@
                                                             <option value="Yamato (JA)">Yamato (JA)</option>
                                                             <option value="YunExpress">YunExpress</option>
                                                             <option value="Other">Other</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <h5 class="ml-4 mt-3 mb-0">Shipping Cost Information</h5>
+                                                    <div class="block-content font-size-sm pb-2">
+                                                        <input type="text" name="shipping_price" class="form-control" placeholder="Enter Shipping price..">
+                                                        <select name="shipping_currency" id="" class="form-control mt-3">
+                                                            <option value="" selected disabled>-- Select currency --</option>
+                                                            <option value="usd">USD</option>
+                                                            <option value="rmb">RMB</option>
                                                         </select>
                                                     </div>
                                                     <div class="block-content block-content-full text-right">

@@ -177,12 +177,12 @@
                                 <span class="nav-main-link-name">Products</span>
                             </a>
                         </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.customers') }}">
-                                <i class="nav-main-link-icon si si-user"></i>
-                                <span class="nav-main-link-name">Customers</span>
-                            </a>
-                        </li>
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.customers') }}">--}}
+{{--                                <i class="nav-main-link-icon si si-user"></i>--}}
+{{--                                <span class="nav-main-link-name">Customers</span>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
 
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.orders') }}">
@@ -200,11 +200,17 @@
                                 <li class="nav-main-item">
                                     <a class="nav-main-link" href="{{route('expenses.create')}}">
                                         <i class="nav-main-link-icon si si-bag"></i>
-                                        <span class="nav-main-link-name">Expense</span>
+                                        <span class="nav-main-link-name">Add Expense</span>
                                     </a>
                                 </li>
                                 <li class="nav-main-item">
                                     <a class="nav-main-link" href="{{route('expenses.index')}}">
+                                        <i class="nav-main-link-icon si si-bag"></i>
+                                        <span class="nav-main-link-name">Expenses</span>
+                                    </a>
+                                </li>
+                                <li class="nav-main-item">
+                                    <a class="nav-main-link" href="{{route('categories.index')}}">
                                         <i class="nav-main-link-icon si si-bag"></i>
                                         <span class="nav-main-link-name">Categories</span>
                                     </a>

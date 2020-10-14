@@ -50,7 +50,7 @@
                             <input type="text" class="form-control"  name="vendor_name[]">
                         </td>
                         <td class="">
-                            <input type="number" class="form-control"  name="product_price[]">
+                            <input type="text" class="form-control"  name="product_price[]">
                         </td>
                         <td class=" ">
                             <input type="text" class="form-control"  name="product_link[]">
@@ -190,7 +190,7 @@
                                                     @endif
                                                 </td>
                                                 <td class="text-center">
-                                                    <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#addModal{{$product->id}}">Add Vendor</button>
+                                                    <button type="button" class="btn btn-sm btn-primary push" data-toggle="modal" data-target="#addModal{{$product->id}}">Add Vendor</button>
 
                                                     <div class="modal p-0" id="addModal{{$product->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
                                                         <div class="modal-dialog" style="max-width: 70% !important;" role="document">

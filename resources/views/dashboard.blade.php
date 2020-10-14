@@ -22,7 +22,7 @@
     <!-- Page Content -->
     <div class="content">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <a class="block block-rounded block-link-pop border-left border-primary border-4x" >
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Products</div>
@@ -30,15 +30,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a class="block block-rounded block-link-pop border-left border-primary border-4x" >
-                    <div class="block-content block-content-full">
-                        <div class="font-size-sm font-w600 text-uppercase text-muted">Customers</div>
-                        <div class="font-size-h2 font-w400 text-dark">{{ $customers }}</div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <a class="block block-rounded block-link-pop border-left border-primary border-4x" >
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Orders</div>

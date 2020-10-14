@@ -17,7 +17,8 @@ class CreateExpensesTable extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->text('notes')->nullable();
-            $table->string('price')->nullable();
+            $table->string('usd_price')->nullable();
+            $table->string('rmb_price')->nullable();
             $table->string('currency')->nullable();
             $table->string('category')->nullable();
             $table->timestamps();

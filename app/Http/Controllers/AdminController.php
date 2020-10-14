@@ -110,7 +110,7 @@ class AdminController extends Controller
         }
 
 
-        $orders = $orders->paginate(10);
+        $orders = $orders->paginate(50);
 
 
         return view('orders.new-index')->with([
@@ -217,6 +217,8 @@ class AdminController extends Controller
             $line->product_id = $item['product_id'];
             $line->price = $item['price'];
             $line->shopify_order_id = $order['id'];
+            $line->fulfillable_quantity = $item['fulfillable_quantity'];
+            $line->fulfillment_status = $item['fulfillment_status'];
             $line->save();
         }
 
@@ -462,15 +464,9 @@ class AdminController extends Controller
 
     public function changeOrderStatus(Request $request, $id) {
 
-        dd($request->all());
-
         $order = ShopifyOrder::find($id);
         $fulfillable_quantities = $request->input('item_fulfill_quantity');
 
-
-        if($request->status == 'Fulfilled') {
-            $order->fulfillment_status = 'fulfilled';
-           // $order->save();
 
 //            Log::create([
 //                'user_id' => Auth::user()->id,
@@ -519,40 +515,36 @@ class AdminController extends Controller
             $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $data, [],true);
 
             if(!$response['errors']) {
-//                return $this->set_fulfilments($request, $id, $fulfillable_quantities, $order, $response);
-//                return redirect()->back()->with('success', 'Order status changed successfully!');
+                return $this->set_fulfilments($request, $id, $fulfillable_quantities, $order, $response);
+                return redirect()->back()->with('success', 'Order Mark as fulfilled successfully!');
             }
             else {
+                dd($response);
                 return redirect()->back()->with('error', 'Request cannot be proceed');
             }
-        }
 
-        if($request->status == 'Unfulfilled') {
-            $order->fulfillment_status = null;
-            $order->save();
-            return redirect()->back()->with('success', 'Order status Updated successfully!');
-        }
     }
 
-//    public function set_fulfilments(Request $request, $id, $fulfillable_quantities, $order, $response): \Illuminate\Http\RedirectResponse
-//    {
-//        foreach ($request->input('item_id') as $index => $item) {
-//            $line_item = LineItem::find($item);
-//            if ($line_item != null && $fulfillable_quantities[$index] > 0) {
-//                if ($fulfillable_quantities[$index] == $line_item->fulfillable_quantity) {
-//                    $line_item->fulfillment_status = 'fulfilled';
-//
-//                } else if ($fulfillable_quantities[$index] < $line_item->fulfillable_quantity) {
-//                    $line_item->fulfillment_status = 'partially-fulfilled';
-//                }
-//                $line_item->fulfillable_quantity = $line_item->fulfillable_quantity - $fulfillable_quantities[$index];
-//            }
-//            $line_item->save();
-//        }
-//        $order->status = $order->getStatus($order);
-//        $order->save();
-//
-//
+    public function set_fulfilments(Request $request, $id, $fulfillable_quantities, $order, $response): \Illuminate\Http\RedirectResponse
+    {
+        foreach ($request->input('item_id') as $index => $item) {
+            $line_item = LineItem::find($item);
+            if ($line_item != null && $fulfillable_quantities[$index] > 0) {
+                if ($fulfillable_quantities[$index] == $line_item->fulfillable_quantity) {
+                    $line_item->fulfillment_status = 'fulfilled';
+                    $order->fulfillment_status = 'fulfilled';
+
+                } else if ($fulfillable_quantities[$index] < $line_item->fulfillable_quantity) {
+                    $line_item->fulfillment_status = 'partially-fulfilled';
+                    $order->status = 'partial';
+                }
+                $line_item->fulfillable_quantity = $line_item->fulfillable_quantity - $fulfillable_quantities[$index];
+            }
+            $line_item->save();
+        }
+        $order->save();
+
+
 //        foreach ($request->input('item_id') as $index => $item) {
 //            if ($fulfillable_quantities[$index] > 0) {
 //                $fulfillment_line_item = new FulfillmentLineItem();
@@ -576,7 +568,7 @@ class AdminController extends Controller
 //        $ml->save();
 //
 //        return redirect()->route('sales_managers.order.view', $id)->with('success', 'Order Line Items Marked as Fulfilled Successfully!');
-//    }
+    }
 
 
     public function storeOrderNotes(Request $request, $id) {
@@ -649,7 +641,6 @@ class AdminController extends Controller
 
     public function storeOrderVendor(Request $request) {
 
-
         if(isset($request->vendors)) {
             foreach ($request->line as $line) {
                 $vendor_array = array();
@@ -657,13 +648,11 @@ class AdminController extends Controller
                 foreach ($request->vendors as $vendor) {
                     $vendorDetail = ProductVendorDetail::find($vendor);
 
-                    if(OrderVendor::where(['vendor_id' => $vendorDetail->id])->exists()) {
-                        $order_vendor = OrderVendor::where(['vendor_id' => $vendorDetail->id])->first();
-                    }
-                    else {
-                        $order_vendor = new OrderVendor();
+                    if(OrderVendor::where(['line_id' => $line, 'vendor_product_id' => $vendorDetail->shopify_product_id])->exists()) {
+                        OrderVendor::where(['line_id' => $line, 'vendor_product_id' => $vendorDetail->shopify_product_id])->delete();
                     }
 
+                    $order_vendor = new OrderVendor();
                     $order_vendor->vendor_id = $vendorDetail->id;
                     $order_vendor->vendor_product_id = $vendorDetail->shopify_product_id;
                     $order_vendor->line_id = $line;

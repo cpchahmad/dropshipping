@@ -31,6 +31,7 @@ Route::get('/delete/variant/{id}', 'ProductsController@deleteProductVariant')->n
 Route::get('/product/variant/update/{id}', 'ProductsController@updateProductVariant')->name('update.product.variant');
 Route::put('/product/variant/edit/{id}', 'ProductsController@updateVariant')->name('edit.product.variant');
 Route::resource('expenses', 'ExpenseController');
+Route::resource('categories', 'CategoriesController');
 
 // Admin Routes
 Route::get('/admin/customers', 'AdminController@getCustomers')->name('admin.customers');

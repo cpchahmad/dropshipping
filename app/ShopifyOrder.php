@@ -44,7 +44,7 @@ class ShopifyOrder extends Model
     public function getDateAttribute() {
         $str = $this->processed_at;
         $date = strtotime($str);
-        return date('d/M/Y h:i:s', $date);
+        return date('M/d/Y', $date);
     }
 
     public function getCustomerNameAttribute() {
@@ -436,15 +436,28 @@ class ShopifyOrder extends Model
 
     public function getBgAttribute() {
         if($this->fulfillment_status == 'fulfilled') {
-            return "#b6ecce4f";
+            return "green";
         }
         else if($this->fulfillment_status == 'partial'){
-            return "#edf1a9a1";
+            return "yellow";
         }
         else {
-            return '#f9f9f9';
+            return 'white';
         }
     }
+
+    public function getColorAttribute() {
+        if($this->fulfillment_status == 'fulfilled') {
+            return "white";
+        }
+        else if($this->fulfillment_status == 'partial'){
+            return "#575757";
+        }
+        else {
+            return '#575757';
+        }
+    }
+
 
 
 }

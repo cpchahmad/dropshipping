@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Expense;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        //
+        return view('expenses.index')->with('expenses', Expense::paginate(20));
     }
 
     /**
@@ -24,8 +25,7 @@ class ExpenseController extends Controller
      */
     public function create()
     {
-        $expense = new Expense();
-        return view('expenses.create')->with('expense', $expense);
+        return view('expenses.create')->with('categories', Category::all());
     }
 
     /**
@@ -52,10 +52,11 @@ class ExpenseController extends Controller
         $expense->currency = $request->currency;
 
         if($request->currency == 'rmb') {
-            $expense->price = ((double) $request->price) * 6.6;
+            $expense->rmb_price = ((double) $request->price) * 6.6;
+            $expense->usd_price = $request->price;
         }
         else {
-            $expense->price = $request->price;
+            $expense->usd_price = $request->price;
         }
 
         $expense->save();
@@ -83,7 +84,8 @@ class ExpenseController extends Controller
      */
     public function edit($id)
     {
-        //
+        $expense = Expense::find($id);
+        return view('expenses.create')->with('expense', $expense)->with('categories', Category::all());
     }
 
     /**
@@ -95,7 +97,32 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $expense = Expense::find($id);
+
+        $this->validate($request, [
+            'title' => 'required',
+            'notes' => 'required',
+            'price' => 'required',
+            'category' => 'required',
+            'currency' => 'required',
+        ]);
+
+        $expense->title = $request->title;
+        $expense->notes = $request->notes;
+        $expense->category = $request->category;
+        $expense->currency = $request->currency;
+
+        if($request->currency == 'rmb') {
+            $expense->rmb_price = ((double) $request->price) * 6.6;
+            $expense->usd_price = $request->price;
+        }
+        else {
+            $expense->usd_price = $request->price;
+        }
+
+        $expense->save();
+
+        return redirect(route('expenses.index'))->with('success', 'Expense Updated sucessfully!');
     }
 
     /**
@@ -106,6 +133,9 @@ class ExpenseController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $expense = Expense::find($id);
+        $expense->delete();
+        return redirect(route('expenses.index'))->with('success', 'Expense Deleted sucessfully!');
+
     }
 }
