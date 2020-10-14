@@ -275,8 +275,8 @@
                                                 </a>
                                             </div>
                                             <div class="col-6">
-                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-lighter"><span class="font-weight-bold">Variant Title: </span>{{$item->shopify_variant->title}}</span>@endif
-                                                <span class="d-block font-weight-lighter"><span class="font-weight-bold">Product Title: </span>{{$item->title}}</span>
+                                                <span class="d-block font-weight-lighter">{{$item->title}}</span>
+                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-lighter">{{$item->shopify_variant->title}}</span>@endif
                                                 <span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
@@ -323,8 +323,8 @@
                                                 </a>
                                             </div>
                                             <div class="col-6">
-                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-lighter"><span class="font-weight-bold">Variant Title: </span>{{$item->shopify_variant->title}}</span>@endif
-                                                <span class="d-block font-weight-lighter"><span class="font-weight-bold">Product Title: </span>{{$item->title}}</span>
+                                                <span class="d-block font-weight-lighter">{{$item->title}}</span>
+                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-lighter">{{$item->shopify_variant->title}}</span>@endif
                                                 <span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
@@ -432,7 +432,6 @@
                             <td class="align-middle" style="font-size: 12px !important;">
                                <div class="btn-group-vertical">
                                    <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Mark as Fulfilled</button>
-                                   <button type="button" class="btn btn-sm btn-light push" data-toggle="modal" data-target="#priceModal{{$order->id}}">Add Shipping Price</button>
                                </div>
 
                                <div class="modal" id="updateModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
@@ -467,10 +466,10 @@
                                                                     <div class="text-right col-4">
                                                                         <div class="form-group">
                                                                             <div class="input-group">
-                                                                                <input type="number" class="form-control" min="1" name="item_fulfill_quantity[]" value="{{ $item->quantity }}">
+                                                                                <input type="number" class="form-control" name="item_fulfill_quantity[]" value="{{ $item->fulfillable_quantity }}">
                                                                                 <div class="input-group-append">
                                                                                 <span class="input-group-text">
-                                                                                    of {{ $item->quantity }}
+                                                                                    of {{ $item->fulfillable_quantity }}
                                                                                 </span>
                                                                                 </div>
                                                                             </div>
@@ -543,7 +542,6 @@
                                                     <div class="block-content font-size-sm pb-2">
                                                         <input type="text" name="shipping_price" class="form-control" placeholder="Enter Shipping price..">
                                                         <select name="shipping_currency" id="" class="form-control mt-3">
-                                                            <option value="" selected disabled>-- Select currency --</option>
                                                             <option value="usd">USD</option>
                                                             <option value="rmb">RMB</option>
                                                         </select>

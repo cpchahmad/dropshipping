@@ -39,7 +39,7 @@ class Log extends Model
 
         }
 
-        if($this->type == "Order Status Changed" || $this->type == "Order Shipping Price added" || $this->type == "Order Notes Added") {
+        if($this->type == "Order Fulfilled" || $this->type == "Order Shipping Price added" || $this->type == "Order Notes Added") {
             $order = ShopifyOrder::find($this->shopify_order_id);
 
             echo "

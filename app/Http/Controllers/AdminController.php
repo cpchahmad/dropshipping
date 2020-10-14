@@ -467,19 +467,38 @@ class AdminController extends Controller
         $order = ShopifyOrder::find($id);
         $fulfillable_quantities = $request->input('item_fulfill_quantity');
 
+        if(!(is_null($request->shipping_price))) {
+            if($request->shipping_currency == 'usd') {
+                ShippingPrice::create([
+                    'shipping_price' => $request->shipping_price,
+                    'shipping_currency' => $request->shipping_currency,
+                    'shopify_order_id' => $id,
+                ]);
+            }
+            else{
+                ShippingPrice::create([
+                    'shipping_price' => ((double) $request->shipping_price) * 6.6,
+                    'shipping_currency' => $request->shipping_currency,
+                    'shopify_order_id' => $id,
+                ]);
+            }
 
-//            Log::create([
-//                'user_id' => Auth::user()->id,
-//                'attempt_time' => Carbon::now()->toDateTimeString(),
-//                'attempt_location_ip' => $request->getClientIp(),
-//                'type' => 'Order Status Changed',
-//                'shopify_order_id' => $order->id
-//            ]);
+            Log::create([
+                'user_id' => Auth::user()->id,
+                'attempt_time' => Carbon::now()->toDateTimeString(),
+                'attempt_location_ip' => $request->getClientIp(),
+                'type' => 'Order Shipping Price added',
+                'shopify_order_id' => $order->id
+            ]);
+
+        }
+
+
 
             if(is_null($request->tracking_number) && is_null($request->tracking_url)) {
                 $data = [
                     "fulfillment" => [
-                        "location_id" => "8749154419",
+                        "location_id" => "6122438719",
                         "tracking_number"=> null,
                         "line_items" => [
 
@@ -487,10 +506,11 @@ class AdminController extends Controller
                     ]
                 ];
             }
+            //8749154419
             else {
                 $data = [
                     "fulfillment" => [
-                        "location_id" => "8749154419",
+                        "location_id" => "6122438719",
                         "tracking_number"=> $request->tracking_number,
                         "tracking_url"=> $request->tracking_url,
                         "tracking_company"=> $request->shipping_carrier,
@@ -506,11 +526,12 @@ class AdminController extends Controller
                 $line_item = LineItem::find($item);
                 if ($line_item != null && $fulfillable_quantities[$index] > 0) {
                     array_push($data['fulfillment']['line_items'], [
-                        "id" => $line_item->variant_id,
+                        "id" => $line_item->id,
                         "quantity" => $fulfillable_quantities[$index],
                     ]);
                 }
             }
+
             $api = ShopsController::config();
             $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $data, [],true);
 
@@ -527,22 +548,45 @@ class AdminController extends Controller
 
     public function set_fulfilments(Request $request, $id, $fulfillable_quantities, $order, $response): \Illuminate\Http\RedirectResponse
     {
+        $flag = 0;
         foreach ($request->input('item_id') as $index => $item) {
             $line_item = LineItem::find($item);
             if ($line_item != null && $fulfillable_quantities[$index] > 0) {
                 if ($fulfillable_quantities[$index] == $line_item->fulfillable_quantity) {
                     $line_item->fulfillment_status = 'fulfilled';
-                    $order->fulfillment_status = 'fulfilled';
 
                 } else if ($fulfillable_quantities[$index] < $line_item->fulfillable_quantity) {
                     $line_item->fulfillment_status = 'partially-fulfilled';
-                    $order->status = 'partial';
+
                 }
                 $line_item->fulfillable_quantity = $line_item->fulfillable_quantity - $fulfillable_quantities[$index];
             }
             $line_item->save();
         }
+
+        $quanity = $order->items->sum('quantity');
+        $fulfillable_quanity = $order->items->sum('fulfillable_quantity');
+        if($fulfillable_quanity == 0){
+            $order->fulfillment_status = 'fulfilled';
+        }
+        else if($fulfillable_quanity == $quanity || $fulfillable_quanity < $quanity){
+            $order->fulfillment_status = 'partial';
+        }
+
         $order->save();
+
+        Log::create([
+            'user_id' => Auth::user()->id,
+            'attempt_time' => Carbon::now()->toDateTimeString(),
+            'attempt_location_ip' => $request->getClientIp(),
+            'type' => 'Order Fulfilled',
+            'shopify_order_id' => $order->id
+        ]);
+
+
+
+        return redirect()->back()->with('success', 'Order Mark as fulfilled successfully!');
+
 
 
 //        foreach ($request->input('item_id') as $index => $item) {

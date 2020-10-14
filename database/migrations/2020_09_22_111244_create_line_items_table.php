@@ -17,13 +17,13 @@ class CreateLineItemsTable extends Migration
             $table->bigInteger('id');
             $table->bigInteger('variant_id')->nullable();
             $table->string('title')->nullable();
-            $table->string('quantity')->nullable();
+            $table->integer('quantity')->nullable();
             $table->string('sku')->nullable();
             $table->bigInteger('product_id')->nullable();
             $table->string('price')->nullable();
             $table->bigInteger('shopify_order_id')->nullable();
             $table->string('vendor')->nullable();
-            $table->string('fulfillable_quantity')->nullable();
+            $table->integer('fulfillable_quantity')->nullable();
             $table->string('fulfillment_status')->nullable();
             $table->timestamps();
         });
