@@ -85,10 +85,8 @@ class ShopifyProduct extends Model
                                 </a>
                             </div>
                             <div class='ml-2 text-left'>
-                                <span class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\"><span class=\"font-weight-bold\">Title : </span>$varient->title</span>
-                                <span class='d-block'>$varient->option1</span>
-                                <span class='d-block'>$varient->option2</span>
-                                <span class='d-block'>$varient->option3</span>
+                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\">$varient->title</span>
+
                                 <span><span class=\"font-weight-bold\">SKU: </span>$varient->sku</span><br>
                                 <span><strong>$$varient->price</strong></span>
                             </div>
@@ -104,10 +102,8 @@ class ShopifyProduct extends Model
                                 </a>
                             </div>
                             <div class='ml-2 text-left'>
-                                <span class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\"><span class=\"font-weight-bold\">Title: </span> $varient->title</span>
-                                <span class='d-block'>$varient->option1</span>
-                                <span class='d-block'>$varient->option2</span>
-                                <span class='d-block'>$varient->option3</span>
+                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\"> $varient->title</span>
+
                                 <span><span class=\"font-weight-bold\">SKU: </span>$varient->sku</span><br>
                                 <span><strong>$$varient->price</strong></span>
                             </div>

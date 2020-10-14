@@ -276,7 +276,7 @@
                                             </div>
                                             <div class="col-6">
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
-                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-lighter">{{$item->shopify_variant->title}}</span>@endif
+                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-boldA">{{$item->shopify_variant->title}}</span>@endif
                                                 <span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
@@ -324,7 +324,7 @@
                                             </div>
                                             <div class="col-6">
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
-                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-lighter">{{$item->shopify_variant->title}}</span>@endif
+                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 <span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">

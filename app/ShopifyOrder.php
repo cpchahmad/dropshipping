@@ -439,7 +439,7 @@ class ShopifyOrder extends Model
             return "green";
         }
         else if($this->fulfillment_status == 'partial'){
-            return "yellow";
+            return "#008068";
         }
         else {
             return 'white';
@@ -451,7 +451,7 @@ class ShopifyOrder extends Model
             return "white";
         }
         else if($this->fulfillment_status == 'partial'){
-            return "#575757";
+            return "white";
         }
         else {
             return '#575757';

@@ -184,7 +184,7 @@
             <button class="btn btn-primary ml-2">Apply</button>
         </form>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <a class="block block-rounded block-link-pop border-left border-primary border-4x" >
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Total Sales</div>
@@ -192,7 +192,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <a class="block block-rounded block-link-pop border-left border-primary border-4x">
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Total Cost</div>
@@ -200,11 +200,19 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <a class="block block-rounded block-link-pop border-left border-primary border-4x">
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Profit</div>
                         <div class="font-size-h2 font-w400 text-dark">${{ ($orders_sum - $cost) }}</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a class="block block-rounded block-link-pop border-left border-primary border-4x">
+                    <div class="block-content block-content-full">
+                        <div class="font-size-sm font-w600 text-uppercase text-muted">Expenses</div>
+                        <div class="font-size-h2 font-w400 text-dark">${{ $expenses_sum }}</div>
                     </div>
                 </a>
             </div>

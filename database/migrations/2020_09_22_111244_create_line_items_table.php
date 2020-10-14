@@ -25,6 +25,7 @@ class CreateLineItemsTable extends Migration
             $table->string('vendor')->nullable();
             $table->integer('fulfillable_quantity')->nullable();
             $table->string('fulfillment_status')->nullable();
+            $table->string('fulfillment_response')->nullable();
             $table->timestamps();
         });
     }

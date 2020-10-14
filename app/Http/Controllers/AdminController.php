@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Expense;
 use App\LineItem;
 use App\Log;
 use App\LoginDetails;
@@ -560,6 +561,7 @@ class AdminController extends Controller
 
                 }
                 $line_item->fulfillable_quantity = $line_item->fulfillable_quantity - $fulfillable_quantities[$index];
+                $line_item->fulfillment_response = $response['body']['fulfillment']['name'];
             }
             $line_item->save();
         }
@@ -790,6 +792,7 @@ class AdminController extends Controller
 
         $cost =  number_format($price, 2);
 
+        $expenses_sum = Expense::sum('usd_price');
 
         return view('products.reports')->with([
             'orders_sum' => $orders_total_price,
@@ -797,7 +800,8 @@ class AdminController extends Controller
             'graph_one_values' => $graph_one_order_values,
             'graph_two_values' => $graph_two_order_values,
 //            'top_products_stores' => $top_products_stores,
-            'cost' => $cost
+            'cost' => $cost,
+            'expenses_sum' => $expenses_sum,
         ]);
 
     }

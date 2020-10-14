@@ -56,7 +56,7 @@
                             <input type="text" class="form-control"  name="product_link[]">
                         </td>
                         <td class=" ">
-                            <input type="number" class="form-control"  name="moq[]">
+                            <input type="number" class="form-control"  name="moq[]" step="any">
                         </td>
                         <td class=" ">
                             <input type="text" class="form-control" name="leads_time[]">
@@ -235,7 +235,7 @@
                                                                                                     <input type="text" class="form-control"  name="product_link[]">
                                                                                                 </td>
                                                                                                 <td class=" ">
-                                                                                                    <input type="number" class="form-control"  name="moq[]">
+                                                                                                    <input type="number" class="form-control"  name="moq[]" step="any">
                                                                                                 </td>
                                                                                                 <td class=" ">
                                                                                                     <input type="text" class="form-control" name="leads_time[]">
