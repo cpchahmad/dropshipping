@@ -49,11 +49,14 @@ class Product extends Model
     public function getApprovedStatusAttribute() {
          if($this->approved== 0)
          {
-             echo '<i class="fa fa-times text-danger ml-2"></i>';
+             echo 'Pending';
          }
-         else
+         else if($this->approved== 1) {
+             echo 'Approved';
+         }
+         else if($this->approved== 2)
          {
-             echo '<i class="fa fa-check text-success ml-2"></i>';
+             echo 'Rejected';
          }
 
     }

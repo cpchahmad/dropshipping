@@ -485,7 +485,7 @@ class AdminController extends Controller
 
     public function rejectProduct(Request $request, $id) {
         $product = Product::find($id);
-        $product->approved = 0;
+        $product->approved = 2;
         $product->notes = $request->notes;
         $product->save();
 

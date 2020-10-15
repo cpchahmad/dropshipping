@@ -169,7 +169,7 @@
                                         </div>
                                         <div class="media-body">
                                             <div class="font-w600"><a href="{{ route('products.show', $product->id) }}">{{ $product->title}}</a></div>
-                                            <div class="font-size-sm">Approved: {{ $product->approved_status }}</div>
+                                            <div class="font-size-sm">Status: {{ $product->approved_status }}</div>
                                         </div>
                                     </div>
                                 </div>
