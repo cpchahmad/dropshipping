@@ -150,7 +150,7 @@ class ShopifyProduct extends Model
     public function getDateAttribute() {
         $str = $this->published_at;
         $date = strtotime($str);
-        return date('M/d/Y', $date);
+        return date('M,d,Y', $date);
     }
 
 

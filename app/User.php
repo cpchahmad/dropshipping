@@ -73,7 +73,7 @@ class User extends Authenticatable
     public function getDateAttribute() {
         $str = $this->last_login_at;
         $date = strtotime($str);
-        return date('d/M/Y h:i:s', $date);
+        return date('d,M,Y h:i:s', $date);
     }
 
     public function getLocationAttribute() {
@@ -87,7 +87,7 @@ class User extends Authenticatable
     public function getCreateAttribute() {
         $str = $this->created_at;
         $date = strtotime($str);
-        return date('d/M/Y', $date);
+        return date('d,M,Y', $date);
     }
 
 }

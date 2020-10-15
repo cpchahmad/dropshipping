@@ -147,7 +147,7 @@
                                     </div>
                                     <div class=" d-flex flex-column" style="font-size: 12px !important;">
                                         <span class="font-weight-bolder" style="font-size: 14px !important;">{{ $product->title}}</span>
-                                        <em>{{ $product->created_at->format('M/d/Y') }}</em>
+                                        <em>{{ $product->created_at->format('M,d,Y') }}</em>
                                     </div>
                                 </td>
                                 <td class="d-flex border-bottom-0" style="font-size: 14px !important;">
