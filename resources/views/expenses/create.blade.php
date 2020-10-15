@@ -67,7 +67,7 @@
                                         <div class="row">
                                             <div class="col-md-10">
                                                 <label for="">Price</label>
-                                                <input type="text" class="form-control @error('price') is-invalid @enderror" id="" name="price" placeholder="Enter price.." value="{{ isset($expense) ? $expense->usd_price  : '' }}">
+                                                <input type="text" class="form-control @error('price') is-invalid @enderror" id="" name="price" placeholder="Enter price.." value="{{ isset($expense) ? is_null($expense->rmb_price) ? number_format($expense->usd_price, 2) : number_format($expense->rmb_price, 2) : '' }}">
                                                 @error('price')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
