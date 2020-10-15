@@ -16,7 +16,8 @@ class CreateShippingPricesTable extends Migration
         Schema::create('shipping_prices', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('shopify_order_id')->nullable();
-            $table->string('shipping_price')->nullable();
+            $table->string('shipping_price_usd')->nullable();
+            $table->string('shipping_price_rmb')->nullable();
             $table->string('shipping_currency')->nullable();
             $table->timestamps();
         });

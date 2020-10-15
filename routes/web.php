@@ -45,6 +45,8 @@ Route::post('/admin/reject/products/{id}', 'AdminController@rejectProduct')->nam
 Route::get('/admin/products/{id}', 'AdminController@showProductDetails')->name('admin.products.details');
 Route::get('/admin/orders/{id}', 'AdminController@showOrderDetails')->name('admin.orders.details');
 Route::post('/admin/add/vendor/{id}', 'AdminController@addVendorForProduct')->name('admin.add.product.vendor');
+Route::delete('/admin/delete/vendor/{id}', 'AdminController@deleteVendorForProduct')->name('admin.delete.product.vendor');
+Route::put('/admin/edit/vendor/{id}', 'AdminController@editVendorForProduct')->name('admin.edit.product.vendor');
 Route::get('/admin/users', 'AdminController@getUsers')->name('admin.users');
 Route::post('/admin/store/user', 'AdminController@storeUser')->name('admin.store.user');
 Route::get('/admin/show/user/{id}', 'AdminController@showUser')->name('admin.show.user');

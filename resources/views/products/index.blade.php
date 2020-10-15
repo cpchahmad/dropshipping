@@ -184,11 +184,11 @@
                             <tr>
                                 <td class="">
                                     <div class="text-left">
-                                        <img src="{{ $product->image }}" alt="No Image Availble" style="width: 70px; height: auto">
+                                        <img src="{{ $product->image }}" alt="No Image Availble" class="img-fluid hover-img" style="width: 70px; height: auto">
                                     </div>
                                     <div class=" d-flex flex-column" style="font-size: 12px !important;">
                                         <span class="font-weight-bolder" style="font-size: 14px !important;">{{ $product->title}}</span>
-                                        <em>{{ $product->created_at->format('d/m/Y') }}</em>
+                                        <em>{{ $product->created_at->format('M/d/Y') }}</em>
                                     </div>
                                 </td>
                                 <td class="font-w600">

@@ -377,6 +377,7 @@ class AdminController extends Controller
 
     public function addVendorForProduct(Request $request, $id) {
 
+
         $product_price_array = [];
         $product_link_array = [];
         $vendor_name_array = [];
@@ -391,21 +392,47 @@ class AdminController extends Controller
         $lead_time_array = array_merge($lead_time_array, $request->leads_time);
 
 
-
         for($i =0; $i< count($vendor_name_array); $i++) {
-            ProductVendorDetail::create([
-                'shopify_product_id' => $id,
-                'name' =>  $vendor_name_array[$i],
-                'cost' => $product_price_array[$i],
-                'url' => $product_link_array[$i],
-                'moq' => $moq_array[$i],
-                'leads_time' => $lead_time_array[$i],
-            ]);
+
+            if(!(is_null($vendor_name_array[$i]))) {
+                ProductVendorDetail::create([
+                    'shopify_product_id' => $id,
+                    'name' =>  $vendor_name_array[$i],
+                    'cost' => $product_price_array[$i],
+                    'url' => $product_link_array[$i],
+                    'moq' => $moq_array[$i],
+                    'leads_time' => $lead_time_array[$i],
+                ]);
+            }
+
         }
 
 
         return redirect()->back()->with('success', 'Vendors added successfully!');
 
+    }
+
+    public function deleteVendorForProduct($id) {
+
+        if(OrderVendor::where('vendor_id', $id)->exists()) {
+            return response()->json(['data'=> 'error']);
+        }
+        $vendor = ProductVendorDetail::find($id);
+        $vendor->delete();
+
+        return response()->json(['data'=> 'success']);
+    }
+
+    public function editVendorForProduct(Request $request, $id) {
+        $vendor = ProductVendorDetail::find($id);
+        $vendor->name = $request->name;
+        $vendor->cost = $request->price;
+        $vendor->url = $request->link;
+        $vendor->moq = $request->moqs;
+        $vendor->leads_time = $request->lead_time;
+        $vendor->save();
+
+        return response()->json(['data'=> 'success', 'vendor' => $vendor]);
     }
 
     public function getUsers() {
@@ -472,14 +499,15 @@ class AdminController extends Controller
         if(!(is_null($request->shipping_price))) {
             if($request->shipping_currency == 'usd') {
                 ShippingPrice::create([
-                    'shipping_price' => $request->shipping_price,
+                    'shipping_price_usd' => $request->shipping_price,
                     'shipping_currency' => $request->shipping_currency,
                     'shopify_order_id' => $id,
                 ]);
             }
             else{
                 ShippingPrice::create([
-                    'shipping_price' => ((double) $request->shipping_price) * 6.6,
+                    'shipping_price_usd' => $request->shipping_price / 6.6,
+                    'shipping_price_rmb' => ((double) $request->shipping_price),
                     'shipping_currency' => $request->shipping_currency,
                     'shopify_order_id' => $id,
                 ]);
@@ -487,6 +515,7 @@ class AdminController extends Controller
 
             Log::create([
                 'user_id' => Auth::user()->id,
+                'user_role' => Auth::user()->role,
                 'attempt_time' => Carbon::now()->toDateTimeString(),
                 'attempt_location_ip' => $request->getClientIp(),
                 'type' => 'Order Shipping Price added',
@@ -500,7 +529,7 @@ class AdminController extends Controller
             if(is_null($request->tracking_number) && is_null($request->tracking_url)) {
                 $data = [
                     "fulfillment" => [
-                        "location_id" => "6122438719",
+                        "location_id" => "8749154419",
                         "tracking_number"=> null,
                         "line_items" => [
 
@@ -508,11 +537,11 @@ class AdminController extends Controller
                     ]
                 ];
             }
-            //8749154419
+            //6122438719
             else {
                 $data = [
                     "fulfillment" => [
-                        "location_id" => "6122438719",
+                        "location_id" => "8749154419",
                         "tracking_number"=> $request->tracking_number,
                         "tracking_url"=> $request->tracking_url,
                         "tracking_company"=> $request->shipping_carrier,
@@ -587,6 +616,7 @@ class AdminController extends Controller
 
         Log::create([
             'user_id' => Auth::user()->id,
+            'user_role' => Auth::user()->role,
             'attempt_time' => Carbon::now()->toDateTimeString(),
             'attempt_location_ip' => $request->getClientIp(),
             'type' => 'Order Fulfilled',
@@ -635,6 +665,7 @@ class AdminController extends Controller
 
         Log::create([
             'user_id' => Auth::user()->id,
+            'user_role' => Auth::user()->role,
             'attempt_time' => Carbon::now()->toDateTimeString(),
             'attempt_location_ip' => $request->getClientIp(),
             'type' => 'Order Notes Added',
@@ -722,6 +753,7 @@ class AdminController extends Controller
 
                 Log::create([
                     'user_id' => Auth::user()->id,
+                    'user_role' => Auth::user()->role,
                     'attempt_time' => Carbon::now()->toDateTimeString(),
                     'attempt_location_ip' => $request->getClientIp(),
                     'type' => 'Vendor added to order',
@@ -801,6 +833,7 @@ class AdminController extends Controller
         $cost =  number_format($price, 2);
 
         $expenses_sum = Expense::sum('usd_price');
+        $shipping_sum = ShippingPrice::sum('shipping_price_usd');
 
         return view('products.reports')->with([
             'orders_sum' => $orders_total_price,
@@ -810,6 +843,7 @@ class AdminController extends Controller
 //            'top_products_stores' => $top_products_stores,
             'cost' => $cost,
             'expenses_sum' => $expenses_sum,
+            'shipping_sum' => $shipping_sum,
         ]);
 
     }
@@ -821,14 +855,18 @@ class AdminController extends Controller
     }
 
     public function getLogs(Request $request) {
-        if ($request->has('search')) {
-            $logs = Log::where('type', 'LIKE', '%' . $request->input('search') . '%')->orderBy('updated_at', 'DESC')->paginate(20);
+
+        if ($request->has('role_search')) {
+            $logs = Log::where('user_id', $request->input('role_search'))->orderBy('updated_at', 'DESC')->paginate(20);
+        }
+        else if ($request->has('type_search')) {
+            $logs = Log::where('type', 'LIKE', '%' . $request->input('type_search') . '%')->orderBy('updated_at', 'DESC')->paginate(20);
         }
         else {
             $logs = Log::orderBy('updated_at', 'DESC')->paginate(30);
         }
 
-        return view('shops.log')->with('logs', $logs)->with('search', $request->input('search'));
+        return view('shops.log')->with('logs', $logs)->with('users', User::all());
     }
 
 
@@ -921,6 +959,7 @@ class AdminController extends Controller
 
             Log::create([
                 'user_id' => Auth::user()->id,
+                'user_role' => Auth::user()->role,
                 'attempt_time' => Carbon::now()->toDateTimeString(),
                 'attempt_location_ip' => $request->getClientIp(),
                 'type' => 'Order Status Changed',
@@ -959,6 +998,7 @@ class AdminController extends Controller
 
         Log::create([
             'user_id' => Auth::user()->id,
+            'user_role' => Auth::user()->role,
             'attempt_time' => Carbon::now()->toDateTimeString(),
             'attempt_location_ip' => $request->getClientIp(),
             'type' => 'Order Shipping Price added',

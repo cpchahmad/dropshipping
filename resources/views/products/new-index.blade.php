@@ -36,15 +36,79 @@
 
             });
 
-            $("#add_vendor_btn").click(function(){
-                addVendor();
+            $(".add_vendor_btn").click(function(){
+                addVendor($(this));
             });
+
+            $('.delete-vendor-btn').click(function () {
+                var id = $(this).attr('id');
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: `/admin/delete/vendor/${id}`,
+                    type: 'DELETE',
+                    success: function(res) {
+                        var response = res.data;
+                        if(response == 'success') {
+                            toastr.success("Vendor deleted Successfully!") ;
+                            $('li#'+id).html('');
+                            $('#deleteModal'+id).modal('hide');
+                        }
+                        else   if(response == 'error') {
+                            toastr.error("Vendor cannot be deleted because it is associated to some line item!") ;
+                            $('#deleteModal'+id).modal('hide');
+                        }
+                    }
+                });
+
+            });
+
+            $('.edit-vendor-btn').click(function () {
+                var id = $(this).attr('id');
+                var name = $(`input[name=name${id}]`).val();
+                var link = $(`input[name=link${id}]`).val();
+                var moqs = $(`input[name=moqs${id}]`).val();
+                var lead_time = $(`input[name=lead_time${id}]`).val();
+                var price = $(`input[name=price${id}]`).val();
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: `/admin/edit/vendor/${id}`,
+                    data: { name : name, link : link, moqs : moqs, lead_time : lead_time, price : price},
+                    type: 'PUT',
+                    success: function(res) {
+                        var response = res.data;
+
+                        if(response == 'success') {
+                            toastr.success("Vendor Updated Successfully!") ;
+                            $('li#'+id).find('.name').html(res.vendor.name);
+                            $('li#'+id).find('.cost').html(res.vendor.cost);
+                            $('li#'+id).find('.leads').html(res.vendor.leads_time);
+                            $('li#'+id).find('.url').html(res.vendor.url);
+                            $('li#'+id).find('.moq').html(res.vendor.moq);
+                            $('#editModal'+id).modal('hide');
+                        }
+                    }
+                });
+
+            });
+
 
         });
 
-        function addVendor() {
-
-                $("#dynamicTable").append(`
+        function addVendor(btn) {
+                console.log(btn.parent().parent().find('#dynamicTable'));
+                btn.parent().parent().find('#dynamicTable').append(`
                     <tr>
                         <td class="">
                             <input type="text" class="form-control"  name="vendor_name[]">
@@ -158,30 +222,139 @@
                                                 <td class="" style="font-size: 12px !important;">
                                                     {{ $product->variant_details}}
                                                 </td>
-                                                <td class="d-flex border-0" style="font-size: 14px !important;">
+                                                <td class="d-flex border-bottom-0" style="font-size: 14px !important;">
                                                     @if($product->product_vendor_details->count()>0)
-                                                        <ul class="pl-3">
+                                                        <ul class="pl-1 w-100">
+                                                            @php
+                                                                $counter = 0;
+                                                            @endphp
                                                             @foreach($product->product_vendor_details as $details)
-                                                                <li class='mb-2 list-unstyled'>
-                                                                    <div class='row d-flex flex-column'>
-                                                                        <div class=''>
-                                                                            <span class="font-weight-bold">Vendor name:</span> {{$details->name}}
+                                                                @if($counter == count( $product->product_vendor_details  ) - 1)
+                                                                    <li class='mb-2 list-unstyled mt-2 d-flex justify-content-between' id="{{ $details->id }}">
+                                                                        <div class="mb-2">
+                                                                            <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Minimum amount of quantity:</span> <span class="moq">{{$details->moq}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
+                                                                            <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                         </div>
-                                                                        <div class='font-weight-bold'>
-                                                                            <span class="font-weight-bold">Cost:</span>  ${{number_format($details->cost, 2)}}
+                                                                        <div class="btn-group align-items-center">
+                                                                            <button type="button" data-toggle="modal" data-target="#editModal{{ $details->id }}" class="btn btn-success btn-sm" >
+                                                                                <i class="fa fa-fw fa-pen-alt"></i>
+                                                                            </button>
+
+                                                                            <button type="button" data-toggle="modal" data-target="#deleteModal{{ $details->id }}" class="btn btn-danger btn-sm" >
+                                                                                <i class="fa fa-fw fa-trash-alt"></i>
+                                                                            </button>
                                                                         </div>
-                                                                        <div class=''>
-                                                                            <span class="font-weight-bold">Minimum amount of quantity:</span>  {{$details->moq}}
+                                                                    </li>
+                                                                @else
+                                                                    <li class='mb-2 list-unstyled border-bottom d-flex justify-content-between' id="{{ $details->id }}">
+                                                                        <div class="mb-2">
+                                                                            <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Minimum amount of quantity:</span> <span class="moq">{{$details->moq}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
+                                                                            <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                         </div>
-                                                                        <div class=''>
-                                                                            <span class="font-weight-bold">Lead time:</span>  {{$details->leads_time}}
+                                                                        <div class="btn-group align-items-center">
+                                                                            <button type="button" data-toggle="modal" data-target="#editModal{{ $details->id }}" class="btn btn-success btn-sm" >
+                                                                                <i class="fa fa-fw fa-pen-alt"></i>
+                                                                            </button>
+
+                                                                            <button type="button" data-toggle="modal" data-target="#deleteModal{{ $details->id }}" class="btn btn-danger btn-sm" >
+                                                                                <i class="fa fa-fw fa-trash-alt"></i>
+                                                                            </button>
                                                                         </div>
-                                                                        <div class=''>
-                                                                            <a href="{{$details->url }}" target=_blank\" > View Product </a >
+                                                                    </li>
+                                                                @endif
+
+                                                                    <div class="modal fade" id="deleteModal{{$details->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    You are going to delete the vendor
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                                    <form action="{{ route('admin.delete.product.vendor', $details->id) }}" method="POST" >
+                                                                                        @csrf
+                                                                                        @method('DELETE')
+                                                                                        <button type="button" class="btn btn-danger delete-vendor-btn" id="{{ $details->id }}">Delete</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
 
-                                                                </li>
+                                                                    <div class="modal fade" id="editModal{{$details->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                        <div class="modal-dialog"  style="max-width: 70% !important;" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="block block-themed block-transparent mb-0">
+                                                                                    <div class="block-header bg-primary-dark">
+                                                                                        <h3 class="block-title">Edit vendor details for {{ $product->title }}</h3>
+                                                                                        <div class="block-options">
+                                                                                            <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                                                                                                <i class="fa fa-fw fa-times"></i>
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <form class="col-md-12" method="POST" action="{{ route('admin.edit.product.vendor', $product->id) }}">
+                                                                                        @csrf
+                                                                                        <div class="block mt-3">
+
+                                                                                            <div class="block-content block-content-full">
+
+                                                                                                <table class="table table-striped table-vcenter">
+                                                                                                    <thead>
+                                                                                                    <tr>
+                                                                                                        <th>Vendor name</th>
+                                                                                                        <th style="width: 12%;">Product cost</th>
+                                                                                                        <th>Product link</th>
+                                                                                                        <th style="width: 8%;">Minimum quantity</th>
+                                                                                                        <th>Leads time</th>
+                                                                                                    </tr>
+                                                                                                    </thead>
+                                                                                                    <tbody>
+                                                                                                    <tr>
+                                                                                                        <td class="">
+                                                                                                            <input type="text" class="form-control"  name="name{{$details->id}}" value="{{ $details->name}}">
+                                                                                                        </td>
+                                                                                                        <td class="">
+                                                                                                            <input type="text" class="form-control"  name="price{{$details->id}}" value="{{number_format($details->cost, 2)}}">
+                                                                                                        </td>
+                                                                                                        <td class=" ">
+                                                                                                            <input type="text" class="form-control"  name="link{{$details->id}}" value="{{ $details->url}}">
+                                                                                                        </td>
+                                                                                                        <td class=" ">
+                                                                                                            <input type="number" class="form-control"  name="moqs{{$details->id}}" step="any" value="{{ $details->moq}}">
+                                                                                                        </td>
+                                                                                                        <td class=" ">
+                                                                                                            <input type="text" class="form-control" name="lead_time{{$details->id}}" value="{{ $details->leads_time}}"}>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                    </tbody>
+                                                                                                </table>
+                                                                                                <div class="d-flex justify-content-end">
+                                                                                                    <button type="button" class="btn btn-primary edit-vendor-btn" id="{{ $details->id }}">Edit</button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    @php
+                                                                    $counter++;
+                                                                @endphp
                                                             @endforeach
 
                                                         </ul>
@@ -189,7 +362,7 @@
                                                         <p>No data!</p>
                                                     @endif
                                                 </td>
-                                                <td class="text-center">
+                                                <td class="text-center align-middle">
                                                     <button type="button" class="btn btn-sm btn-primary push" data-toggle="modal" data-target="#addModal{{$product->id}}">Add Vendor</button>
 
                                                     <div class="modal p-0" id="addModal{{$product->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
@@ -210,7 +383,7 @@
 
                                                                             <div class="block-content block-content-full">
                                                                                     <div class="d-flex justify-content-end mb-3">
-                                                                                        <button type="button" id="add_vendor_btn" class="btn btn-primary btn-sm">Add more</button>
+                                                                                        <button type="button"  class="add_vendor_btn btn btn-primary btn-sm">Add more</button>
                                                                                     </div>
 
                                                                                     <table class="table table-striped table-vcenter">

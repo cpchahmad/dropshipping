@@ -67,7 +67,7 @@
                                     {{ $expense->notes}}
                                 </td>
                                 <td class="font-w600">
-                                    ${{ $expense->usd_price}} {{ $expense->rmb_price ? '(RMB '.$expense->rmb_price.')': ''}}
+                                    ${{ number_format($expense->usd_price, 2)}} {{ $expense->rmb_price ? '(RMB '.number_format($expense->rmb_price, 2).')': ''}}
                                 </td>
 
                                 <td class="font-w600">

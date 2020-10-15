@@ -236,11 +236,11 @@
                             </th>
                             <th class="text-center" style="width: 80px;">Order</th>
                             <th class="text-center">Products</th>
-                            <th class="text-center" style="width: 100px;">Shipping Price</th>
+                            <th class="text-center" style="width: 140px;">Shipping Price</th>
                             <th class="text-center" style="width: 100px;">Order Tracking Information</th>
                             <th class="text-center" style="width: 150px;">Shipping Address</th>
                             <th class="text-center" style="width: 220px;">Notes</th>
-                            <th class="text-center" style="width: 140px;"></th>
+                            <th class="text-center" style="width: 120px;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -378,7 +378,7 @@
                                 @if($order->shipping_prices()->count() > 0)
                                    <ul class="pl-3">
                                        @foreach($order->shipping_prices as $price)
-                                           <li class="pl-0">{{ number_format($price->shipping_price,2) }} {{ $price->shipping_currency }}</li>
+                                           <li class="pl-0">${{ number_format($price->shipping_price_usd,2) }} @if(!(is_null($price->shipping_price_rmb))) {{ '(RMB '.number_format($price->shipping_price_usd,2).')' }} @endif</li>
                                        @endforeach
                                    </ul>
                                 @else
@@ -387,7 +387,7 @@
                             </td>
                             <td class="text-left align-middle" style="font-size: 12px !important;">
                                 @if($order->order_tracking()->count() > 0)
-                                    <ul class="pl-3">
+                                    <ul class="pl-3 list-unstyled">
                                             <li class="pl-0">
                                                 {{ $order->order_tracking->tracking_number }} <br>
                                                 <a href="{{ $order->order_tracking->tracking_url }}" class="text-white">{{ $order->order_tracking->tracking_url }}</a> <br>
@@ -479,7 +479,7 @@
                                                                         <input type="hidden" name="item_id[]" value="{{ $item->id }}">
                                                                         <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">
                                                                     </div>
-                                                                    <div class=' col-6'>
+                                                                    <div class='col-6'>
                                                                         <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                                         <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>
                                                                     </div>
@@ -499,74 +499,80 @@
                                                                 @endif
                                                             @endforeach
                                                         </ul>
-                                                        <h5>Tracking Information</h5>
-                                                        <input type="text" name="tracking_number" class="form-control mb-2" placeholder="Enter tracking number..">
-                                                        <input type="text" name="tracking_url" class="form-control mb-2" placeholder="Enter tracking url..">
-                                                        <select name="shipping_carrier" class="form-control status_select">
-                                                            <option value="null" selected disabled>Select carrier</option>
-                                                            <option value="4PX">4PX</option>
-                                                            <option value="APC">APC</option>
-                                                            <option value="Amazon Logistics UK">Amazon Logistics UK</option>
-                                                            <option value="Amazon Logistics US">Amazon Logistics US</option>
-                                                            <option value="Anjun Logistics">Anjun Logistics</option>
-                                                            <option value="Australia Post">Australia Post</option>
-                                                            <option value="Bluedart">Bluedart</option>
-                                                            <option value="Canada Post">Canada Post</option>
-                                                            <option value="Canpar">Canpar</option>
-                                                            <option value="China Post">China Post</option>
-                                                            <option value="Chukou1">Chukou1</option>
-                                                            <option value="Correios">Correios</option>
-                                                            <option value="Couriers Please">Couriers Please</option>
-                                                            <option value="DHL Express">DHL Express</option>
-                                                            <option value="DHL eCommerce">DHL eCommerce</option>
-                                                            <option value="DHL eCommerce Asia">DHL eCommerce Asia</option>
-                                                            <option value="DPD">DPD</option>
-                                                            <option value="DPD Local">DPD Local</option>
-                                                            <option value="DPD UK">DPD UK</option>
-                                                            <option value="Delhivery">Delhivery</option>
-                                                            <option value="Eagle">Eagle</option>
-                                                            <option value="FSC">FSC</option>
-                                                            <option value="Fastway Australia">Fastway Australia</option>
-                                                            <option value="FedEx">FedEx</option>
-                                                            <option value="GLS">GLS</option>
-                                                            <option value="GLS (US)">GLS (US)</option>
-                                                            <option value="Globegistics">Globegistics</option>
-                                                            <option value="Japan Post (EN)">Japan Post (EN)</option>
-                                                            <option value="Japan Post (JA)">Japan Post (JA)</option>
-                                                            <option value="La Poste">La Poste</option>
-                                                            <option value="New Zealand Post">New Zealand Post</option>
-                                                            <option value="Newgistics">Newgistics</option>
-                                                            <option value="PostNL">PostNL</option>
-                                                            <option value="PostNord">PostNord</option>
-                                                            <option value="Purolator">Purolator</option>
-                                                            <option value="Royal Mail">Royal Mail</option>
-                                                            <option value="SF Express">SF Express</option>
-                                                            <option value="SFC Fulfillment">SFC Fulfillment</option>
-                                                            <option value="Sagawa (EN)">Sagawa (EN)</option>
-                                                            <option value="Sagawa (JA)">Sagawa (JA)</option>
-                                                            <option value="Sendle">Sendle</option>
-                                                            <option value="Singapore Post">Singapore Post</option>
-                                                            <option value="StarTrack">StarTrack</option>
-                                                            <option value="TNT">TNT</option>
-                                                            <option value="Toll IPEC">Toll IPEC</option>
-                                                            <option value="UPS">UPS</option>
-                                                            <option value="USPS">USPS</option>
-                                                            <option value="Whistl">Whistl</option>
-                                                            <option value="Yamato (EN)">Yamato (EN)</option>
-                                                            <option value="Yamato (JA)">Yamato (JA)</option>
-                                                            <option value="YunExpress">YunExpress</option>
-                                                            <option value="Other">Other</option>
-                                                        </select>
+                                                        <div class="row">
+                                                            <div class="col-md-8">
+                                                                <h5>Tracking Information</h5>
+                                                                <input type="text" name="tracking_number" class="form-control mb-2" placeholder="Enter tracking number..">
+                                                                <input type="text" name="tracking_url" class="form-control mb-2" placeholder="Enter tracking url..">
+                                                                <select name="shipping_carrier" class="form-control status_select">
+                                                                    <option value="null" selected disabled>Select carrier</option>
+                                                                    <option value="4PX">4PX</option>
+                                                                    <option value="APC">APC</option>
+                                                                    <option value="Amazon Logistics UK">Amazon Logistics UK</option>
+                                                                    <option value="Amazon Logistics US">Amazon Logistics US</option>
+                                                                    <option value="Anjun Logistics">Anjun Logistics</option>
+                                                                    <option value="Australia Post">Australia Post</option>
+                                                                    <option value="Bluedart">Bluedart</option>
+                                                                    <option value="Canada Post">Canada Post</option>
+                                                                    <option value="Canpar">Canpar</option>
+                                                                    <option value="China Post">China Post</option>
+                                                                    <option value="Chukou1">Chukou1</option>
+                                                                    <option value="Correios">Correios</option>
+                                                                    <option value="Couriers Please">Couriers Please</option>
+                                                                    <option value="DHL Express">DHL Express</option>
+                                                                    <option value="DHL eCommerce">DHL eCommerce</option>
+                                                                    <option value="DHL eCommerce Asia">DHL eCommerce Asia</option>
+                                                                    <option value="DPD">DPD</option>
+                                                                    <option value="DPD Local">DPD Local</option>
+                                                                    <option value="DPD UK">DPD UK</option>
+                                                                    <option value="Delhivery">Delhivery</option>
+                                                                    <option value="Eagle">Eagle</option>
+                                                                    <option value="FSC">FSC</option>
+                                                                    <option value="Fastway Australia">Fastway Australia</option>
+                                                                    <option value="FedEx">FedEx</option>
+                                                                    <option value="GLS">GLS</option>
+                                                                    <option value="GLS (US)">GLS (US)</option>
+                                                                    <option value="Globegistics">Globegistics</option>
+                                                                    <option value="Japan Post (EN)">Japan Post (EN)</option>
+                                                                    <option value="Japan Post (JA)">Japan Post (JA)</option>
+                                                                    <option value="La Poste">La Poste</option>
+                                                                    <option value="New Zealand Post">New Zealand Post</option>
+                                                                    <option value="Newgistics">Newgistics</option>
+                                                                    <option value="PostNL">PostNL</option>
+                                                                    <option value="PostNord">PostNord</option>
+                                                                    <option value="Purolator">Purolator</option>
+                                                                    <option value="Royal Mail">Royal Mail</option>
+                                                                    <option value="SF Express">SF Express</option>
+                                                                    <option value="SFC Fulfillment">SFC Fulfillment</option>
+                                                                    <option value="Sagawa (EN)">Sagawa (EN)</option>
+                                                                    <option value="Sagawa (JA)">Sagawa (JA)</option>
+                                                                    <option value="Sendle">Sendle</option>
+                                                                    <option value="Singapore Post">Singapore Post</option>
+                                                                    <option value="StarTrack">StarTrack</option>
+                                                                    <option value="TNT">TNT</option>
+                                                                    <option value="Toll IPEC">Toll IPEC</option>
+                                                                    <option value="UPS">UPS</option>
+                                                                    <option value="USPS">USPS</option>
+                                                                    <option value="Whistl">Whistl</option>
+                                                                    <option value="Yamato (EN)">Yamato (EN)</option>
+                                                                    <option value="Yamato (JA)">Yamato (JA)</option>
+                                                                    <option value="YunExpress">YunExpress</option>
+                                                                    <option value="Other">Other</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <h5 class="mb-0">Shipping Cost Information</h5>
+                                                                <div class="block-content font-size-sm pl-0">
+                                                                    <input type="text" name="shipping_price" class="form-control" placeholder="Enter Shipping price..">
+                                                                    <select name="shipping_currency"  class="form-control mt-2">
+                                                                        <option value="usd">USD</option>
+                                                                        <option value="rmb">RMB</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
 
-                                                    <h5 class="ml-4 mt-3 mb-0">Shipping Cost Information</h5>
-                                                    <div class="block-content font-size-sm pb-2">
-                                                        <input type="text" name="shipping_price" class="form-control" placeholder="Enter Shipping price..">
-                                                        <select name="shipping_currency" id="" class="form-control mt-3">
-                                                            <option value="usd">USD</option>
-                                                            <option value="rmb">RMB</option>
-                                                        </select>
-                                                    </div>
                                                     <div class="block-content block-content-full text-right">
                                                         <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Close</button>
                                                         <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-check mr-1"></i>Change</button>

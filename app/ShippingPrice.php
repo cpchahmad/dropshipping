@@ -8,7 +8,8 @@ class ShippingPrice extends Model
 {
     protected $fillable = [
       'shopify_order_id',
-      'shipping_price',
+      'shipping_price_usd',
+      'shipping_price_rmb',
       'shipping_currency'
     ];
 }

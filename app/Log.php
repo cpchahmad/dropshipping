@@ -8,6 +8,7 @@ class Log extends Model
 {
     protected $fillable = [
         'user_id',
+        'user_role',
         'shopify_product_id',
         'shopify_order_id',
         'type',
@@ -22,7 +23,7 @@ class Log extends Model
     public function getDateAttribute() {
         $str = $this->attempt_time;
         $date = strtotime($str);
-        return date('d/M/Y h:i:s', $date);
+        return date('M/d/Y h:i:s', $date);
     }
 
     public function getItemAttribute() {
@@ -31,7 +32,7 @@ class Log extends Model
 
             if($product !== null) {
                 echo "
-                <a href='/admin/products?search=$product->title' target='_blank' style='font-size: 12px !important;'>
+                <a href='/admin/products?search=$product->title' target='_blank' style='font-size: 12px !important; color: white!important;'>
                     $product->title
                 </a>
             ";
@@ -39,11 +40,11 @@ class Log extends Model
 
         }
 
-        if($this->type == "Order Fulfilled" || $this->type == "Order Shipping Price added" || $this->type == "Order Notes Added") {
+        if($this->type == "Order Fulfilled" || $this->type == "Order Shipping Price added" || $this->type == "Order Notes Added" || $this->type == "Vendor added to order") {
             $order = ShopifyOrder::find($this->shopify_order_id);
 
             echo "
-                <a href='/admin/orders?search=$order->name' target='_blank' style='font-size: 12px !important;'>
+                <a href='/admin/orders?search=$order->name' target='_blank' style='font-size: 12px !important; color: white!important;'>
                     #$order->name
                 </a>
             ";

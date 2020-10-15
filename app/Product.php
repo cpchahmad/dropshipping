@@ -77,8 +77,9 @@ class Product extends Model
                             <img src=\"$image_src\" alt='No img' class=\"img-fluid hover-img\" style='width: 50px; height: auto;'>
                             </div>
                             <div class='ml-2 text-left'>
-                                <p class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->variant_title (<strong>SKU:</strong> $varient->variant_sku)</p>
-                                <span>$".number_format($varient->variant_price,2)."</span>
+                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\">$varient->variant_title </span>
+                                <span class=\"d-block\" style=\"font-size: 12px;\"><strong>SKU:</strong> $varient->variant_sku</span>
+                                <span class=\"d-block\" style=\"font-size: 12px;\">$".number_format($varient->variant_price,2)."</span>
                             </div>
                         </div>
                     ";
@@ -90,8 +91,9 @@ class Product extends Model
                             <img src=\"$image_src\" alt='No img' class=\"img-fluid hover-img\" style='width: 50px; height: auto;'>
                             </div>
                             <div class='ml-2 text-left'>
-                                <p class=\"d-block font-weight-lighter\" style=\"font-size: 14px;\">$varient->variant_title (<strong>SKU:</strong> $varient->variant_sku)</p>
-                                <span>$".number_format($varient->variant_price,2)."</span>
+                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\">$varient->variant_title </span>
+                                <span class=\"d-block\" style=\"font-size: 12px;\"><strong>SKU:</strong> $varient->variant_sku</span>
+                                <span class=\"d-block\" style=\"font-size: 12px;\">$".number_format($varient->variant_price,2)."</span>
                             </div>
                         </div>
                     ";

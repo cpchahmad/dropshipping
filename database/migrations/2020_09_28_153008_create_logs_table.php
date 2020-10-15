@@ -16,6 +16,7 @@ class CreateLogsTable extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->nullable();
+            $table->string('user_role')->nullable();
             $table->string('type')->nullable();
             $table->bigInteger('shopify_product_id')->nullable();
             $table->bigInteger('shopify_order_id')->nullable();

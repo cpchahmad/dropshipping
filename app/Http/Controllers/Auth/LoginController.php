@@ -55,6 +55,7 @@ class LoginController extends Controller
 
         Log::create([
            'user_id' => $user->id,
+           'user_role' => $user->role,
            'attempt_time' => Carbon::now()->toDateTimeString(),
            'attempt_location_ip' => $request->getClientIp(),
            'type' => 'Log in',

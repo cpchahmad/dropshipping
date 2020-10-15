@@ -184,35 +184,43 @@
             <button class="btn btn-primary ml-2">Apply</button>
         </form>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <a class="block block-rounded block-link-pop border-left border-primary border-4x" >
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Total Sales</div>
-                        <div class="font-size-h2 font-w400 text-dark">${{ $orders_sum }}</div>
+                        <div class="font-size-h2 font-w400 text-dark">${{ number_format($orders_sum, 2) }}</div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <a class="block block-rounded block-link-pop border-left border-primary border-4x">
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Total Cost</div>
-                        <div class="font-size-h2 font-w400 text-dark">${{ $cost }}</div>
+                        <div class="font-size-h2 font-w400 text-dark">${{ number_format($cost, 2) }}</div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-3">
-                <a class="block block-rounded block-link-pop border-left border-primary border-4x">
-                    <div class="block-content block-content-full">
-                        <div class="font-size-sm font-w600 text-uppercase text-muted">Profit</div>
-                        <div class="font-size-h2 font-w400 text-dark">${{ ($orders_sum - $cost) }}</div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <a class="block block-rounded block-link-pop border-left border-primary border-4x">
                     <div class="block-content block-content-full">
                         <div class="font-size-sm font-w600 text-uppercase text-muted">Expenses</div>
-                        <div class="font-size-h2 font-w400 text-dark">${{ $expenses_sum }}</div>
+                        <div class="font-size-h2 font-w400 text-dark">${{ number_format($expenses_sum, 2) }}</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a class="block block-rounded block-link-pop border-left border-primary border-4x">
+                    <div class="block-content block-content-full">
+                        <div class="font-size-sm font-w600 text-uppercase text-muted">Shipping Cost</div>
+                        <div class="font-size-h2 font-w400 text-dark">${{ number_format($shipping_sum, 2) }}</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a class="block block-rounded block-link-pop border-left border-primary border-4x">
+                    <div class="block-content block-content-full">
+                        <div class="font-size-sm font-w600 text-uppercase text-muted">Profit</div>
+                        <div class="font-size-h2 font-w400 text-dark">${{ number_format(($orders_sum - $cost - $expenses_sum - $shipping_sum), 2) }}</div>
                     </div>
                 </a>
             </div>

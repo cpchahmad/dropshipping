@@ -25,6 +25,10 @@ class ExpenseController extends Controller
      */
     public function create()
     {
+        if(Category::count() <= 0) {
+            return redirect(route('categories.index'))->with('error', 'Expense cannot be created since no category exists!');
+        }
+
         return view('expenses.create')->with('categories', Category::all());
     }
 
@@ -36,6 +40,7 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
+
         $expense = new Expense();
 
         $this->validate($request, [
@@ -51,8 +56,8 @@ class ExpenseController extends Controller
         $expense->currency = $request->currency;
 
         if($request->currency == 'rmb') {
-            $expense->rmb_price = ((double) $request->price) * 6.6;
-            $expense->usd_price = $request->price;
+            $expense->rmb_price = ((double) $request->price);
+            $expense->usd_price = $request->price / 6.6;
         }
         else {
             $expense->usd_price = $request->price;

@@ -50,7 +50,19 @@
         <form class="js-form-icon-search push" action="" method="get">
             <div class="form-group">
                 <div class="input-group">
-                    <input type="search" class="form-control" placeholder="Search Logs By Type" value="{{$search}}" name="search" required >
+                    <select name="role_search" id="" class="form-control">
+                        <option value="" selected disabled>Search by User</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                        @endforeach
+                    </select>
+                    <select name="type_search" id="" class="form-control">
+                        <option value="" selected disabled>Serach by Log Type</option>
+                        <option value="source">Product</option>
+                        <option value="shipping">Order</option>
+                        <option value="log">Log in</option>
+                    </select>
+{{--                    <input type="search" class="form-control" placeholder="Search Logs By Type" value="{{$search}}" name="search" required >--}}
                     <div class="input-group-append">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
                         <a class="btn btn-danger" href="/admin/users/logs"> <i class="fa fa-times"></i> Clear </a>
@@ -73,15 +85,15 @@
                         @foreach($logs as $log)
                             <li class="pb-3">
                                     <span class="badge badge-success">{{ $log->user->name }}</span>
-                                    <strong>[{{ $log->user->role }}]</strong>
-                                    <strong>{{ $log->type }} </strong>{{ $log->item }}
-                                    {{ $log->date }}
-                                    {{ $log->location }}
+                                    <strong class="badge badge-primary">{{ $log->user->role }}</strong>
+                                    <strong>{{ $log->type }} </strong><span class="badge badge-success text-white">{{ $log->item }}</span>
+                                    ( {{ $log->date }} )
+{{--                                    {{ $log->location }}--}}
                             </li>
                         @endforeach
                     </ul>
                 @else
-                    <p class="p-3">No data!</p>
+                    <p class=" pl-0">No data!</p>
                 @endif
                 <div class="d-flex justify-content-end">
                     {{ $logs->links() }}
