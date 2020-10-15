@@ -88,7 +88,7 @@
                                     <strong class="badge badge-primary">{{ $log->user->role }}</strong>
                                     <strong>{{ $log->type }} </strong><span class="badge badge-success text-white">{{ $log->item }}</span>
                                     ( {{ $log->date }} )
-{{--                                    {{ $log->location }}--}}
+                                    {{ $log->location }}
                             </li>
                         @endforeach
                     </ul>
