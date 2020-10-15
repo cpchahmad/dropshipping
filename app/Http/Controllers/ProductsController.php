@@ -6,6 +6,8 @@ use App\Category;
 use App\Log;
 use App\Product;
 use App\ProdImage;
+use App\ProductLink;
+use App\ProductVendorDetail;
 use App\SubCategory;
 use App\Variant;
 use Carbon\Carbon;
@@ -46,31 +48,16 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
 
-        if(is_null($request->tags)) {
-           $tags = null;
-        }
-        else {
-            $tags = implode(", ", $request->tags);
-        }
-
-
         $this->validate($request, [
             'title' => 'required',
-            'price' => 'required',
-            'compare_price' => 'required',
         ]);
+
 
 
         $product = Product::create([
            'title' => $request->title,
            'description' => $request->description,
-           'price' => $request->price,
-           'compare_price' => $request->compare_price,
-           'weight' => $request->weight,
-           'quantity' => $request->quantity,
-           'tags' => $tags,
            'outsource_id' => auth()->user()->id,
-           'unit' => $request->unit
         ]);
 
 
@@ -86,35 +73,60 @@ class ProductsController extends Controller
             }
         }
 
-        if($request->varient_check == 'on') {
-
-            for($i=0; $i< count($request->var_title); $i++) {
-
-                $variant = new Variant();
-
-                if(isset($request->key1)) {
-                    $variant->option1 = json_encode($request->value1);
+        if($request->has('link')) {
+            foreach ($request->link as $lin)
+            {
+                if(!(is_null($lin))) {
+                    $link = new ProductLink();
+                    $link->link = $lin;
+                    $link->product_id = $product->id;
+                    $link->save();
                 }
+            }
+        }
 
-                if(isset($request->key2)) {
-                    $variant->option2 = json_encode($request->value2);
+        if($request->has('vendor_name')) {
+            $product_price_array = [];
+            $product_link_array = [];
+            $vendor_name_array = [];
+            $moq_array = [];
+            $lead_time_array = [];
+
+
+            $product_price_array = array_merge($product_price_array, $request->product_price);
+            $product_link_array = array_merge($product_link_array, $request->product_link);
+            $vendor_name_array = array_merge($vendor_name_array, $request->vendor_name);
+            $moq_array = array_merge($moq_array, $request->moq);
+            $lead_time_array = array_merge($lead_time_array, $request->leads_time);
+
+
+            for($i =0; $i< count($vendor_name_array); $i++) {
+
+                if(!(is_null($vendor_name_array[$i]))) {
+                    ProductVendorDetail::create([
+                        'shopify_product_id' => $product->id,
+                        'name' =>  $vendor_name_array[$i],
+                        'cost' => $product_price_array[$i],
+                        'url' => $product_link_array[$i],
+                        'moq' => $moq_array[$i],
+                        'leads_time' => $lead_time_array[$i],
+                    ]);
                 }
-
-                if(isset($request->key3)) {
-                    $variant->option3 = json_encode($request->value3);
-                }
-
-                $variant->product_id = $product->id;
-                $variant->variant_title = $request->var_title[$i];
-                $variant->variant_price = $request->var_price[$i];
-                $variant->variant_qty = $request->var_qty[$i];
-                $variant->variant_sku = $request->var_sku[$i];
-                $variant->barcode = $request->var_barcode[$i];
-                $variant->save();
 
             }
 
+
+            Log::create([
+                'user_id' => Auth::user()->id,
+                'attempt_time' => Carbon::now()->toDateTimeString(),
+                'attempt_location_ip' => $request->getClientIp(),
+                'type' => 'Product Vendor Added',
+                'shopify_product_id' => $product->id
+            ]);
+
         }
+
+
 
 
         Log::create([
@@ -160,31 +172,14 @@ class ProductsController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-
-        if(is_null($request->tags)) {
-            $tags = null;
-        }
-        else {
-            $tags = implode(", ", $request->tags);
-        }
-
         $this->validate($request, [
             'title' => 'required',
-            'price' => 'required',
-            'compare_price' => 'required',
         ]);
 
 
         $product->update([
             'title' => $request->title,
             'description' => $request->description,
-            'price' => $request->price,
-            'compare_price' => $request->compare_price,
-            'weight' => $request->weight,
-            'quantity' => $request->quantity,
-            'tags' => $tags,
-            'outsource_id' => auth()->user()->id,
-            'unit' => $request->unit
         ]);
 
 
@@ -200,20 +195,62 @@ class ProductsController extends Controller
             }
         }
 
-        if($request->var_id) {
-            for($i=0; $i< count($request->var_id); $i++) {
-
-                $variant = Variant::find($request->var_id[$i]);
-
-                $variant->update([
-                    'product_id' => $product->id,
-                    'variant_title' => $request->var_title[$i],
-                    'variant_price' => $request->var_price[$i],
-                    'variant_qty' => $request->var_qty[$i],
-                    'variant_sku' => $request->var_sku[$i],
-                    'barcode' => $request->var_barcode[$i],
-                ]);
+        if($request->has('link')) {
+            foreach ($request->link as $lin)
+            {
+                if(!(is_null($lin))) {
+                    if(ProductLink::where('link', $lin)->exists()) {
+                        $link = ProductLink::where('link', $lin)->first();
+                    }
+                    else {
+                        $link = new ProductLink();
+                    }
+                    $link->link = $lin;
+                    $link->product_id = $product->id;
+                    $link->save();
+                }
             }
+        }
+
+        if($request->has('vendor_name')) {
+            $product_price_array = [];
+            $product_link_array = [];
+            $vendor_name_array = [];
+            $moq_array = [];
+            $lead_time_array = [];
+
+
+            $product_price_array = array_merge($product_price_array, $request->product_price);
+            $product_link_array = array_merge($product_link_array, $request->product_link);
+            $vendor_name_array = array_merge($vendor_name_array, $request->vendor_name);
+            $moq_array = array_merge($moq_array, $request->moq);
+            $lead_time_array = array_merge($lead_time_array, $request->leads_time);
+
+
+            for($i =0; $i< count($vendor_name_array); $i++) {
+
+                if(!(is_null($vendor_name_array[$i]))) {
+                    ProductVendorDetail::create([
+                        'shopify_product_id' => $product->id,
+                        'name' =>  $vendor_name_array[$i],
+                        'cost' => $product_price_array[$i],
+                        'url' => $product_link_array[$i],
+                        'moq' => $moq_array[$i],
+                        'leads_time' => $lead_time_array[$i],
+                    ]);
+                }
+
+            }
+
+
+            Log::create([
+                'user_id' => Auth::user()->id,
+                'attempt_time' => Carbon::now()->toDateTimeString(),
+                'attempt_location_ip' => $request->getClientIp(),
+                'type' => 'Product Vendor Added',
+                'shopify_product_id' => $product->id
+            ]);
+
         }
 
 

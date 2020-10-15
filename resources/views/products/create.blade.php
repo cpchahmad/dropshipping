@@ -225,59 +225,44 @@
 
         });
 
-
-
-        $("#add").click(function(){
-            if(i==2) {
-                $(this).hide();
-            }
-
-            addVarient();
+        $(".add_vendor_btn").click(function(){
+            addVendor($(this));
         });
 
-        $(document).on('click', '.remove-tr', function(){
-            var id = $(this).attr('id');
-
-            var tr_count = $(this).parents('tr').nextAll().length;
-
-            if(tr_count == 1) {
-                var trs = $(this).parents('tr').nextAll();
-
-                for(var j=0; j<trs.length ; j++) {
-                    trs.find('.key').attr('name', `key${id}`);
-                    trs.find('.value').attr('name', `value${id}[]`);
-                    trs.find('.option').html(`Option${id}`);
-                    trs.find('.value').attr('id', `arr${id}`);
-                }
-
-            }
-            else if(tr_count == 2) {
-                var trs = $(this).parents('tr').nextAll();
-
-
-                trs.each(function() {
-                   $(this).find('.key').attr('name', `key${id}`);
-                   $(this).find('.value').attr('name', `value${id}[]`);
-                   $(this).find('.option').html(`Option${id}`);
-                   $(this).find('.value').attr('id', `arr${id}`);
-                   id++;
-                });
-            }
-
-            if(i==1) {
-                $('#varient-check').prop('checked', false);
-                $('#add').hide();
-            }
-
-            if(i>1 && i<=3) {
-                $('#add').show();
-            }
-
-
-            --i;
-
-            $(this).parents('tr').remove();
+        $(".add_link_btn").click(function(){
+            addLinks($(this));
         });
+
+
+        function addVendor(btn) {
+            console.log(btn.parent().parent().find('#dynamicTable'));
+            btn.parent().parent().find('#dynamicTable').append(`
+                    <tr>
+                        <td class="">
+                            <input type="text" class="form-control"  name="vendor_name[]">
+                        </td>
+                        <td class="">
+                            <input type="text" class="form-control"  name="product_price[]">
+                        </td>
+                        <td class=" ">
+                            <input type="text" class="form-control"  name="product_link[]">
+                        </td>
+                        <td class=" ">
+                            <input type="number" class="form-control"  name="moq[]" step="any">
+                        </td>
+                        <td class=" ">
+                            <input type="text" class="form-control" name="leads_time[]">
+                        </td>
+                    </tr>
+                `);
+        }
+
+        function addLinks(btn) {
+            btn.parent().parent().find('#linksTable').append(`
+                   <input type="text" class="form-control mt-3" name="link[]" placeholder="Enter reference link..">
+                `);
+        }
+
 
         function deleteImg(id) {
 
@@ -358,222 +343,108 @@
                         <div class="block-content block-content-full">
                             <div class="row">
                                 <div class="col-lg-12">
-                                        <div class="form-group">
-                                            <label for="">Title</label>
-                                            <input type="text" class="form-control @error('title') is-invalid @enderror" id="" name="title" placeholder="Enter product name.." value="{{ isset($prod) ? $prod->title : '' }}">
-                                            @error('title')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="">Description</label>
-                                            <textarea id="js-ckeditor" name="description">
-                                                {{ isset($prod) ? $prod->description : '' }}
-                                            </textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="">Images</label>
-                                            @isset($prod)
-                                                @if($prod->prod_images()->count() > 0)
-                                                    <div class="row gutters-tiny items-push js-gallery push">
-                                                    @foreach($prod->prod_images()->get() as $image)
-                                                            <div class="col-md-6 col-lg-4 col-xl-3 animated fadeIn">
-                                                                <div class="options-container fx-item-rotate-r">
-                                                                    <img class="img-fluid options-item" src="{{ asset('storage/'.$image->image) }}" alt="">
-                                                                    <div class="options-overlay bg-black-75">
-                                                                        <div class="options-overlay-content">
+                                    <div class="form-group">
+                                        <label for="">Title</label>
+                                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="" name="title" placeholder="Enter product name.." value="{{ isset($prod) ? $prod->title : '' }}">
+                                        @error('title')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Description</label>
+                                        <textarea id="js-ckeditor" name="description">
+                                            {{ isset($prod) ? $prod->description : '' }}
+                                        </textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Images</label>
+                                        @isset($prod)
+                                            @if($prod->prod_images()->count() > 0)
+                                                <div class="row gutters-tiny items-push js-gallery push">
+                                                @foreach($prod->prod_images()->get() as $image)
+                                                        <div class="col-md-6 col-lg-4 col-xl-3 animated fadeIn">
+                                                            <div class="options-container fx-item-rotate-r">
+                                                                <img class="img-fluid options-item" src="{{ asset('storage/'.$image->image) }}" alt="">
+                                                                <div class="options-overlay bg-black-75">
+                                                                    <div class="options-overlay-content">
 
-                                                                            <a class="btn btn-sm btn-primary img-lightbox" href="{{ asset('storage/'.$image->image) }}">
-                                                                                <i class="fa fa-search-plus mr-1"></i> View
-                                                                            </a>
-                                                                            <a class="btn btn-sm btn-danger img-lightbox text-white" onclick="deleteImg({{$image->id}})">
-                                                                                <i class="fa fa-trash-alt mr-1"></i> Delete
-                                                                            </a>
-                                                                        </div>
+                                                                        <a class="btn btn-sm btn-primary img-lightbox" href="{{ asset('storage/'.$image->image) }}">
+                                                                            <i class="fa fa-search-plus mr-1"></i> View
+                                                                        </a>
+                                                                        <a class="btn btn-sm btn-danger img-lightbox text-white" onclick="deleteImg({{$image->id}})">
+                                                                            <i class="fa fa-trash-alt mr-1"></i> Delete
+                                                                        </a>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                    @endforeach
-                                                    </div>
-                                                @endif
-                                            @endisset
-                                            <div class="input-images"></div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label for="">Price</label>
-                                                    <input type="text" class="form-control @error('price') is-invalid @enderror" id="" name="price" placeholder="Enter product price.." value="{{ isset($prod) ? $prod->price : '' }}">
-                                                    @error('price')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
+                                                        </div>
+                                                @endforeach
                                                 </div>
-
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label for="">Compare at Price</label>
-                                                    <input type="text" class="form-control @error('compare_price') is-invalid @enderror" id="" name="compare_price" placeholder="Enter product compare at price.." value="{{ isset($prod) ? $prod->compare_price : '' }}">
-                                                    @error('compare_price')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label for="">Tags</label>
-                                                    <select class="form-control" multiple="multiple" id="tags" name="tags[]">
-                                                        @isset($prod)
-                                                            @if($prod->tags)
-                                                                @foreach($prod->tag_array as $tag)
-                                                                    <option value="{{ $tag }}" selected>{{ $tag }}</option>
-                                                                @endforeach
-                                                            @endif
-                                                        @endisset
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label for="">Quantity</label>
-                                                    <input type="text" class="form-control @error('quantity') is-invalid @enderror" id="" name="quantity" placeholder="Enter product quantity.." value="{{ isset($prod) ? $prod->quantity : '' }}">
-                                                    @error('quantity')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-
-                                            <div class="col-4">
-                                                <div class="form-group">
-                                                    <label for="">Weight</label>
-                                                    <input type="text" class="form-control @error('weight') is-invalid @enderror" id="" name="weight" placeholder="Enter product weight.." value="{{ isset($prod) ? $prod->weight : '' }}">
-
-                                                    @error('weight')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-
-                                            <div class="col-2">
-                                                <div class="form-group">
-                                                    <label for="">Unit</label>
-                                                    <select name="unit" id="" class="form-control">
-                                                        <option value="gm">gm</option>
-                                                        <option value="kg">kg</option>
-                                                        <option value="mg">mm</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        @isset($product)
-                                        <div class="row">
-                                            <div class="col-12">
-                                            <label for="">Varients</label><br>
-                                            <input type="checkbox" id="varient-check" name="varient_check">
-                                            <label for="varient-check" class="text-muted">
-                                                This product has multiple options, like different sizes or colors
-                                            </label>
-
-                                            <table class="table" id="dynamicTable" style="display: none">
-                                                <button type="button" name="add" id="add" class="btn btn-success float-right mb-2" style="display: none">Add More <i class="fa fa-fw fa-plus"></i></button>
-                                            </table>
-                                        </div>
-                                        </div>
+                                            @endif
                                         @endisset
+                                        <div class="input-images"></div>
+                                    </div>
 
-                                        <div class="row preview" style="display: none">
-                                            <div class="col-12">
-                                                <label for="">Preview</label><br>
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <td>Varient Title</td>
-                                                            <td>Price</td>
-                                                            <td>Quantity</td>
-                                                            <td>SKU</td>
-                                                            <td>Barcode</td>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="var_body">
-
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                    <div>
+                                        <label for="">Reference Links</label>
+                                        <div class="d-flex justify-content-end mb-3">
+                                            <button type="button"  class="add_link_btn btn btn-primary btn-sm">Add more</button>
                                         </div>
 
-                                        @isset($prod)
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <label for="">Varients</label><br>
-                                                @if($prod->varients()->count() > 0)
-                                                    <table class="table">
-                                                        <thead>
-                                                        <tr>
-                                                            <td></td>
-                                                            <td>Varient Title</td>
-                                                            <td>Price</td>
-                                                            <td>Quantity</td>
-                                                            <td>SKU</td>
-                                                            <td>Barcode</td>
-                                                            <td></td>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach($prod->varients()->get() as $varient)
-                                                                <tr>
-                                                                    <input type="hidden" value="{{ $varient->id }}" name="var_id[]">
-                                                                    <td>
-                                                                        @if($varient->image)
-                                                                            <img class="No Image" src="{{ asset('storage/'.$varient->image) }}" alt="" style="width: 100px; height: auto">
-                                                                        @else
-                                                                            <img class="No Image" src="https://lunawood.com/wp-content/uploads/2018/02/placeholder-image.png" alt="" style="width: 100px; height: auto">
-                                                                        @endif
-
-                                                                    </td>
-                                                                    <td>{{ $varient->variant_title }}<input type="hidden" value="{{ $varient->variant_title }}" name="var_title[]"></td>
-                                                                    <td><input type="text" name="var_price[]" placeholder="$ 0.0" class="form-control" value="{{ $varient->variant_price }}"></td>
-                                                                    <td><input type="number" name="var_qty[]"  class="form-control" value="{{ $varient->variant_qty }}"></td>
-                                                                    <td><input type="text" name="var_sku[]"  class="form-control" value="{{ $varient->variant_sku }}"></td>
-                                                                    <td><input type="text" name="var_barcode[]"  class="form-control" value="{{ $varient->barcode }}"></td>
-                                                                    <td class="d-flex" style="font-size: 8px !important;">
-                                                                        <a class="btn btn-sm btn-alt-success js-tooltip-enabled" href="{{ route('update.product.variant', $varient->id) }}" data-toggle="tooltip" title="" data-original-title="View">
-                                                                            <i class="fa fa-fw fa-pen"></i>
-                                                                        </a>
-{{--                                                                        <button type="button" onclick="removeVarUpdate({{ $varient->id }})" class="btn btn-danger btn-sm mx-1" id="{{ $varient->id }}">--}}
-{{--                                                                            <i class="fa fa-fw fa-trash-alt"></i>--}}
-{{--                                                                        </button>--}}
-                                                                        <button type="button" class="btn btn-danger btn-sm mx-1 remove-update-var" id="{{ $varient->id }}">
-                                                                            <i class="fa fa-fw fa-trash-alt"></i>
-                                                                        </button>
-{{--                                                                        <a class="btn btn-success" href=""><i class="fa fa-pen-alt"></i></a>--}}
-{{--                                                                        <button type="button" class="btn btn-danger" ><i class="fa fa-trash-alt"></i></button>--}}
-                                                                    </td>
-
-                                                                </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                @else
-                                                    No Variants
+                                        <div id="linksTable">
+                                            @isset($prod)
+                                                @if($prod->product_links->count() > 0)
+                                                    <strong style="font-size: 14px !important">Refrence Links:</strong>
+                                                    <ul class="p-0 list-unstyled">
+                                                        @foreach($prod->product_links as $link)
+                                                            <input type="text" class="form-control mt-3" name="link[]" placeholder="Enter reference link.." value="{{ $link->link }}">
+                                                        @endforeach
+                                                    </ul>
                                                 @endif
-                                            </div>
+                                            @endif
+                                            <input type="text" class="form-control" name="link[]" placeholder="Enter reference link..">
                                         </div>
-                                        @endisset
+                                    </div>
 
-                                        <div class="form-group d-flex justify-content-end">
-                                            <button type="submit" class="btn btn-primary"> {{ isset($prod) ? 'Update Product' : 'Add Product'}}</button>
-                                        </div>
+                                    <label for="" class="mt-4">Vendors</label>
+                                    <div class="d-flex justify-content-end mb-3">
+                                        <button type="button"  class="add_vendor_btn btn btn-primary btn-sm">Add more</button>
+                                    </div>
+
+                                    <table class="table table-striped table-vcenter">
+                                        <thead>
+                                        <tr>
+                                            <th>Vendor name</th>
+                                            <th style="width: 12%;">Product cost</th>
+                                            <th>Product link</th>
+                                            <th style="width: 8%;">Minimum quantity</th>
+                                            <th>Leads time</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="dynamicTable">
+                                        <tr>
+                                            <td class="">
+                                                <input type="text" class="form-control"  name="vendor_name[]">
+                                            </td>
+                                            <td class="">
+                                                <input type="text" class="form-control"  name="product_price[]">
+                                            </td>
+                                            <td class=" ">
+                                                <input type="text" class="form-control"  name="product_link[]">
+                                            </td>
+                                            <td class=" ">
+                                                <input type="number" class="form-control"  name="moq[]" step="any">
+                                            </td>
+                                            <td class=" ">
+                                                <input type="text" class="form-control" name="leads_time[]">
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="form-group d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary"> {{ isset($prod) ? 'Update Product' : 'Add Product'}}</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

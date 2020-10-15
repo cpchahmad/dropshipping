@@ -102,8 +102,6 @@
                 });
 
             });
-
-
         });
 
         function addVendor(btn) {
@@ -459,7 +457,7 @@
                                     <thead>
                                     <tr>
                                         <th class="text-center" style="width: 15%;">Product</th>
-                                        <th class="text-center" style="width: 40%;">Variants</th>
+                                        <th class="text-center" style="width: 40%;">Vendors</th>
                                         <th class="text-center" style="width: 40%;">Details</th>
                                         <th class="text-center" style="width: 5%;">Approve/Approved</th>
 
@@ -477,21 +475,58 @@
                                                     <em>{{ $product->created_at->format('d/m/Y') }}</em>
                                                 </div>
                                             </td>
-                                            <td class="font-w600">
-                                                {{ $product->variant_details}}
+                                            <td class="d-flex border-bottom-0" style="font-size: 14px !important;">
+                                                @if($product->product_vendor_details->count()>0)
+                                                    <ul class="pl-1 w-100">
+                                                        @php
+                                                            $counter = 0;
+                                                        @endphp
+                                                        @foreach($product->product_vendor_details as $details)
+                                                            @if($counter == count( $product->product_vendor_details  ) - 1)
+                                                                <li class='mb-2 list-unstyled mt-2 d-flex justify-content-between' id="{{ $details->id }}">
+                                                                    <div class="mb-2">
+                                                                        <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
+                                                                        <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
+                                                                        <span class="d-block"><span class="font-weight-bold">Minimum amount of quantity:</span> <span class="moq">{{$details->moq}}</span></span>
+                                                                        <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
+                                                                        <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
+                                                                    </div>
+                                                                </li>
+                                                            @else
+                                                                <li class='mb-2 list-unstyled border-bottom d-flex justify-content-between' id="{{ $details->id }}">
+                                                                    <div class="mb-2">
+                                                                        <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
+                                                                        <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
+                                                                        <span class="d-block"><span class="font-weight-bold">Minimum amount of quantity:</span> <span class="moq">{{$details->moq}}</span></span>
+                                                                        <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
+                                                                        <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
+                                                                    </div>
+                                                                </li>
+                                                            @endif
+                                                            @php
+                                                                $counter++;
+                                                            @endphp
+                                                        @endforeach
+
+                                                    </ul>
+                                                @else
+                                                    <p>No data!</p>
+                                                @endif
                                             </td>
                                             <td class="" style="font-size: 12px !important;">
-
-                                                 <span><strong style="font-size: 14px !important">Description:</strong>{!! $product->description  !!}</span><br>
-                                                 <span><strong style="font-size: 14px !important">Source Team:</strong> {{ $product->source_name }}</span><br>
-                                                 <span><strong style="font-size: 14px !important">Price:</strong> ${{ $product->price }}</span><br>
-                                                 <span><strong style="font-size: 14px !important">Compare at Price:</strong> ${{ $product->compare_price }}</span><br>
-                                                 <span><strong style="font-size: 14px !important">Tags:</strong> {{ $product->product_tags }}</span><br>
-                                                 <span><strong style="font-size: 14px !important">Weight:</strong> {{ $product->weight }} {{ $product->unit }}</span><br>
-                                                 <span><strong style="font-size: 16px !important">Approved Status:</strong>{{ $product->approved_status }}</span><br>
+                                                <span><strong style="font-size: 14px !important">Description:</strong>{!! $product->description  !!}</span>
+                                                @if($product->product_links->count() > 0)
+                                                    <strong style="font-size: 14px !important">Refrence Links:</strong>
+                                                    <ul class="p-0 list-unstyled">
+                                                        @foreach($product->product_links as $link)
+                                                            <li><a href="{{ $link->link }}" target="_blank">{{ $link->link }}</a></li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                                <span><strong style="font-size: 16px !important">Approved Status:</strong>{{ $product->approved_status }}</span><br>
                                             </td>
 
-                                            <td class="text-center" style="font-size: 12px !important;">
+                                            <td class="text-center align-middle" style="font-size: 12px !important;">
                                                 <button type="button" class="btn btn-sm btn-primary push" data-toggle="modal" data-target="#addNotesModal{{$product->id}}">Change Status</button>
 
                                                 <div class="modal" id="addNotesModal{{$product->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
@@ -513,7 +548,7 @@
                                                                             <textarea name="notes" id="" cols="30" rows="10" class="form-control" placeholder="Enter some notes regarding the product"></textarea>
                                                                         </div>
                                                                         <div class="block-content block-content-full text-right">
-                                                                            <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                                                                            <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
                                                                             <button type="submit" class="btn btn-success rejectBtn" id="{{ $product->id }}">Approve<i class="fa fa-check text-white ml-2"></i></button>
                                                                             <button type="submit" class="btn btn-danger approveBtn" id="{{ $product->id }}">Reject<i class="fa fa-times text-white ml-2"></i></button>
                                                                         </div>

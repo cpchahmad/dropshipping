@@ -16,6 +16,14 @@ class Product extends Model
         return $this->hasMany(ProdImage::class);
     }
 
+    public function product_links() {
+        return $this->hasMany(ProductLink::class);
+    }
+
+    public function product_vendor_details() {
+        return $this->hasMany(ProductVendorDetail::class, 'shopify_product_id');
+    }
+
     public function getImageAttribute() {
         $first_image = $this->prod_images()->first();
 
@@ -27,6 +35,8 @@ class Product extends Model
         }
 
     }
+
+
 
     public function getProductTagsAttribute() {
         return $this->tags;

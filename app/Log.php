@@ -27,7 +27,7 @@ class Log extends Model
     }
 
     public function getItemAttribute() {
-        if($this->type == "Product Updated" || $this->type == "Product Added") {
+        if($this->type == "Product Updated" || $this->type == "Product Added" || $this->type == "Product Vendor Added") {
             $product = Product::find($this->shopify_product_id);
 
             if($product !== null) {
