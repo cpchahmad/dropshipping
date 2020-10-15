@@ -138,7 +138,7 @@ class AdminController extends Controller
 
         if (isset($orders['link']['next'])) {
             echo $orders['link']['next'] . "<br>";
-           // $this->storeOrders($orders['link']['next']);
+            $this->storeOrders($orders['link']['next']);
         }
     }
 
