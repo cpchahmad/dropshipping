@@ -232,7 +232,7 @@
                                                                         <div class="mb-2">
                                                                             <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Minimum amount of quantity:</span> <span class="moq">{{$details->moq}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">MOQ:</span> <span class="moq">{{$details->moq}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
                                                                             <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                         </div>
@@ -251,7 +251,7 @@
                                                                         <div class="mb-2">
                                                                             <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Minimum amount of quantity:</span> <span class="moq">{{$details->moq}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">MOQ:</span> <span class="moq">{{$details->moq}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
                                                                             <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                         </div>
@@ -487,7 +487,7 @@
                                                                     <div class="mb-2">
                                                                         <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
                                                                         <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
-                                                                        <span class="d-block"><span class="font-weight-bold">Minimum amount of quantity:</span> <span class="moq">{{$details->moq}}</span></span>
+                                                                        <span class="d-block"><span class="font-weight-bold">MOQ:</span> <span class="moq">{{$details->moq}}</span></span>
                                                                         <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
                                                                         <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                     </div>
@@ -497,7 +497,7 @@
                                                                     <div class="mb-2">
                                                                         <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
                                                                         <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
-                                                                        <span class="d-block"><span class="font-weight-bold">Minimum amount of quantity:</span> <span class="moq">{{$details->moq}}</span></span>
+                                                                        <span class="d-block"><span class="font-weight-bold">MOQ:</span> <span class="moq">{{$details->moq}}</span></span>
                                                                         <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
                                                                         <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                     </div>
