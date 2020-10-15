@@ -23,7 +23,7 @@ class Log extends Model
     public function getDateAttribute() {
         $str = $this->attempt_time;
         $date = strtotime($str);
-        return date('M/d/Y h:i:s', $date);
+        return date('M,d,Y h:i:s', $date);
     }
 
     public function getItemAttribute() {
