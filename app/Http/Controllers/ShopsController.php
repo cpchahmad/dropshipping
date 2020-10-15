@@ -27,7 +27,11 @@ class ShopsController extends Controller
      */
     public function create()
     {
-        $shop = new Shop();
+        $shop = Shop::find(1);
+        if(!$shop) {
+            $shop = new Shop();
+        }
+
         return view('shops.create')->with('shop',$shop);
     }
 
