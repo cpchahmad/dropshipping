@@ -127,96 +127,96 @@
             </div>
         </form>
 
-        <div class="d-flex justify-content-end">
-            <button class="btn btn-primary btn-lg filter-btn">
-                <i class="fa fa-filter"></i>Filters
-            </button>
-        </div>
-        <div class="bg-white p-3 push filters mt-3" style="display: none">
-            <!-- Navigation -->
-            <div id="horizontal-navigation-hover-normal" class=" mt-2 mt-lg-0">
-                <ul class="nav-main nav-main-horizontal nav-main-hover">
-                    <div class="col-md-6">
-                        <h5>Fulfillment Status</h5>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'unfulfilled') active @endif" href="?status=unfulfilled">
-                                <i class="nav-main-link-icon fa fa-flag-checkered"></i>
-                                <span class="nav-main-link-name">Unfulfilled</span>
+{{--        <div class="d-flex justify-content-end">--}}
+{{--            <button class="btn btn-primary btn-lg filter-btn">--}}
+{{--                <i class="fa fa-filter"></i>Filters--}}
+{{--            </button>--}}
+{{--        </div>--}}
+{{--        <div class="bg-white p-3 push filters mt-3" style="display: none">--}}
+{{--            <!-- Navigation -->--}}
+{{--            <div id="horizontal-navigation-hover-normal" class=" mt-2 mt-lg-0">--}}
+{{--                <ul class="nav-main nav-main-horizontal nav-main-hover">--}}
+{{--                    <div class="col-md-6">--}}
+{{--                        <h5>Fulfillment Status</h5>--}}
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'unfulfilled') active @endif" href="?status=unfulfilled">--}}
+{{--                                <i class="nav-main-link-icon fa fa-flag-checkered"></i>--}}
+{{--                                <span class="nav-main-link-name">Unfulfilled</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-danger">{{$all_orders->where('fulfillment_status', null)->count()}}</span>--}}
-                            </a>
-                        </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'fulfilled') active @endif " href="?status=fulfilled">
-                                <i class="nav-main-link-icon fa fa-star"></i>
-                                <span class="nav-main-link-name">Fulfilled</span>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'fulfilled') active @endif " href="?status=fulfilled">--}}
+{{--                                <i class="nav-main-link-icon fa fa-star"></i>--}}
+{{--                                <span class="nav-main-link-name">Fulfilled</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-success">{{$all_orders->whereIN('fulfillment_status',['fulfilled'])->count()}}</span>--}}
-                            </a>
-                        </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'partial') active @endif " href="?status=partial">
-                                <i class="nav-main-link-icon fa fa-spinner"></i>
-                                <span class="nav-main-link-name">Partially Fulfilled</span>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'partial') active @endif " href="?status=partial">--}}
+{{--                                <i class="nav-main-link-icon fa fa-spinner"></i>--}}
+{{--                                <span class="nav-main-link-name">Partially Fulfilled</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-warning" style="color: white;">{{$all_orders->whereIN('fulfillment_status',['partial'])->count()}}</span>--}}
-                            </a>
-                        </li>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Financial Status</h5>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                    </div>--}}
+{{--                    <div class="col-md-6">--}}
+{{--                        <h5>Financial Status</h5>--}}
 
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'paid') active @endif " href="?status=paid">
-                                <i class="nav-main-link-icon fa fa-check-circle"></i>
-                                <span class="nav-main-link-name">Paid</span>
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'paid') active @endif " href="?status=paid">--}}
+{{--                                <i class="nav-main-link-icon fa fa-check-circle"></i>--}}
+{{--                                <span class="nav-main-link-name">Paid</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-success" style="color: white;">{{$all_orders->whereIN('financial_status',['paid'])->count()}}</span>--}}
-                            </a>
-                        </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'partially_refunded') active @endif " href="?status=partially_refunded">
-                                <i class="nav-main-link-icon fa fa-question-circle"></i>
-                                <span class="nav-main-link-name">Partially Refunded</span>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'partially_refunded') active @endif " href="?status=partially_refunded">--}}
+{{--                                <i class="nav-main-link-icon fa fa-question-circle"></i>--}}
+{{--                                <span class="nav-main-link-name">Partially Refunded</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-warning" style="color: white;">{{$all_orders->whereIN('financial_status',['partially_refunded'])->count()}}</span>--}}
-                            </a>
-                        </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'authorized') active @endif " href="?status=authorized">
-                                <i class="nav-main-link-icon fa fa-check-circle"></i>
-                                <span class="nav-main-link-name">Authorized</span>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'authorized') active @endif " href="?status=authorized">--}}
+{{--                                <i class="nav-main-link-icon fa fa-check-circle"></i>--}}
+{{--                                <span class="nav-main-link-name">Authorized</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-primary" style="color: white;">{{$all_orders->whereIN('financial_status',['authorized'])->count()}}</span>--}}
-                            </a>
-                        </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'pending') active @endif " href="?status=pending">
-                                <i class="nav-main-link-icon fa fa-spinner"></i>
-                                <span class="nav-main-link-name">Pending</span>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'pending') active @endif " href="?status=pending">--}}
+{{--                                <i class="nav-main-link-icon fa fa-spinner"></i>--}}
+{{--                                <span class="nav-main-link-name">Pending</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-warning" style="color: white;">{{$all_orders->whereIN('financial_status',['pending'])->count()}}</span>--}}
-                            </a>
-                        </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'partially_paid') active @endif " href="?status=partially_paid">
-                                <i class="nav-main-link-icon fa fa-spinner"></i>
-                                <span class="nav-main-link-name">Partially Paid</span>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'partially_paid') active @endif " href="?status=partially_paid">--}}
+{{--                                <i class="nav-main-link-icon fa fa-spinner"></i>--}}
+{{--                                <span class="nav-main-link-name">Partially Paid</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-dark" style="color: white;">{{$all_orders->whereIN('financial_status',['partially_paid'])->count()}}</span>--}}
-                            </a>
-                        </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'refunded') active @endif " href="?status=refunded">
-                                <i class="nav-main-link-icon fa fa-times-circle"></i>
-                                <span class="nav-main-link-name">Refunded</span>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'refunded') active @endif " href="?status=refunded">--}}
+{{--                                <i class="nav-main-link-icon fa fa-times-circle"></i>--}}
+{{--                                <span class="nav-main-link-name">Refunded</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-danger" style="color: white;">{{$all_orders->whereIN('financial_status',['refunded'])->count()}}</span>--}}
-                            </a>
-                        </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link @if($status == 'voided') active @endif " href="?status=voided">
-                                <i class="nav-main-link-icon fa fa-question-circle"></i>
-                                <span class="nav-main-link-name">Voided</span>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link @if($status == 'voided') active @endif " href="?status=voided">--}}
+{{--                                <i class="nav-main-link-icon fa fa-question-circle"></i>--}}
+{{--                                <span class="nav-main-link-name">Voided</span>--}}
 {{--                                <span class="nav-main-link-badge badge badge-pill badge-primary" style="color: white;">{{$all_orders->whereIN('financial_status',['voided'])->count()}}</span>--}}
-                            </a>
-                        </li>
-                    </div>
-                </ul>
-            </div>
-            <!-- END Navigation -->
-        </div>
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                    </div>--}}
+{{--                </ul>--}}
+{{--            </div>--}}
+{{--            <!-- END Navigation -->--}}
+{{--        </div>--}}
 
         <!-- Dynamic Table Full -->
         <div class="block mt-3">

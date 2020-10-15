@@ -71,7 +71,7 @@ class AdminController extends Controller
 
     public function getOrders(Request $request) {
 
-        $orders = ShopifyOrder::with(['items.shopify_variant'])->newQuery();
+        $orders = ShopifyOrder::with(['items.shopify_variant.shopify_product.product_vendor_details'])->newQuery();
 
         if ($request->has('search')) {
             $orders->where('name', 'LIKE', '%' . $request->input('search') . '%');
@@ -112,7 +112,7 @@ class AdminController extends Controller
         }
 
 
-        $orders = $orders->paginate(50);
+        $orders = $orders->paginate(30);
 
 
         return view('orders.new-index')->with([
