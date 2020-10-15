@@ -85,6 +85,40 @@
             console.log(324);
             $(".filters").slideToggle();
         });
+
+        $('.add-notes-btn').click(function () {
+            var id = $(this).attr('id');
+            var notes = $(`textarea[name=notes${id}]`).val();
+
+
+
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $.ajax({
+                url: `/admin/store/order/notes/${id}`,
+                data: { notes : notes},
+                type: 'POST',
+                success: function(res) {
+                    var response = res.data;
+                    if(response == 'success') {
+                        toastr.success("Notes added Successfully!") ;
+                        $('td#'+id).css("background-color", "yellow");
+                        console.log($('td#'+id));
+                        $('td#'+id).find('.notes-div').append(`
+                              <li style="font-size: 12px !important; color: #575757;">${ res.note.notes }</li>
+                        `);
+                        $('#notesModal'+id).modal('hide');
+                    }
+
+                }
+            });
+
+        });
     </script>
 @endsection
 
@@ -127,96 +161,6 @@
             </div>
         </form>
 
-{{--        <div class="d-flex justify-content-end">--}}
-{{--            <button class="btn btn-primary btn-lg filter-btn">--}}
-{{--                <i class="fa fa-filter"></i>Filters--}}
-{{--            </button>--}}
-{{--        </div>--}}
-{{--        <div class="bg-white p-3 push filters mt-3" style="display: none">--}}
-{{--            <!-- Navigation -->--}}
-{{--            <div id="horizontal-navigation-hover-normal" class=" mt-2 mt-lg-0">--}}
-{{--                <ul class="nav-main nav-main-horizontal nav-main-hover">--}}
-{{--                    <div class="col-md-6">--}}
-{{--                        <h5>Fulfillment Status</h5>--}}
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'unfulfilled') active @endif" href="?status=unfulfilled">--}}
-{{--                                <i class="nav-main-link-icon fa fa-flag-checkered"></i>--}}
-{{--                                <span class="nav-main-link-name">Unfulfilled</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-danger">{{$all_orders->where('fulfillment_status', null)->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'fulfilled') active @endif " href="?status=fulfilled">--}}
-{{--                                <i class="nav-main-link-icon fa fa-star"></i>--}}
-{{--                                <span class="nav-main-link-name">Fulfilled</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-success">{{$all_orders->whereIN('fulfillment_status',['fulfilled'])->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'partial') active @endif " href="?status=partial">--}}
-{{--                                <i class="nav-main-link-icon fa fa-spinner"></i>--}}
-{{--                                <span class="nav-main-link-name">Partially Fulfilled</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-warning" style="color: white;">{{$all_orders->whereIN('fulfillment_status',['partial'])->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-md-6">--}}
-{{--                        <h5>Financial Status</h5>--}}
-
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'paid') active @endif " href="?status=paid">--}}
-{{--                                <i class="nav-main-link-icon fa fa-check-circle"></i>--}}
-{{--                                <span class="nav-main-link-name">Paid</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-success" style="color: white;">{{$all_orders->whereIN('financial_status',['paid'])->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'partially_refunded') active @endif " href="?status=partially_refunded">--}}
-{{--                                <i class="nav-main-link-icon fa fa-question-circle"></i>--}}
-{{--                                <span class="nav-main-link-name">Partially Refunded</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-warning" style="color: white;">{{$all_orders->whereIN('financial_status',['partially_refunded'])->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'authorized') active @endif " href="?status=authorized">--}}
-{{--                                <i class="nav-main-link-icon fa fa-check-circle"></i>--}}
-{{--                                <span class="nav-main-link-name">Authorized</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-primary" style="color: white;">{{$all_orders->whereIN('financial_status',['authorized'])->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'pending') active @endif " href="?status=pending">--}}
-{{--                                <i class="nav-main-link-icon fa fa-spinner"></i>--}}
-{{--                                <span class="nav-main-link-name">Pending</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-warning" style="color: white;">{{$all_orders->whereIN('financial_status',['pending'])->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'partially_paid') active @endif " href="?status=partially_paid">--}}
-{{--                                <i class="nav-main-link-icon fa fa-spinner"></i>--}}
-{{--                                <span class="nav-main-link-name">Partially Paid</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-dark" style="color: white;">{{$all_orders->whereIN('financial_status',['partially_paid'])->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'refunded') active @endif " href="?status=refunded">--}}
-{{--                                <i class="nav-main-link-icon fa fa-times-circle"></i>--}}
-{{--                                <span class="nav-main-link-name">Refunded</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-danger" style="color: white;">{{$all_orders->whereIN('financial_status',['refunded'])->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link @if($status == 'voided') active @endif " href="?status=voided">--}}
-{{--                                <i class="nav-main-link-icon fa fa-question-circle"></i>--}}
-{{--                                <span class="nav-main-link-name">Voided</span>--}}
-{{--                                <span class="nav-main-link-badge badge badge-pill badge-primary" style="color: white;">{{$all_orders->whereIN('financial_status',['voided'])->count()}}</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                    </div>--}}
-{{--                </ul>--}}
-{{--            </div>--}}
-{{--            <!-- END Navigation -->--}}
-{{--        </div>--}}
 
         <!-- Dynamic Table Full -->
         <div class="block mt-3">
@@ -236,8 +180,7 @@
                             </th>
                             <th class="text-center" style="width: 80px;">Order</th>
                             <th class="text-center">Products</th>
-                            <th class="text-center" style="width: 140px;">Shipping Price</th>
-                            <th class="text-center" style="width: 100px;">Order Tracking Information</th>
+                            <th class="text-center" style="width: 210px;">Fulfillment Tracking and Shipping</th>
                             <th class="text-center" style="width: 150px;">Shipping Address</th>
                             <th class="text-center" style="width: 220px;">Notes</th>
                             <th class="text-center" style="width: 120px;"></th>
@@ -277,9 +220,9 @@
                                             </div>
                                             <div class="col-6">
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
-                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-boldA">{{$item->shopify_variant->title}}</span>@endif
+                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 @if(!(is_null($item->sku)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
-                                                @if(!(is_null($item->fulfillment_response)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">This Line is fulfilled in: </span> {{$item->fulfillment_response}}</span>@endif
+                                                @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
                                                     <span class="d-block font-weight-bolder">Vendors: </span>
@@ -328,7 +271,7 @@
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                 @if(isset($item->shopify_variant->title))<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 @if(!(is_null($item->sku)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
-                                                @if(!(is_null($item->fulfillment_response)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">This Line is fulfilled in: </span> {{$item->fulfillment_response}}</span>@endif
+                                                @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
 
                                             @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
@@ -374,38 +317,49 @@
                                     @endforeach
 
                             </td>
-                            <td class="text-left align-middle" style="font-size: 12px !important;">
-                                @if($order->shipping_prices()->count() > 0)
-                                   <ul class="pl-3">
-                                       @foreach($order->shipping_prices as $price)
-                                           <li class="pl-0">${{ number_format($price->shipping_price_usd,2) }} @if(!(is_null($price->shipping_price_rmb))) {{ '(RMB '.number_format($price->shipping_price_usd,2).')' }} @endif</li>
+                            <td class="text-left align-middle" style="font-size: 13px !important;">
+                                @if($order->order_fulfillments()->count() > 0)
+
+                                   <ul class="pl-3 list-unstyled">
+                                       @php
+                                           $counter = 0;
+                                       @endphp
+                                       @foreach($order->order_fulfillments as $fulfillment)
+                                           @if($counter == count( $order->items ) - 1)
+                                               <li class="pl-0 pb-2 border-bottom my-2"> <span class="d-inline-block badge badge-primary">{{ $fulfillment->fulfillment_response }}</span>
+                                                   <span class="d-block">${{ number_format($fulfillment->shipping_price_usd,2) }} @if(!(is_null($fulfillment->shipping_price_rmb))) {{ '(RMB '.number_format($fulfillment->shipping_price_rmb,2).')' }} @endif</span>
+                                                   {{ $fulfillment->tracking_number }} <br>
+                                                   <a href="{{ $fulfillment->tracking_url }}" class="text-white">{{ $fulfillment->tracking_url }}</a> <br>
+                                                   {{ $fulfillment->tracking_company }} <br>
+                                               </li>
+                                           @else
+                                               <li class="pl-0 "> <span class="d-inline-block badge badge-primary">{{ $fulfillment->fulfillment_response }}</span>
+                                                   <span class="d-block">${{ number_format($fulfillment->shipping_price_usd,2) }} @if(!(is_null($fulfillment->shipping_price_rmb))) {{ '(RMB '.number_format($fulfillment->shipping_price_rmb,2).')' }} @endif</span>
+                                                   {{ $fulfillment->tracking_number }} <br>
+                                                   <a href="{{ $fulfillment->tracking_url }}" class="text-white">{{ $fulfillment->tracking_url }}</a> <br>
+                                                   {{ $fulfillment->tracking_company }} <br>
+                                               </li>
+                                           @endif
+
+
+                                       @php
+                                           $counter++;
+                                       @endphp
                                        @endforeach
                                    </ul>
                                 @else
                                     Not Added Yet!
                                 @endif
                             </td>
-                            <td class="text-left align-middle" style="font-size: 12px !important;">
-                                @if($order->order_tracking()->count() > 0)
-                                    <ul class="pl-3 list-unstyled">
-                                            <li class="pl-0">
-                                                {{ $order->order_tracking->tracking_number }} <br>
-                                                <a href="{{ $order->order_tracking->tracking_url }}" class="text-white">{{ $order->order_tracking->tracking_url }}</a> <br>
-                                                {{ $order->order_tracking->tracking_company }} <br>
-                                            </li>
-                                    </ul>
-                                @else
-                                    Not Added Yet!
-                                @endif
-                            </td>
+
                             <td class="align-middle" style="font-size: 12px !important;">
                                 {{ $order->ship_add }}
                             </td>
-                            <td class="font-w600 text-center align-middle" @if($order->notes_check) style="background: yellow"  @endif>
+                            <td class="font-w600 text-center align-middle" @if($order->notes_check) style="background: yellow"  @endif id="{{ $order->id }}">
                                 <button type="button" class="btn btn-sm btn-light push border-dark" style="border-radius: 100%" data-toggle="modal" data-target="#notesModal{{$order->id}}">
                                     <i class="si si-note "></i>
                                 </button>
-                                <div class="text-left">
+                                <div class="text-left notes-div">
                                     @if(!(is_null($order->notes)) && $order->notes !== '')
                                         <li style="font-size: 12px !important; color: #575757;">{{ $order->notes }}</li>
                                     @endif
@@ -433,11 +387,11 @@
                                                 <form action="{{ route('admin.store.order.notes', $order->id) }}" method="POST">
                                                     @csrf
                                                     <div class="block-content font-size-sm pb-2">
-                                                        <textarea name="notes" class="form-control" id="" cols="25" rows="8" placeholder="Enter some notes"></textarea>
+                                                        <textarea name="notes{{$order->id}}" class="form-control" id="" cols="25" rows="8" placeholder="Enter some notes"></textarea>
                                                     </div>
                                                     <div class="block-content block-content-full text-right">
                                                         <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-check mr-1"></i>Add</button>
+                                                        <button type="button" class="btn btn-sm btn-primary add-notes-btn" id="{{ $order->id }}"><i class="fa fa-check mr-1"></i>Add</button>
                                                     </div>
                                                 </form>
                                             </div>

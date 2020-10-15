@@ -51,15 +51,19 @@
             <div class="form-group">
                 <div class="input-group">
                     <select name="role_search" id="" class="form-control">
-                        <option value="" selected disabled>Search by User</option>
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            <option value="{{ $user->id }}"
+                                @if($user->id == '1')
+                                    selected
+                                @endif
+                            >
+                                {{ $user->name }}
+                            </option>
                         @endforeach
                     </select>
                     <select name="type_search" id="" class="form-control">
-                        <option value="" selected disabled>Serach by Log Type</option>
-                        <option value="source">Product</option>
-                        <option value="shipping">Order</option>
+                        <option value="product">Product</option>
+                        <option value="order">Order</option>
                         <option value="log">Log in</option>
                     </select>
 {{--                    <input type="search" class="form-control" placeholder="Search Logs By Type" value="{{$search}}" name="search" required >--}}

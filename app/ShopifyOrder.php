@@ -37,12 +37,8 @@ class ShopifyOrder extends Model
         return $this->hasMany(LineItem::class);
     }
 
-    public function shipping_prices() {
-        return $this->hasMany(ShippingPrice::class);
-    }
-
-    public function order_tracking() {
-        return $this->hasOne(OrderTracking::class);
+    public function order_fulfillments() {
+        return $this->hasMany(OrderFulfillment::class);
     }
 
     public function getDateAttribute() {

@@ -6,6 +6,7 @@ use App\Expense;
 use App\LineItem;
 use App\Log;
 use App\LoginDetails;
+use App\OrderFulfillment;
 use App\OrderTracking;
 use App\OrderVendor;
 use App\Product;
@@ -494,23 +495,20 @@ class AdminController extends Controller
     public function changeOrderStatus(Request $request, $id) {
 
         $order = ShopifyOrder::find($id);
+        $order_fulfillment = new OrderFulfillment();
         $fulfillable_quantities = $request->input('item_fulfill_quantity');
 
         if(!(is_null($request->shipping_price))) {
             if($request->shipping_currency == 'usd') {
-                ShippingPrice::create([
-                    'shipping_price_usd' => $request->shipping_price,
-                    'shipping_currency' => $request->shipping_currency,
-                    'shopify_order_id' => $id,
-                ]);
+                $order_fulfillment->shipping_price_usd = $request->shipping_price;
+                $order_fulfillment->shipping_currency = $request->shipping_currency;
+                $order_fulfillment->shopify_order_id = $id;
             }
             else{
-                ShippingPrice::create([
-                    'shipping_price_usd' => $request->shipping_price / 6.6,
-                    'shipping_price_rmb' => ((double) $request->shipping_price),
-                    'shipping_currency' => $request->shipping_currency,
-                    'shopify_order_id' => $id,
-                ]);
+                $order_fulfillment->shipping_price_usd = $request->shipping_price / 6.6;
+                $order_fulfillment->shipping_price_rmb = ((double) $request->shipping_price);
+                $order_fulfillment->shipping_currency = $request->shipping_currency;
+                $order_fulfillment->shopify_order_id = $id;
             }
 
             Log::create([
@@ -551,12 +549,10 @@ class AdminController extends Controller
                     ]
                 ];
 
-                $tracking = new OrderTracking();
-                $tracking->tracking_number = $request->tracking_number;
-                $tracking->tracking_url = $request->tracking_url;
-                $tracking->tracking_company = $request->shipping_carrier;
-                $tracking->shopify_order_id = $id;
-                $tracking->save();
+                $order_fulfillment->tracking_number = $request->tracking_number;
+                $order_fulfillment->tracking_url = $request->tracking_url;
+                $order_fulfillment->tracking_company = $request->shipping_carrier;
+
             }
 
 
@@ -574,7 +570,7 @@ class AdminController extends Controller
             $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $data, [],true);
 
             if(!$response['errors']) {
-                return $this->set_fulfilments($request, $id, $fulfillable_quantities, $order, $response);
+                return $this->set_fulfilments($request, $id, $fulfillable_quantities, $order, $response, $order_fulfillment);
                 return redirect()->back()->with('success', 'Order Mark as fulfilled successfully!');
             }
             else {
@@ -584,7 +580,7 @@ class AdminController extends Controller
 
     }
 
-    public function set_fulfilments(Request $request, $id, $fulfillable_quantities, $order, $response): \Illuminate\Http\RedirectResponse
+    public function set_fulfilments(Request $request, $id, $fulfillable_quantities, $order, $response, $order_fulfillment): \Illuminate\Http\RedirectResponse
     {
         $flag = 0;
         foreach ($request->input('item_id') as $index => $item) {
@@ -611,7 +607,8 @@ class AdminController extends Controller
         else if($fulfillable_quanity == $quanity || $fulfillable_quanity < $quanity){
             $order->fulfillment_status = 'partial';
         }
-
+        $order_fulfillment->fulfillment_response = $response['body']['fulfillment']['name'];
+        $order_fulfillment->save();
         $order->save();
 
         Log::create([
@@ -672,7 +669,7 @@ class AdminController extends Controller
             'shopify_order_id' => $notes->shopify_order_id
         ]);
 
-        return redirect()->back()->with('success', "Notes Added Successfully!");
+        return response()->json(['data'=> 'success', 'note'=> $notes]);
     }
 
     public function deleteUser($id) {
@@ -833,7 +830,7 @@ class AdminController extends Controller
         $cost =  number_format($price, 2);
 
         $expenses_sum = Expense::sum('usd_price');
-        $shipping_sum = ShippingPrice::sum('shipping_price_usd');
+        $shipping_sum = OrderFulfillment::sum('shipping_price_usd');
 
         return view('products.reports')->with([
             'orders_sum' => $orders_total_price,
@@ -856,13 +853,17 @@ class AdminController extends Controller
 
     public function getLogs(Request $request) {
 
-        if ($request->has('role_search')) {
+        if ($request->has('type_search') && $request->has('role_search')) {
+            $logs = Log::where('user_id', $request->input('role_search'))->where('type', 'LIKE', '%' . $request->input('type_search') . '%')->orderBy('updated_at', 'DESC')->paginate(20);
+        }
+        else if ($request->has('role_search')) {
             $logs = Log::where('user_id', $request->input('role_search'))->orderBy('updated_at', 'DESC')->paginate(20);
         }
         else if ($request->has('type_search')) {
             $logs = Log::where('type', 'LIKE', '%' . $request->input('type_search') . '%')->orderBy('updated_at', 'DESC')->paginate(20);
         }
         else {
+
             $logs = Log::orderBy('updated_at', 'DESC')->paginate(30);
         }
 
@@ -922,7 +923,7 @@ class AdminController extends Controller
         $tracking->tracking_number = $request->tracking_number;
         $tracking->tracking_url = $request->tracking_url;
         $tracking->tracking_company = $request->shipping_carrier;
-        $tracking->location_id = '6122438719';
+        $tracking->location_id = '8749154419';
         $tracking->save();
 
         return response()->json(['data'=> 'success', 'tracking'=> $tracking]);
