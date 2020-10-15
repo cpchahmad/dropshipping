@@ -66,7 +66,7 @@ class User extends Authenticatable
     }
 
     public function getUnapproveProductCountAttribute() {
-        return Product::where('outsource_id', $this->id)->where('approved', 0)->count();
+        return Product::where('outsource_id', $this->id)->where('approved', 2)->count();
     }
 
 
