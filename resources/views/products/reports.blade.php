@@ -81,7 +81,7 @@
                                     beginAtZero: true,
                                     stepSize: 11,
                                     min: 0,
-                                    max: 80
+                                    max: 88
                                 },
                                 scaleLabel: {
                                     display: true,
