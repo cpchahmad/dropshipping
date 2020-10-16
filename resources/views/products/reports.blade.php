@@ -80,7 +80,8 @@
                                 ticks: {
                                     beginAtZero: true,
                                     stepSize: 11,
-                                    max:100
+                                    min: 0,
+                                    max: 80
                                 },
                                 scaleLabel: {
                                     display: true,
