@@ -185,6 +185,7 @@ class ShopifyOrder extends Model
             echo "
                 <div class='d-flex flex-column'>
                      <span>$address_obj->first_name $address_obj->last_name</span>
+                     <span>$address_obj->phone</span>
                      <span>$address_obj->company</span>
                      <span>$address_obj->address1</span>
                      <span>$address_obj->address2</span>
