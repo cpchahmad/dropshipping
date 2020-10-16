@@ -79,7 +79,8 @@
                                 display: true,
                                 ticks: {
                                     beginAtZero: true,
-                                    stepSize: 100
+                                    stepSize: 11,
+                                    max:100
                                 },
                                 scaleLabel: {
                                     display: true,

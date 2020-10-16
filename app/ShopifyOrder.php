@@ -182,15 +182,15 @@ class ShopifyOrder extends Model
         }
         else {
             $address_obj = json_decode($address_obj);
-            dd($address_obj);
             echo "
                 <div class='d-flex flex-column'>
                      <span>$address_obj->first_name $address_obj->last_name</span>
-                     <span>$address_obj->phone</span>
                      <span>$address_obj->company</span>
                      <span>$address_obj->address1</span>
                      <span>$address_obj->address2</span>
-                     <span>$address_obj->city, $address_obj->province, $address_obj->country</span>
+                     <span>$address_obj->city $address_obj->province_code $address_obj->zip</span>
+                     <span>$address_obj->country</span>
+                     <span>$address_obj->phone</span>
                 </div>
 
             ";
