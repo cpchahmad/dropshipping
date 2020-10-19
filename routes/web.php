@@ -86,6 +86,6 @@ Route::post('webhook/order/fulfilled', 'AdminController@orderFulfilledWebhook');
 
 Route::get('/test', function() {
     $api = ShopsController::config();
-    $response = $api->rest('GET', '/admin/products/4897691598934/variants.json', null, [], true);
+    $response = $api->rest('GET', '/admin/orders/2729380380758.json', null, [], true);
     dd($response);
 });

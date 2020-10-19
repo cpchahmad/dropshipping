@@ -20,6 +20,7 @@ class ShopifyOrder extends Model
       'billing_address',
       'processed_at',
       'processing_method',
+      'properties'
     ];
 
     protected $casts = [

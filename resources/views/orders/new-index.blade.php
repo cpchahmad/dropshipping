@@ -221,8 +221,9 @@
                                             <div class="col-6">
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                 @if(isset($item->shopify_variant->title))<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
-                                                @if(!(is_null($item->sku)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
+                                                @if(!(is_null($item->sku)) && $item->sku != '')<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
                                                 @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
+                                                <span> {{ $item->prop }}</span>
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
                                                     <span class="d-block font-weight-bolder">Vendors: </span>
@@ -270,7 +271,8 @@
                                             <div class="col-6">
                                                 <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                 @if(isset($item->shopify_variant->title))<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
-                                                @if(!(is_null($item->sku)))<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
+                                                @if(!(is_null($item->sku)) && $item->sku != '')<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
+                                                <span> {{ $item->prop }}</span>
                                                 @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
 
                                             @if($order->ful_check && $item->vendor_chk)

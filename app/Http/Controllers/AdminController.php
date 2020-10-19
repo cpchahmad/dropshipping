@@ -221,6 +221,7 @@ class AdminController extends Controller
             $line->price = $item['price'];
             $line->shopify_order_id = $order['id'];
             $line->fulfillable_quantity = $item['fulfillable_quantity'];
+            $line->properties = json_encode($item['properties']);
 
             $line->save();
         }

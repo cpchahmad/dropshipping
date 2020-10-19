@@ -135,4 +135,17 @@ class LineItem extends Model
             return false;
         }
     }
+
+    public function getPropAttribute() {
+        $properties = json_decode($this->properties);
+
+
+        if($properties != null) {
+            foreach ($properties as $property) {
+                echo "
+                     <span class='d-block'><span class=\"font-weight-bold\">$property->name </span>". ":" ." $property->value</span>
+                 ";
+            }
+        }
+    }
 }
