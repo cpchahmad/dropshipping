@@ -494,6 +494,44 @@ class AdminController extends Controller
     }
 
     public function changeOrderStatus(Request $request, $id) {
+        foreach ($request->input('item_id') as $line) {
+            if($request->input('item_vendor_'.$line)) {
+
+                    $vendor_array = array();
+
+                    $vendorDetail = ProductVendorDetail::find($request->input('item_vendor_'.$line));
+
+                    if(OrderVendor::where(['line_id' => $line, 'vendor_product_id' => $vendorDetail->shopify_product_id])->exists()) {
+                        OrderVendor::where(['line_id' => $line, 'vendor_product_id' => $vendorDetail->shopify_product_id])->delete();
+                    }
+
+                    $order_vendor = new OrderVendor();
+                    $order_vendor->vendor_id = $vendorDetail->id;
+                    $order_vendor->vendor_product_id = $vendorDetail->shopify_product_id;
+                    $order_vendor->product_price = $request->input('product_price_'.$line);
+                    $order_vendor->line_id = $line;
+                    $order_vendor->save();
+
+                    array_push($vendor_array, $vendorDetail->id);
+
+
+
+                    $line_item = LineItem::find($line);
+                    $line_item->vendor = $vendor_array;
+                    $line_item->save();
+
+                    Log::create([
+                        'user_id' => Auth::user()->id,
+                        'user_role' => Auth::user()->role,
+                        'attempt_time' => Carbon::now()->toDateTimeString(),
+                        'attempt_location_ip' => $request->getClientIp(),
+                        'type' => 'Vendor added to order',
+                        'shopify_order_id' => $line_item->shopify_order_id
+                    ]);
+                }
+
+        }
+
 
         $order = ShopifyOrder::find($id);
         $order_fulfillment = new OrderFulfillment();
@@ -524,60 +562,61 @@ class AdminController extends Controller
         }
 
 
+        if(is_null($request->tracking_number) && is_null($request->tracking_url)) {
+            $data = [
+                "fulfillment" => [
+                    "location_id" => "8749154419",
+                    "tracking_number"=> null,
+                    "line_items" => [
 
-            if(is_null($request->tracking_number) && is_null($request->tracking_url)) {
-                $data = [
-                    "fulfillment" => [
-                        "location_id" => "8749154419",
-                        "tracking_number"=> null,
-                        "line_items" => [
-
-                        ]
                     ]
-                ];
-            }
-            //6122438719
-            else {
-                $data = [
-                    "fulfillment" => [
-                        "location_id" => "8749154419",
-                        "tracking_number"=> $request->tracking_number,
-                        "tracking_url"=> $request->tracking_url,
-                        "tracking_company"=> $request->shipping_carrier,
-                        "line_items" => [
+                ]
+            ];
+        }
+        //6122438719
+        else {
+            $data = [
+                "fulfillment" => [
+                    "location_id" => "8749154419",
+                    "tracking_number"=> $request->tracking_number,
+                    "tracking_url"=> $request->tracking_url,
+                    "tracking_company"=> $request->shipping_carrier,
+                    "line_items" => [
 
-                        ]
                     ]
-                ];
+                ]
+            ];
 
-                $order_fulfillment->tracking_number = $request->tracking_number;
-                $order_fulfillment->tracking_url = $request->tracking_url;
-                $order_fulfillment->tracking_company = $request->shipping_carrier;
+            $order_fulfillment->tracking_number = $request->tracking_number;
+            $order_fulfillment->tracking_url = $request->tracking_url;
+            $order_fulfillment->tracking_company = $request->shipping_carrier;
 
+        }
+
+
+
+
+        foreach ($request->input('item_id') as $index => $item) {
+            $line_item = LineItem::find($item);
+            if ($line_item != null && $fulfillable_quantities[$index] > 0) {
+                array_push($data['fulfillment']['line_items'], [
+                    "id" => $line_item->id,
+                    "quantity" => $fulfillable_quantities[$index],
+                ]);
             }
+        }
 
+        $api = ShopsController::config();
+        $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $data, [],true);
 
-            foreach ($request->input('item_id') as $index => $item) {
-                $line_item = LineItem::find($item);
-                if ($line_item != null && $fulfillable_quantities[$index] > 0) {
-                    array_push($data['fulfillment']['line_items'], [
-                        "id" => $line_item->id,
-                        "quantity" => $fulfillable_quantities[$index],
-                    ]);
-                }
-            }
-
-            $api = ShopsController::config();
-            $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $data, [],true);
-
-            if(!$response['errors']) {
-                return $this->set_fulfilments($request, $id, $fulfillable_quantities, $order, $response, $order_fulfillment);
-                return redirect()->back()->with('success', 'Order Mark as fulfilled successfully!');
-            }
-            else {
-                dd($response);
-                return redirect()->back()->with('error', 'Request cannot be proceed');
-            }
+        if(!$response['errors']) {
+            return $this->set_fulfilments($request, $id, $fulfillable_quantities, $order, $response, $order_fulfillment);
+            return redirect()->back()->with('success', 'Order Mark as fulfilled successfully!');
+        }
+        else {
+            dd($response);
+            return redirect()->back()->with('error', 'Request cannot be proceed');
+        }
 
     }
 
@@ -798,35 +837,20 @@ class AdminController extends Controller
         $graph_one_order_values = $ordersQ->pluck('total')->toArray();
         $graph_two_order_values = $ordersQ->pluck('total_sum')->toArray();
 
-        // Top products
-//        $top_products_stores = ShopifyProduct::join('shopify_varients', function ($join) {
-//                    $join->on('shopify_varients.shopify_product_id', '=', 'shopify_products.id')
-//                        ->join('line_items', function ($o) {
-//                            $o->on('shopify_varients.id', '=', 'line_items.variant_id')
-//                                ->join('shopify_orders', function ($o) {
-//                                    $o->on('line_items.shopify_order_id', '=', 'shopify_orders.id')
-//                                        ->where('shopify_orders.financial_status', '=', 'paid');
-//                                });
-//                        });
-//        })->select('shopify_products.*', DB::raw('sum(line_items.quantity) as sold'), DB::raw('sum(line_items.price) as selling_cost'))
-//            ->groupBy('shopify_products.id' )
-//            ->orderBy('sold', 'DESC')
-//            ->get()
-//            ->take(5);
-
-
 
         // Vendor cost calculation
         $price = 0;
 
-        foreach (LineItem::whereNotNull('vendor')->get() as $item) {
-            $vendor = $item->vendor;
-                $vendors = json_decode($vendor);
-                foreach ($vendors as $vendor) {
-                    $vendor_details = ProductVendorDetail::where('id', $vendor)->first();
-                    $price += $vendor_details->cost;
-                }
-        }
+//        foreach (LineItem::whereNotNull('vendor')->get() as $item) {
+//            $vendor = $item->vendor;
+//                $vendors = json_decode($vendor);
+//                foreach ($vendors as $vendor) {
+//                    $vendor_details = ProductVendorDetail::where('id', $vendor)->first();
+//                    $price += $vendor_details->cost;
+//                }
+//        }
+
+        $price = OrderVendor::sum('product_price');
 
         $cost =  number_format($price, 2);
 

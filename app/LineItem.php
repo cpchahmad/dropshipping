@@ -14,6 +14,10 @@ class LineItem extends Model
         return $this->belongsTo(ShopifyVarient::class, 'variant_id');
     }
 
+    public function order_vendor() {
+        return $this->hasOne(OrderVendor::class, 'line_id');
+    }
+
 
     public function getImgAttribute() {
 
@@ -148,4 +152,5 @@ class LineItem extends Model
             }
         }
     }
+
 }

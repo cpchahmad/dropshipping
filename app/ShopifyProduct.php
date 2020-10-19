@@ -77,6 +77,13 @@ class ShopifyProduct extends Model
                 }
 
                 if( $counter == count( $varients ) - 1) {
+                    if($varient->title == 'Default Title') {
+                        $title = '';
+                    }
+                    else {
+                        $title = $varient->title;
+                    }
+
                     echo "
                         <div class='d-flex align-items-center  py-2'>
                             <div>
@@ -85,8 +92,7 @@ class ShopifyProduct extends Model
                                 </a>
                             </div>
                             <div class='ml-2 text-left'>
-                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\">$varient->title</span>
-
+                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\">$title</span>
                                 <span><span class=\"font-weight-bold\">SKU: </span>$varient->sku</span><br>
                                 <span><strong>$$varient->price</strong></span>
                             </div>
@@ -94,6 +100,12 @@ class ShopifyProduct extends Model
                     ";
                 }
                 else{
+                    if($varient->title == 'Default Title') {
+                        $title = '';
+                    }
+                    else {
+                        $title = $varient->title;
+                    }
                     echo "
                         <div class='d-flex align-items-center border-bottom py-2'>
                             <div>
@@ -102,7 +114,7 @@ class ShopifyProduct extends Model
                                 </a>
                             </div>
                             <div class='ml-2 text-left'>
-                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\"> $varient->title</span>
+                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\"> $title</span>
 
                                 <span><span class=\"font-weight-bold\">SKU: </span>$varient->sku</span><br>
                                 <span><strong>$$varient->price</strong></span>

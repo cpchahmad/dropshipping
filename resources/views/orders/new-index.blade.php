@@ -30,6 +30,12 @@
                         break;
                 }
             });
+
+            $(".vendors").change(function(){
+                $(this).parent().parent().parent().parent().find('.product_price').val($(this).attr('data-price'));
+                console.log(234);
+                // $('.product_price').val($(this).attr('data-price'));
+            });
         });
 
         $('.check-order-all').change(function () {
@@ -82,7 +88,6 @@
         });
 
         $(".filter-btn").click(function(){
-            console.log(324);
             $(".filters").slideToggle();
         });
 
@@ -218,9 +223,9 @@
                                                     <img src="{{ $item->img }}" alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto; z-index: 9999;">
                                                 </a>
                                             </div>
-                                            <div class="col-6">
-                                                <span class="d-block font-weight-lighter">{{$item->title}}</span>
-                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
+                                            <div class="col-7">
+                                                <span class="d-block font-weight-lighter">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<span class=" font-weight-lighter"><span class="font-weight-bold"> [SKU: </span> {{$item->sku}}]</span>@endif</span>
+                                                @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 @if(!(is_null($item->sku)) && $item->sku != '')<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
                                                 @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
@@ -231,14 +236,14 @@
                                                     @foreach ($item->shopify_variant->shopify_product->product_vendor_details as $details)
                                                         <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
                                                             <div class='row d-flex'>
-                                                                <div class='mr-2'>
-                                                                    <input type='radio' class='from-control' name='vendors[]' value='{{ $details->id }}'
-                                                                    @if($details->checkbox)
-                                                                        checked
-                                                                    @endif>
-                                                                    <input type='hidden' value='{{ $details->shopify_product_id }}'>
-                                                                    <input type='hidden' value='{{ $details->id }}'>
-                                                                </div>
+{{--                                                                <div class='mr-2'>--}}
+{{--                                                                    <input type='radio' class='from-control' name='vendors[]' value='{{ $details->id }}'--}}
+{{--                                                                    @if($details->checkbox)--}}
+{{--                                                                        checked--}}
+{{--                                                                    @endif>--}}
+{{--                                                                    <input type='hidden' value='{{ $details->shopify_product_id }}'>--}}
+{{--                                                                    <input type='hidden' value='{{ $details->id }}'>--}}
+{{--                                                                </div>--}}
                                                                 <div class='mr-2'>
                                                                     {{ $details->name }}
                                                                 </div>
@@ -252,12 +257,41 @@
                                                         </li>
                                                     @endforeach
                                                 @endif
-                                            </div>
-                                            <div class="text-right col-3">
-                                                <p class="font-weight-bold">x{{$item->quantity}}</p>
-                                                @if($order->ful_check && $item->vendor_chk)
-                                                    <button type="submit" class="btn btn-dark btn-sm">Save</button>
+                                                @if($order->unful_check && $item->order_vendor()->count() > 0)
+
+                                                    <span class="d-block font-weight-bolder mt-1">Added Vendors: </span>
+                                                    @foreach ($item->shopify_variant->shopify_product->product_vendor_details as $details)
+                                                        @php
+                                                            if(\App\OrderVendor::where('vendor_id', $details->id)->where('line_id', $item->id)->exists()) {
+                                                                $checked = 'checked';
+                                                                $order_vendor = \App\OrderVendor::where('vendor_id', $details->id)->where('line_id', $item->id)->first();
+                                                                $special_price = $order_vendor->product_price;
+                                                                $flag = true;
+                                                            }
+                                                            else {
+                                                                $checked = '';
+                                                                $flag = false;
+                                                            }
+                                                        @endphp
+                                                        @if($flag)
+                                                            <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
+                                                                <div class='row d-flex'>
+                                                                    <div class='font-weight-bold'>
+                                                                        <span class="d-block">{{ $details->name }}</span>
+                                                                        <span class="d-block">Vendor Price: ${{ number_format($details->cost, 2) }}</span>
+                                                                        @if($details->cost !== $special_price)
+                                                                            <span class=" d-block"><span class=" badge badge-primary font-weight-bold" style="font-size: 12px; !important;">Special Price</span> ${{ number_format($special_price, 2) }}</span>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        @endif
+
+                                                    @endforeach
                                                 @endif
+                                            </div>
+                                            <div class="text-right col-2">
+                                                <p class="font-weight-bold">x{{$item->quantity}}</p>
                                             </div>
                                         </form>
                                         @else
@@ -268,28 +302,19 @@
                                                     <img src="{{ $item->img }}" alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto;">
                                                 </a>
                                             </div>
-                                            <div class="col-6">
-                                                <span class="d-block font-weight-lighter">{{$item->title}}</span>
-                                                @if(isset($item->shopify_variant->title))<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
-                                                @if(!(is_null($item->sku)) && $item->sku != '')<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
+                                            <div class="col-7">
+                                                <span class="d-block font-weight-lighter">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<span class=" font-weight-lighter"><span class="font-weight-bold"> [SKU: </span> {{$item->sku}}]</span>@endif</span>
+                                                @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
                                                 @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
 
-                                            @if($order->ful_check && $item->vendor_chk)
+                                                @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
                                                     <span class="d-block font-weight-bolder">Vendors: </span>
 
                                                     @foreach ($item->shopify_variant->shopify_product->product_vendor_details as $details)
                                                         <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
                                                             <div class='row d-flex'>
-                                                                <div class='mr-2'>
-                                                                    <input type='radio' class='from-control' name='vendors[]' value='{{ $details->id }}'
-                                                                           @if($details->checkbox)
-                                                                           checked
-                                                                        @endif>
-                                                                    <input type='hidden' value='{{ $details->shopify_product_id }}'>
-                                                                    <input type='hidden' value='{{ $details->id }}'>
-                                                                </div>
                                                                 <div class='mr-2'>
                                                                     {{ $details->name }}
                                                                 </div>
@@ -303,12 +328,43 @@
                                                         </li>
                                                     @endforeach
                                                 @endif
-                                            </div>
-                                            <div class="text-right col-3">
-                                                <p class="font-weight-bold">x{{$item->quantity}}</p>
-                                                @if($order->ful_check && $item->vendor_chk)
-                                                    <button type="submit" class="btn btn-dark btn-sm">Save</button>
+
+                                                @if($order->unful_check && $item->order_vendor()->count() > 0)
+
+                                                    <span class="d-block font-weight-bolder mt-1">Added Vendors: </span>
+                                                    @foreach ($item->shopify_variant->shopify_product->product_vendor_details as $details)
+                                                        @php
+                                                            if(\App\OrderVendor::where('vendor_id', $details->id)->where('line_id', $item->id)->exists()) {
+                                                                $checked = 'checked';
+                                                                $order_vendor = \App\OrderVendor::where('vendor_id', $details->id)->where('line_id', $item->id)->first();
+                                                                $special_price = $order_vendor->product_price;
+                                                                $flag = true;
+                                                            }
+                                                            else {
+                                                                $checked = '';
+                                                                $flag = false;
+                                                            }
+                                                        @endphp
+                                                        @if($flag)
+                                                            <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
+                                                                <div class='row d-flex'>
+                                                                    <div class='font-weight-bold'>
+                                                                        <span class="d-block">{{ $details->name }}</span>
+                                                                        <span class="d-block">Vendor Price: ${{ number_format($details->cost, 2) }}</span>
+                                                                        @if($details->cost !== $special_price)
+                                                                            <span class="d-block"><span class=" badge badge-primary font-weight-bold" style="font-size: 12px; !important;">Special Price</span> ${{ number_format($special_price, 2) }}</span>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        @endif
+
+                                                    @endforeach
                                                 @endif
+
+                                            </div>
+                                            <div class="text-right col-2">
+                                                <p class="font-weight-bold">x{{$item->quantity}}</p>
                                             </div>
                                         </form>
                                         @endif
@@ -435,14 +491,56 @@
                                                                         <input type="hidden" name="item_id[]" value="{{ $item->id }}">
                                                                         <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">
                                                                     </div>
-                                                                    <div class='col-6'>
+                                                                    <div class='col-7'>
                                                                         <span class="d-block font-weight-lighter">{{$item->title}}</span>
                                                                         <span class="d-block font-weight-lighter"><span class='font-weight-bold'>SKU: </span> {{$item->sku}}</span>
+                                                                        @if($order->ful_check && $item->vendor_chk)
+                                                                            <span class="d-block font-weight-bolder">Vendors: </span>
+
+                                                                            @foreach ($item->shopify_variant->shopify_product->product_vendor_details as $details)
+                                                                                    <div class='row d-flex ml-0 mb-1'>
+                                                                                        @php
+                                                                                            if(\App\OrderVendor::where('vendor_id', $details->id)->where('line_id', $item->id)->exists()) {
+                                                                                                $checked = 'checked';
+                                                                                            }
+                                                                                            else {
+                                                                                                $checked = '';
+                                                                                            }
+                                                                                        @endphp
+                                                                                        <div class='mr-2'>
+                                                                                            <input type='radio' data-price="{{ $details->cost }}"class='from-control vendors' name='item_vendor_{{$item->id}}' value='{{ $details->id }}'
+                                                                                                   {{ $checked}}>
+                                                                                        </div>
+                                                                                        <div class='mr-2'>
+                                                                                            {{ $details->name }}
+                                                                                        </div>
+                                                                                        <div class='font-weight-bold mr-2'>
+                                                                                            <span class=>${{ number_format($details->cost, 2) }}</span>
+                                                                                        </div>
+                                                                                        <div class='font-weight-bold'>
+                                                                                            <a href='{{ $details->url }}' target='_blank'>Place Order</a>
+                                                                                        </div>
+                                                                                    </div>
+                                                                            @endforeach
+                                                                        @endif
                                                                     </div>
-                                                                    <div class="text-right col-4">
+                                                                    <div class="text-right col-3">
+                                                                        @if($order->ful_check && $item->vendor_chk)
+                                                                            <div class="form-group">
+
+                                                                            <div class="input-group">
+                                                                                <input type="text" name="product_price_{{$item->id}}" value="0.00" class="d-inline form-control product_price">
+                                                                                <div class="input-group-append">
+                                                                                <span class="input-group-text">
+                                                                                    $
+                                                                                </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        @endif
                                                                         <div class="form-group">
                                                                             <div class="input-group">
-                                                                                <input type="number" class="form-control" name="item_fulfill_quantity[]" min="1" max="{{ $item->fulfillable_quantity }}" value="{{ $item->fulfillable_quantity }}">
+                                                                                <input type="number" class="form-control d-inline" name="item_fulfill_quantity[]" min="1" max="{{ $item->fulfillable_quantity }}" value="{{ $item->fulfillable_quantity }}">
                                                                                 <div class="input-group-append">
                                                                                 <span class="input-group-text">
                                                                                     of {{ $item->fulfillable_quantity }}
@@ -526,6 +624,7 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
+
                                                         </div>
                                                     </div>
 

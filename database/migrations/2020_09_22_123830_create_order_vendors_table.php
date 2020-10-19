@@ -18,6 +18,7 @@ class CreateOrderVendorsTable extends Migration
             $table->bigInteger('line_id')->nullable();
             $table->bigInteger('vendor_id')->nullable();
             $table->bigInteger('vendor_product_id')->nullable();
+            $table->string('product_price')->nullable();
             $table->timestamps();
         });
     }

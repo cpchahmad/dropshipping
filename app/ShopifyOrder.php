@@ -90,6 +90,15 @@ class ShopifyOrder extends Model
         }
     }
 
+    public function getUnfulCheckAttribute() {
+        if(is_null($this->fulfillment_status)) {
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
     public function getIsUnfulfilledAttribute() {
         if(is_null($this->fulfillment_status) || $this->fulfillment_status == "partial") {
             return true;
