@@ -97,13 +97,17 @@
         });
 
         $('.print-btn').click(function () {
-            console.log(234);
             var id = $(this).attr('id');
+            var checkbox = $(`.print${id}`).find('.item-checkbox');
+            checkbox.hide();
+
+
             var printContents = $(`.print${id}`).html();
+
+
             var originalContents = document.body.innerHTML;
 
             document.body.innerHTML = printContents;
-            document.body.setAttribute("style","opacity:0.7; -moz-opacity:0.7; filter:alpha(opacity=40)");
 
             window.print();
 
@@ -538,11 +542,12 @@
                                                                         <div class="col-2 align-middle d-flex justify-content-between">
 {{--                                                                            <input type="hidden" name="item_id[]" value="{{ $item->id }}">--}}
                                                                             <input type="checkbox" class="form-control-sm my-auto ml-2 item-checkbox" checked name="item_id{{ $order->id }}[]" value="{{ $item->id }}">
-                                                                            <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">
+                                                                            <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto; opacity: 1;">
                                                                         </div>
                                                                         <div class='col-7'>
-                                                                            <h5 class="d-block font-weight-lighter">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<h5 class="font-weight-bold"> [SKU: {{$item->sku}}]</h5>@endif</h5>
+                                                                            <h5 class="d-block font-weight-bold mb-2">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<h5 class="font-weight-bold mb-1"> [SKU: {{$item->sku}}]</h5>@endif</h5>
                                                                             @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<h5 class="d-block font-weight-bold">{{$item->shopify_variant->title}}</h5>@endif
+                                                                            <h5>{{ $item->prop }}</h5>
                                                                         </div>
                                                                         <div class="text-right col-3">
                                                                             <div class="form-group">
