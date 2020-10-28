@@ -114,6 +114,7 @@
             document.body.setAttribute("style","opacity:1; -moz-opacity:1; filter:alpha(opacity=100)");
 
             document.body.innerHTML = originalContents;
+
         });
 
         $('.add-notes-btn').click(function () {

@@ -97,7 +97,7 @@ class CategoriesController extends Controller
      */
     public function destroy($id)
     {
-        if(Expense::where('category', $id)->exists()) {
+        if(Expense::where('category_id', $id)->exists()) {
             return redirect()->back()->with('error', 'Category cannot be deleted since it is attached to some expense!');
         }
         $category = Category::find($id);
