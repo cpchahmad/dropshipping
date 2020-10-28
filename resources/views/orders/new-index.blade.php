@@ -103,7 +103,7 @@
             var originalContents = document.body.innerHTML;
 
             document.body.innerHTML = printContents;
-            document.body.setAttribute("style","opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=25)");
+            document.body.setAttribute("style","opacity:0.7; -moz-opacity:0.7; filter:alpha(opacity=40)");
 
             window.print();
 
@@ -516,12 +516,12 @@
                                                         <hr>
                                                         <div class="row">
                                                             <div class="col-md-6">
-                                                                <label for="">SHIP TO</label>
-                                                                <span>{{ $order->ship_add }}</span>
+                                                                <h5 for="">SHIP TO</h5>
+                                                                <h5>{{ $order->ship_add }}</h5>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <label for="">BILL TO</label>
-                                                                <span>{{ $order->bill_address }}</span>
+                                                                <h5 for="">BILL TO</h5>
+                                                                <h5>{{ $order->bill_address }}</h5>
                                                             </div>
 
                                                         </div>
@@ -541,8 +541,8 @@
                                                                             <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">
                                                                         </div>
                                                                         <div class='col-7'>
-                                                                            <span class="d-block font-weight-lighter">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<span class=" font-weight-lighter"><span class="font-weight-bold"> [SKU: </span> {{$item->sku}}]</span>@endif</span>
-                                                                            @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
+                                                                            <h5 class="d-block font-weight-lighter">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<h5 class="font-weight-bold"> [SKU: {{$item->sku}}]</h5>@endif</h5>
+                                                                            @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<h5 class="d-block font-weight-bold">{{$item->shopify_variant->title}}</h5>@endif
                                                                         </div>
                                                                         <div class="text-right col-3">
                                                                             <div class="form-group">
@@ -563,9 +563,9 @@
                                                         <div class="row text-center">
                                                             <div class="col-md-12">
                                                                 <h5>Thanks for Shipping with us!</h5>
-                                                                <p>Contact us if you have any questions or concerns regarding the items</p>
+                                                                <h5>Contact us if you have any questions or concerns regarding the items</h5>
                                                                 @if($order->fulfillment_status == 'partial')
-                                                                    <p class="text-danger">This is not your full order and some items might be pending or will come in next shipment. Please contact us for more info</p>
+                                                                    <h5 class="text-danger">This is not your full order and some items might be pending or will come in next shipment. Please contact us for more info</h5>
                                                                 @endif
                                                             </div>
                                                         </div>
