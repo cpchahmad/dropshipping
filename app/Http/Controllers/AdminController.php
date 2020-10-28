@@ -1035,6 +1035,21 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Shipping Price added sucessfully!');
     }
 
+    public function printOrderShipping(Request $request, $id) {
+
+        dd($request->all());
+        $line_items = LineItem::whereIn('id', $request->item_id)->get()->toArray();
+
+        $items = [];
+        foreach ($line_items as $index => $item) {
+            $item['temp_qty'] =  $request->item_fulfill_quantity[$index];
+            array_push($items, $item);
+        }
+
+
+        return view('orders.print')->with('order', ShopifyOrder::find($id))->with('items', $items);
+    }
+
 
 
 

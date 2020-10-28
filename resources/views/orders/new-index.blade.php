@@ -31,6 +31,11 @@
                 }
             });
 
+            $('.item-checkbox').change(function() {
+                $(this).parent().parent().html('');
+            });
+
+
             $(".vendors").change(function(){
                 $(this).parent().parent().parent().parent().find('.product_price').val($(this).attr('data-price'));
                 console.log(234);
@@ -89,6 +94,22 @@
 
         $(".filter-btn").click(function(){
             $(".filters").slideToggle();
+        });
+
+        $('.print-btn').click(function () {
+            console.log(234);
+            var id = $(this).attr('id');
+            var printContents = $(`.print${id}`).html();
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+            document.body.setAttribute("style","opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=25)");
+
+            window.print();
+
+            document.body.setAttribute("style","opacity:1; -moz-opacity:1; filter:alpha(opacity=100)");
+
+            document.body.innerHTML = originalContents;
         });
 
         $('.add-notes-btn').click(function () {
@@ -459,13 +480,109 @@
 
                             </td>
                             <td class="align-middle" style="font-size: 12px !important;">
-                               <div class="btn-group-vertical">
-                                   @if($order->status_check)
+                               <div class="">
+                                   <button type="button" class="btn btn-sm btn-success push w-100" data-toggle="modal" data-target="#printModal{{$order->id}}">Print</button>
+
+                                    @if($order->status_check)
                                         <button type="button" class="btn btn-sm btn-primary push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Mark as Fulfilled</button>
-                                   @endif
+                                    @endif
                                </div>
 
-                               <div class="modal" id="updateModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
+                                <div class="modal" id="printModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="block block-themed block-transparent mb-0">
+                                                <div class="block-header bg-primary-dark">
+                                                    <h3 class="block-title">Packing Slip {{ $order->name }}</h3>
+                                                    <div class="block-options">
+                                                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                                                            <i class="fa fa-fw fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <form action="{{ route('admin.print.order.shipping', $order->id) }}" method="POST">
+                                                    @csrf
+
+                                                    <div class="block-content font-size-sm pb-2 print{{ $order->id }}">
+                                                        <div class="d-flex justify-content-between align-middle">
+                                                            <h3>Packing Slip</h3>
+                                                            <h5>
+                                                                Order {{ $order->name }}
+                                                                <br>
+                                                                {{ $order->date }}
+                                                            </h5>
+                                                        </div>
+
+                                                        <hr>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <label for="">SHIP TO</label>
+                                                                <span>{{ $order->ship_add }}</span>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label for="">BILL TO</label>
+                                                                <span>{{ $order->bill_address }}</span>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <hr>
+                                                        <div class="d-flex justify-content-between align-middle">
+                                                            <h3>Items</h3>
+                                                            <h5>Quantity</h5>
+                                                        </div>
+                                                        <ul class="list-unstyled">
+                                                            @foreach($order->items as $item)
+                                                                    <li class='row d-flex align-items-center py-2 border-bottom item-li' action="{{ route('admin.store.order.vendor') }}" method="POST">
+                                                                        @csrf
+                                                                        <div class="col-2 align-middle d-flex justify-content-between">
+{{--                                                                            <input type="hidden" name="item_id[]" value="{{ $item->id }}">--}}
+                                                                            <input type="checkbox" class="form-control-sm my-auto ml-2 item-checkbox" checked name="item_id{{ $order->id }}[]" value="{{ $item->id }}">
+                                                                            <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto;">
+                                                                        </div>
+                                                                        <div class='col-7'>
+                                                                            <span class="d-block font-weight-lighter">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<span class=" font-weight-lighter"><span class="font-weight-bold"> [SKU: </span> {{$item->sku}}]</span>@endif</span>
+                                                                            @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
+                                                                        </div>
+                                                                        <div class="text-right col-3">
+                                                                            <div class="form-group">
+                                                                                <div class="input-group">
+                                                                                    <input type="number" class="form-control d-inline" name="item_fulfill_quantity{{ $order->id }}[]" min="1" max="{{ $item->quantity }}" value="{{ $item->quantity }}">
+                                                                                    <div class="input-group-append">
+                                                                                <span class="input-group-text">
+                                                                                    of {{ $item->quantity }}
+                                                                                </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    <li/>
+                                                            @endforeach
+                                                        </ul>
+
+                                                        <div class="row text-center">
+                                                            <div class="col-md-12">
+                                                                <h5>Thanks for Shipping with us!</h5>
+                                                                <p>Contact us if you have any questions or concerns regarding the items</p>
+                                                                @if($order->fulfillment_status == 'partial')
+                                                                    <p class="text-danger">This is not your full order and some items might be pending or will come in next shipment. Please contact us for more info</p>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="block-content block-content-full text-right">
+                                                        <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Close</button>
+                                                        <button type="button" class="btn btn-sm btn-primary print-btn" id="{{ $order->id }}"><i class="fa fa-check mr-1"></i>Print</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="modal" id="updateModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="block block-themed block-transparent mb-0">

@@ -122,6 +122,7 @@ class ShopifyOrder extends Model
     public function getBillAddressAttribute() {
         $address_obj = $this->billing_address;
 
+
         if(is_null($address_obj)){
             return "No billing address";
         }
@@ -129,24 +130,15 @@ class ShopifyOrder extends Model
             $address_obj = json_decode($address_obj);
 
             echo "
-                 <div class=\"block-header p-0\">
-                        <h1 class=\"block-title\">ADDRESS</h1> $address_obj->address1
-                 </div>
-                 <div class=\"block-header p-0\">
-                        <h1 class=\"block-title\">CITY </h1> $address_obj->city
-                 </div>
-                 <div class=\"block-header p-0\">
-                        <h1 class=\"block-title\">COUNTRY </h1> $address_obj->country
-                 </div>
-                 <div class=\"block-header p-0\">
-                        <h1 class=\"block-title\">PROVINCE </h1> $address_obj->province
-                 </div>
-                 <div class=\"block-header p-0\">
-                        <h1 class=\"block-title\">ZIP </h1> $address_obj->zip
-                 </div>
-                 <div class=\"block-header p-0\">
-                        <h1 class=\"block-title\">PHONE </h1> $address_obj->phone
-                 </div>
+                <div class='d-flex flex-column'>
+                     <span>$address_obj->first_name $address_obj->last_name</span>
+                     <span>$address_obj->company</span>
+                     <span>$address_obj->address1</span>
+                     <span>$address_obj->address2</span>
+                     <span>$address_obj->city $address_obj->province_code $address_obj->zip</span>
+                     <span>$address_obj->country</span>
+                     <span>$address_obj->phone</span>
+                </div>
                  ";
         }
     }
