@@ -546,7 +546,7 @@
                                                                         </div>
                                                                         <div class='col-7'>
                                                                             <h5 class="d-block font-weight-bold mb-2">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<h5 class="font-weight-bold mb-1"> [SKU: {{$item->sku}}]</h5>@endif</h5>
-                                                                            @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<h5 class="d-block font-weight-bold">{{$item->shopify_variant->title}}</h5>@endif
+                                                                            @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<h5 class="d-block font-weight-bold mb-2">{{$item->shopify_variant->title}}</h5>@endif
                                                                             <h5>{{ $item->prop }}</h5>
                                                                         </div>
                                                                         <div class="text-right col-3">
