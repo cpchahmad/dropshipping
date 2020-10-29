@@ -4,6 +4,11 @@
     <!-- Page JS Plugins CSS -->
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables/dataTables.bootstrap4.css') }}">
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables/buttons-bs4/buttons.bootstrap4.min.css') }}">
+    <style type='text/css'>
+        .li-content{
+           display: none !important;
+        }
+    </style>
 @endsection
 
 @section('js_after')
@@ -32,7 +37,28 @@
             });
 
             $('.item-checkbox').change(function() {
-                $(this).parent().parent().html('');
+                var li = $(this).parent().parent();
+                var id = $(this).attr('id');
+                li.attr('style', 'display: none !important');
+                var modal = $(`#printModal${id}`);
+                console.log(modal);
+                modal.find('.partial-msg').show();
+            });
+
+            $(".qty").change(function(){
+                var value = $(this).val();
+                var max = $(this).attr('max');
+                var id = $(this).data('item');
+                var modal = $(`#printModal${id}`);
+                if(value < max) {
+                    modal.find('.partial-msg').show();
+                }
+                else if(value == max){
+                    modal.find('.partial-msg').hide();
+                }
+                else {
+                    modal.find('.partial-msg').show();
+                }
             });
 
 
@@ -111,9 +137,11 @@
 
             window.print();
 
-            document.body.setAttribute("style","opacity:1; -moz-opacity:1; filter:alpha(opacity=100)");
+            window.location.reload();
+            // document.body.innerHTML = originalContents;
 
-            document.body.innerHTML = originalContents;
+
+
 
         });
 
@@ -542,7 +570,7 @@
                                                                         @csrf
                                                                         <div class="col-2 align-middle d-flex justify-content-between">
 {{--                                                                            <input type="hidden" name="item_id[]" value="{{ $item->id }}">--}}
-                                                                            <input type="checkbox" class="form-control-sm my-auto ml-2 item-checkbox" checked name="item_id{{ $order->id }}[]" value="{{ $item->id }}">
+                                                                            <input type="checkbox" class="form-control-sm my-auto ml-2 item-checkbox" checked name="item_id{{ $order->id }}[]" id="{{$order->id}}" value="{{ $item->id }}">
                                                                             <img src="{{ $item->img }}" alt='No img' class="img-fluid" style="width: 100px; height: auto; opacity: 1;">
                                                                         </div>
                                                                         <div class='col-7'>
@@ -553,7 +581,7 @@
                                                                         <div class="text-right col-3">
                                                                             <div class="form-group">
                                                                                 <div class="input-group">
-                                                                                    <input type="number" class="form-control d-inline" name="item_fulfill_quantity{{ $order->id }}[]" min="1" max="{{ $item->quantity }}" value="{{ $item->quantity }}">
+                                                                                    <input type="number" class="form-control d-inline qty" id="{{ $item->id }}" data-item="{{ $order->id }}" name="item_fulfill_quantity{{ $order->id }}[]" min="1" max="{{ $item->quantity }}" value="{{ $item->quantity }}">
                                                                                     <div class="input-group-append">
                                                                                 <span class="input-group-text">
                                                                                     of {{ $item->quantity }}
@@ -570,9 +598,8 @@
                                                             <div class="col-md-12">
                                                                 <h5>Thanks for Shipping with us!</h5>
                                                                 <h5>Contact us if you have any questions or concerns regarding the items</h5>
-                                                                @if($order->fulfillment_status == 'partial')
-                                                                    <h5 class="text-danger">This is not your full order and some items might be pending or will come in next shipment. Please contact us for more info</h5>
-                                                                @endif
+
+                                                                <h5 class="text-danger partial-msg" style="display: none; ">This is not your full order and some items might be pending or will come in next shipment. Please contact us for more info</h5>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -663,7 +690,7 @@
                                                                         @endif
                                                                         <div class="form-group">
                                                                             <div class="input-group">
-                                                                                <input type="number" class="form-control d-inline" name="item_fulfill_quantity[]" min="1" max="{{ $item->fulfillable_quantity }}" value="{{ $item->fulfillable_quantity }}">
+                                                                                <input type="number"  class="form-control d-inline "  name="item_fulfill_quantity[]" min="1" max="{{ $item->fulfillable_quantity }}" value="{{ $item->fulfillable_quantity }}">
                                                                                 <div class="input-group-append">
                                                                                 <span class="input-group-text">
                                                                                     of {{ $item->fulfillable_quantity }}
