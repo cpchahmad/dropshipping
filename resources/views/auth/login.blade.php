@@ -14,12 +14,11 @@
                                 <!-- Sign In Block -->
                                 <div class="block block-themed block-fx-shadow mb-0">
                                     <div class="block-header">
-                                        <h3 class="block-title">Log In</h3>
+                                        <h1 class="text-white pl-4 pb-0 mb-2">Welcome</h1>
                                     </div>
                                     <div class="block-content">
-                                        <div class="p-sm-3 px-lg-4 py-lg-5">
-                                            <h1 class="mb-2">DropShipping</h1>
-                                            <p>Welcome, please login.</p>
+                                        <div class="p-sm-3 px-lg-4 py-lg-3">
+                                            <p>Please login.</p>
 
                                             <form class="" action="{{ route('login') }}" method="POST">
                                                 @csrf
