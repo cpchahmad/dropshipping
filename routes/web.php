@@ -22,14 +22,14 @@ Route::get('/', function () {
 Auth::routes();
 
 
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => 'auth'], function () {
     // Resource Routes
     Route::resource('shops', 'ShopsController');
     Route::resource('products', 'ProductsController');
     Route::post('/product/{id}/add/variant/images', 'ProductsController@addVariantImages')->name('add.images');
     Route::get('/delete/product/image/{id}', 'ProductsController@deleteProductImage')->name('delete.product.image');
     Route::get('/delete/variant/image/{id}', 'ProductsController@deleteVariantImage')->name('delete.variant.image');
-    Route::get('/delete/variant/{id}', 'ProductsController@deleteProductVariant')->name('delete.product.variant');
+    Route::get('/delete/varphp iant/{id}', 'ProductsController@deleteProductVariant')->name('delete.product.variant');
     Route::get('/product/variant/update/{id}', 'ProductsController@updateProductVariant')->name('update.product.variant');
     Route::put('/product/variant/edit/{id}', 'ProductsController@updateVariant')->name('edit.product.variant');
     Route::resource('expenses', 'ExpenseController');
@@ -92,3 +92,8 @@ Route::group(['middleware' => ['auth']], function () {
 //    $response = $api->rest('GET', '/admin/orders/2729380380758.json', null, [], true);
 //    dd($response);
 //});
+
+
+Route::get('/test', function () {
+   echo "34";
+})->middleware('auth');
