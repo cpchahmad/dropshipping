@@ -3,10 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" id="css-main" href="{{ asset('css/oneui.css') }}">
 
-
-        <title>Nitesh Corp</title>
+        <title>Laravel</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
@@ -77,11 +75,9 @@
                 </div>
             @endif
 
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <div class="title m-b-md">
-                        Nitesh Corp
-                    </div>
+            <div class="content">
+                <div class="title m-b-md">
+                    Nitesh Corp
                 </div>
             </div>
         </div>
