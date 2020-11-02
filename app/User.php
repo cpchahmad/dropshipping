@@ -41,6 +41,9 @@ class User extends Authenticatable
 
     public function getRoleAttribute() {
         $role_array = $this->getRoleNames();
+        if(count($role_array) == 2) {
+            return 'Shipping Team, Source Team';
+        }
         if($role_array[0] == 'shipping_team') {
             return 'Shipping Team';
         }
@@ -54,7 +57,12 @@ class User extends Authenticatable
     }
 
     public function getRoleNameAttribute() {
-        return $this->roles->first()->name === "shipping_team" ? 'Shipping Team' : 'Source Team';
+        if(count($this->roles) ==2) {
+            return 'Shipping Team & Source Team';
+        }
+        else {
+            return $this->roles->first()->name === "shipping_team" ? 'Shipping Team' : 'Source Team';
+        }
     }
 
     public function getProductCountAttribute() {

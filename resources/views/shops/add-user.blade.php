@@ -3,11 +3,18 @@
 @section('css_before')
     <link rel="stylesheet" href="{{ asset('js/plugins/slick-carousel/slick.css') }}">
     <link rel="stylesheet" href="{{ asset('js/plugins/slick-carousel/slick-theme.css') }}">
+    <link rel="stylesheet" href="{{ asset('js/plugins/select2/css/select2.min.css') }}">
 @endsection
 
 @section('js_after')
     <!-- Page JS Plugins -->
     <script src="{{ asset('js/plugins/slick-carousel/slick.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/select2/js/select2.full.min.js') }}"></script>
+    <script>jQuery(function(){ One.helpers(['select2']); });</script>
+
+
+
+
 @endsection
 
 @section('content')
@@ -156,14 +163,18 @@
 
                                                             <div class="form-group">
                                                                 <label for="">Type</label>
-                                                                <select type="text" class="form-control @error('type') is-invalid @enderror" id="" name="type">
 
-                                                                    @if($user->hasRole('shipping_team'))
-                                                                        <option value="shipping_team" selected>Shipping Team</option>
-                                                                        <option value="outsource_team">Source Team</option>
-                                                                    @else
+                                                                <select type="text" class="form-control @error('type') is-invalid @enderror js-select2"  name="type[]" style="width: 100%;" data-placeholder="Choose Role.." multiple>
+
+                                                                    @if($user->hasRole('shipping_team') && $user->hasRole('outsource_team'))
+                                                                        <option value="shipping_team" selected >Shipping Team</option>
+                                                                        <option value="outsource_team" selected>Source Team</option>
+                                                                    @elseif($user->hasRole('outsource_team'))
                                                                         <option value="shipping_team" >Shipping Team</option>
                                                                         <option value="outsource_team" selected>Source Team</option>
+                                                                    @else
+                                                                        <option value="shipping_team" selected>Shipping Team</option>
+                                                                        <option value="outsource_team">Source Team</option>
                                                                     @endif
 
 
@@ -219,7 +230,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="">Name</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="" name="name" placeholder="Enter team name..">
+                            <input type="text" class="form-control @error('name') is-invalid @enderror"  name="name" placeholder="Enter team name..">
                             @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -227,7 +238,7 @@
 
                         <div class="form-group">
                             <label for="">Email</label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="" name="email" placeholder="Enter team email.." >
+                            <input type="email" class="form-control @error('email') is-invalid @enderror"  name="email" placeholder="Enter team email.." >
                             @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -235,7 +246,7 @@
 
                         <div class="form-group">
                             <label for="">Password</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="" name="password" placeholder="Enter password.." >
+                            <input type="password" class="form-control @error('password') is-invalid @enderror"  name="password" placeholder="Enter password.." >
                             @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -243,7 +254,7 @@
 
                         <div class="form-group">
                             <label for="">Confirm password</label>
-                            <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="" name="password_confirmation" placeholder="Re-enter password.." >
+                            <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" name="password_confirmation" placeholder="Re-enter password.." >
                             @error('password_confirmation')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -251,8 +262,8 @@
 
                         <div class="form-group">
                             <label for="">Type</label>
-                            <select type="text" class="form-control @error('type') is-invalid @enderror" id="" name="type">
-                                <option value="" disabled selected>Select user type</option>
+                            <select class="@error('type') is-invalid @enderror js-select2 form-control" name="type[]" style="width: 100%;" data-placeholder="Choose Role.." multiple>
+                                <option ></option>
                                 <option value="shipping_team">Shipping Team</option>
                                 <option value="outsource_team">Source Team</option>
                             </select>

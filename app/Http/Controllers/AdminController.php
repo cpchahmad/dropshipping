@@ -446,6 +446,8 @@ class AdminController extends Controller
     }
 
     public function storeUser(Request $request) {
+
+
         $this->validate($request, [
             'name' =>  'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -460,8 +462,9 @@ class AdminController extends Controller
            'password' => Hash::make($request->password)
         ]);
 
-        $user->assignRole($request->type);
-
+        foreach ($request->type as $type) {
+            $user->assignRole($type);
+        }
 
         return redirect()->back()->with('success', 'User created successfully!');
 
@@ -715,7 +718,9 @@ class AdminController extends Controller
     public function deleteUser($id) {
         $user = User::find($id);
 
-        $user->removeRole($user->roles->first());
+        foreach ($user->roles as $role) {
+            $user->removeRole($role);
+        }
 
         $user->delete();
 
@@ -723,8 +728,9 @@ class AdminController extends Controller
     }
 
     public function editUser(Request $request, $id) {
-        $user = User::find($id);
 
+
+        $user = User::find($id);
         if($request->password) {
            $this->validate($request, [
                'password' => 'required|string|min:8|confirmed',
@@ -744,8 +750,12 @@ class AdminController extends Controller
             'email' => $request->email,
         ]);
 
-        $user->removeRole($user->roles->first());
-        $user->assignRole($request->type);
+        foreach ($user->roles as $role) {
+            $user->removeRole($role);
+        }
+        foreach ($request->type as $type) {
+            $user->assignRole($type);
+        }
 
 
         return redirect()->back()->with('success', 'User Updated successfully!');
