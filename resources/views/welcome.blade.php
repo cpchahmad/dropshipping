@@ -6,7 +6,7 @@
         <link rel="stylesheet" id="css-main" href="{{ asset('css/oneui.css') }}">
 
 
-        <title>Nitesh Corporation</title>
+        <title>Nitesh Corp</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
