@@ -240,6 +240,7 @@
                             <th class="text-center" style="width: 80px;">Order</th>
                             <th class="text-center">Products</th>
                             <th class="text-center" style="width: 210px;">Fulfillment Tracking and Shipping</th>
+                            <th class="text-center" style="width: 150px;">Payment Method</th>
                             <th class="text-center" style="width: 150px;">Shipping Address</th>
                             <th class="text-center" style="width: 220px;">Notes</th>
                             <th class="text-center" style="width: 120px;"></th>
@@ -463,7 +464,9 @@
                                     Not Added Yet!
                                 @endif
                             </td>
-
+                            <td class="align-middle" style="font-size: 12px !important;">
+                                {{ $order->ship_method }}
+                            </td>
                             <td class="align-middle" style="font-size: 12px !important;">
                                 {{ $order->ship_add }}
                             </td>

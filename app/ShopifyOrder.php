@@ -327,6 +327,16 @@ class ShopifyOrder extends Model
 
     }
 
+    public function getShipMethodAttribute() {
+        $shipping_method = json_decode($this->shipping_lines);
+        if($shipping_method != null) {
+            return $shipping_method[0]->title;
+        }
+        else {
+            return 'Not provided';
+        }
+    }
+
     public function getLineItemDetailsAttribute() {
         $line_item_obj = json_decode($this->line_items);
 
