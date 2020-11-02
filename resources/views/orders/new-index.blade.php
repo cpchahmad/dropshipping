@@ -220,6 +220,11 @@
             </div>
         </form>
 
+        @role('admin')
+        <div class="text-right">
+            <a class="btn btn-primary" href="{{ route('admin.sync.order') }}"> <i class="fa fa-sync"></i> Sync Orders </a>
+        </div>
+        @endrole
 
         <!-- Dynamic Table Full -->
         <div class="block mt-3">
@@ -464,7 +469,7 @@
                                     Not Added Yet!
                                 @endif
                             </td>
-                            <td class="align-middle" style="font-size: 12px !important;">
+                            <td class="align-middle text-center" style="font-size: 12px !important;">
                                 {{ $order->ship_method }}
                             </td>
                             <td class="align-middle" style="font-size: 12px !important;">

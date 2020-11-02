@@ -51,6 +51,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('/admin/edit/vendor/{id}', 'AdminController@editVendorForProduct')->name('admin.edit.product.vendor');
     Route::get('/admin/users', 'AdminController@getUsers')->name('admin.users');
     Route::post('/admin/store/user', 'AdminController@storeUser')->name('admin.store.user');
+    Route::get('/admin/sync/orders', 'AdminController@adminSyncOrders')->name('admin.sync.order');
     Route::get('/admin/show/user/{id}', 'AdminController@showUser')->name('admin.show.user');
     Route::delete('/admin/delete/user/{id}', 'AdminController@deleteUser')->name('admin.delete.user');
     Route::put('/admin/edit/user/{id}', 'AdminController@editUser')->name('admin.edit.user');

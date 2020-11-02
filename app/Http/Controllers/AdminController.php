@@ -123,6 +123,25 @@ class AdminController extends Controller
         ]);
     }
 
+    public function adminSyncOrders() {
+        $api = ShopsController::config();
+        $orders = $api->rest('GET', '/admin/orders.json', [
+            'limit' => 100,
+        ]);
+
+        if(!$orders['errors'])
+        {
+            foreach ($orders['body']['container']['orders'] as $order) {
+                $this->createOrder($order);
+            }
+
+            return redirect()->back()->with('success', 'Orders Synced Successfully!');
+        }
+
+
+        return redirect()->back()->with('error', 'Your Request cannot be procceed, Please try again!');
+    }
+
     public function storeOrders($next = null)
     {
         $api = ShopsController::config();
