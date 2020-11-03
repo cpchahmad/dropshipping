@@ -77,7 +77,7 @@ class AdminController extends Controller
         if ($request->has('search')) {
             $orders->where('name', 'LIKE', '%' . $request->input('search') . '%');
         }
-        else if($request->has('status')){
+        if($request->has('status')){
             if($request->input('status') == 'unfulfilled'){
                 $orders->where('fulfillment_status', null);
             }
@@ -107,13 +107,13 @@ class AdminController extends Controller
                 $orders->where('fulfillment_status', $request->input('status'));
             }
         }
-        else if($request->query('customer')){
+        if($request->query('customer')){
             $customer_id = $request->query('customer');
             $orders->where('customer', $customer_id)->get();
         }
 
 
-        $orders = $orders->orderByRaw("CAST(name as UNSIGNED) DESC")->paginate(30);
+        $orders = $orders->orderBy('processed_at', 'DESC')->paginate(30);
 
 
         return view('orders.new-index')->with([
