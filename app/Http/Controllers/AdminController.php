@@ -113,7 +113,7 @@ class AdminController extends Controller
         }
 
 
-        $orders = $orders->orderBy('name', 'ASC')->paginate(30);
+        $orders = $orders->orderBy('name', 'DESC')->paginate(30);
 
 
         return view('orders.new-index')->with([
