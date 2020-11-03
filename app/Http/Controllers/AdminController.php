@@ -946,7 +946,7 @@ class AdminController extends Controller
         $data = [
             "webhook"=> [
                 "topic"=> "orders/create",
-                "address"=> "https://nitesh-corp.com/webhook/order/create",
+                "address"=> "https://nitesh-corp.com/webhook/orders-create",
                 "format"=> "json",
             ]
         ];
@@ -956,7 +956,7 @@ class AdminController extends Controller
         $data = [
             "webhook"=> [
                 "topic"=> "orders/updated",
-                "address"=> "https://nitesh-corp.com/webhook/order/update",
+                "address"=> "https://nitesh-corp.com/webhook/orders-update",
                 "format"=> "json",
             ]
         ];
@@ -966,7 +966,7 @@ class AdminController extends Controller
         $data = [
             "webhook"=> [
                 "topic"=> "products/create",
-                "address"=> "https://nitesh-corp.com/webhook/product/create",
+                "address"=> "https://nitesh-corp.com/webhook/products-create",
                 "format"=> "json",
             ]
         ];
@@ -976,7 +976,7 @@ class AdminController extends Controller
         $data = [
             "webhook"=> [
                 "topic"=> "products/update",
-                "address"=> "https://nitesh-corp.com/webhook/product/update",
+                "address"=> "https://nitesh-corp.com/webhook/products-update",
                 "format"=> "json",
             ]
         ];
@@ -991,9 +991,9 @@ class AdminController extends Controller
     }
 
     public function productCreateWebhook(Request $request){
-        $input = file_get_contents('php://input');
-        $product = json_decode($input, true);
-        $this->createProduct($product);
+//        $input = file_get_contents('php://input');
+//        $product = json_decode($input, true);
+//        $this->createProduct($product);
         $webhook = new Webhook();
         $webhook->content = 'aa';
         $webhook->save();
