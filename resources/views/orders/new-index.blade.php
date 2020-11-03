@@ -310,11 +310,11 @@
                                                 @if(!(is_null($item->sku)) && $item->sku != '')<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
                                                 @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
-                                                @if($item->shopify_variant->shopify_product->product_images->count() > 0)
-                                                    <button type="button" class="btn btn-sm btn-dark mt-2 show-images-btn" id="{{ $item->id }}" >
-                                                        View all images
-                                                    </button>
-                                                @endif
+
+                                                <button type="button" class="btn btn-sm btn-dark mt-2 show-images-btn" id="{{ $item->id }}" >
+                                                    View all images
+                                                </button>
+
                                                 <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
                                                     <div class="modal-dialog modal-md" role="document">
                                                         <div class="modal-content">
@@ -330,7 +330,7 @@
 
                                                                 <div class="block-content font-size-sm pb-5">
                                                                     <div class="row">
-                                                                        <p>Loading..</p>
+                                                                        <p class="pl-2">Loading..</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -415,11 +415,11 @@
                                                 <span class="d-block font-weight-lighter">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<span class=" font-weight-lighter"><span class="font-weight-bold"> [SKU: </span> {{$item->sku}}]</span>@endif</span>
                                                 @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
-                                                @if($item->shopify_variant->shopify_product->product_images->count() > 0)
-                                                    <button type="button" class="btn btn-sm btn-dark mt-2 show-images-btn" id="{{ $item->id }}" >
-                                                        View all images
-                                                    </button>
-                                                @endif
+
+                                                <button type="button" class="btn btn-sm btn-dark mt-2 show-images-btn" id="{{ $item->id }}" >
+                                                    View all images
+                                                </button>
+
                                                 <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
                                                     <div class="modal-dialog modal-md" role="document">
                                                         <div class="modal-content">
@@ -435,7 +435,7 @@
 
                                                                 <div class="block-content font-size-sm pb-5">
                                                                     <div class="row">
-                                                                        <p>Loading..</p>
+                                                                        <p class="pl-2">Loading..</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
