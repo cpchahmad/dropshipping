@@ -311,9 +311,9 @@
                                                 @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
 
-                                                <button type="button" class="btn btn-sm btn-dark mt-2 show-images-btn" id="{{ $item->id }}" >
+                                                <a type="button" class="btn-link mt-2 show-images-btn" style="color: #0e7a8a !important; text-decoration: underline;" id="{{ $item->id }}" >
                                                     View all images
-                                                </button>
+                                                </a>
 
                                                 <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
                                                     <div class="modal-dialog modal-md" role="document">
@@ -416,9 +416,9 @@
                                                 @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
 
-                                                <button type="button" class="btn btn-sm btn-dark mt-2 show-images-btn" id="{{ $item->id }}" >
+                                                <a type="button" class="btn-link mt-2 show-images-btn" style="color: #0e7a8a !important; text-decoration: underline;" id="{{ $item->id }}" >
                                                     View all images
-                                                </button>
+                                                </a>
 
                                                 <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
                                                     <div class="modal-dialog modal-md" role="document">
