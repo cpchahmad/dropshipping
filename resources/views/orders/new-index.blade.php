@@ -307,7 +307,7 @@
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="block-content font-size-sm pb-5">
+                                                                <div class="block-content font-size-sm pb-5 ">
                                                                     <div class="row">
                                                                         @if($item->shopify_variant->shopify_product->product_images->count() > 0)
                                                                             @foreach($item->shopify_variant->shopify_product->product_images as $image)
