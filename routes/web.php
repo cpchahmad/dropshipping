@@ -89,11 +89,13 @@ Route::post('webhook/orders-create', 'AdminController@orderCreateWebhook');
 Route::post('webhook/orders-update', 'AdminController@orderUpdatedWebhook');
 //
 //
-//Route::get('/test', function() {
-//    $api = ShopsController::config();
-//    $response = $api->rest('GET', '/admin/orders/2729380380758.json', null, [], true);
-//    dd($response);
-//});
+Route::get('/test', function() {
+    $api = ShopsController::config();
+    $response = $api->rest('GET', '/admin/orders/count.json', null, [], true);
+    dd($response);
+});
+
+
 
 
 
