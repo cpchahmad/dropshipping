@@ -994,6 +994,8 @@ class AdminController extends Controller
 //        $input = file_get_contents('php://input');
 //        $product = json_decode($input, true);
 //        $this->createProduct($product);
+
+        // For Testing if webhook is working
         $webhook = new Webhook();
         $webhook->content = 'aa';
         $webhook->save();
