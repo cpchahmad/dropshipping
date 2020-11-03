@@ -83,17 +83,17 @@ Route::get('create/webhooks', 'AdminController@createWebhooks');
 Route::get('get/webhooks', 'AdminController@getWebhooks');
 Route::get('delete/webhooks', 'AdminController@deleteWebhooks');
 
-Route::post('/sync', 'AdminController@productCreateWebhook');
+Route::post('webhook/products-create', 'AdminController@productCreateWebhook');
 Route::post('webhook/products-update', 'AdminController@productUpdateWebhook');
 Route::post('webhook/orders-create', 'AdminController@orderCreateWebhook');
 Route::post('webhook/orders-update', 'AdminController@orderUpdatedWebhook');
 //
 //
-Route::get('/test', function() {
-    $api = ShopsController::config();
-    $response = $api->rest('GET', '/admin/orders/count.json', null, [], true);
-    dd($response);
-});
+//Route::get('/test', function() {
+//    $api = ShopsController::config();
+//    $response = $api->rest('GET', '/admin/orders/count.json', null, [], true);
+//    dd($response);
+//});
 
 
 
