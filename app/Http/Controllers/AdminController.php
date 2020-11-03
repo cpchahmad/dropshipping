@@ -924,25 +924,64 @@ class AdminController extends Controller
         return view('shops.log')->with('logs', $logs)->with('users', User::all());
     }
 
+    public function deleteWebhooks() {
+        $api = ShopsController::config();
+        $response = $api->rest('GET', '/admin/webhooks.json', null, [], true);
+
+        $webhook_ids = [];
+        foreach ($response['body']['webhooks'] as $webhook) {
+            array_push($webhook_ids, $webhook->id);
+        }
+
+        foreach ($webhook_ids as $id) {
+            $api->rest('DELETE', '/admin/webhooks/'.$id.'.json');
+        }
+
+    }
+
 
     public function createWebhooks(Request $request) {
         $api = ShopsController::config();
-        $product_array = [
+
+        $data = [
             "webhook"=> [
-                "topic"=> "customers/create",
-                "address"=> "https://phpstack-176572-1491780.cloudwaysapps.com/webhook/product/create",
+                "topic"=> "orders/create",
+                "address"=> "https://nitesh-corp.com/webhook/order/create",
                 "format"=> "json",
             ]
         ];
-        $order_array = [
+        $api->rest('POST', '/admin/webhooks.json', $data, [], true);
+        $data = [];
+
+        $data = [
             "webhook"=> [
-                "topic"=> "customers/update",
-                "address"=> "https://phpstack-176572-1491780.cloudwaysapps.com/webhook/order/create",
+                "topic"=> "orders/updated",
+                "address"=> "https://nitesh-corp.com/webhook/order/update",
                 "format"=> "json",
             ]
         ];
-        $api->rest('POST', '/admin/webhooks.json', $product_array, [], true);
-        $api->rest('POST', '/admin/webhooks.json', $order_array, [], true);
+        $api->rest('POST', '/admin/webhooks.json', $data, [], true);
+        $data = [];
+
+        $data = [
+            "webhook"=> [
+                "topic"=> "products/create",
+                "address"=> "https://nitesh-corp.com/webhook/product/create",
+                "format"=> "json",
+            ]
+        ];
+        $api->rest('POST', '/admin/webhooks.json', $data, [], true);
+        $data = [];
+
+        $data = [
+            "webhook"=> [
+                "topic"=> "products/update",
+                "address"=> "https://nitesh-corp.com/webhook/product/update",
+                "format"=> "json",
+            ]
+        ];
+        $api->rest('POST', '/admin/webhooks.json', $data, [], true);
+        $data = [];
     }
 
     public function getWebhooks() {
@@ -952,12 +991,12 @@ class AdminController extends Controller
     }
 
     public function productCreateWebhook(Request $request){
-//        $input = file_get_contents('php://input');
-//        $product = json_decode($input, true);
-//        $this->createProduct($product);
-            $webhook = new Webhook();
-            $webhook->content = 'aa';
-            $webhook->save();
+        $input = file_get_contents('php://input');
+        $product = json_decode($input, true);
+        $this->createProduct($product);
+        $webhook = new Webhook();
+        $webhook->content = 'aa';
+        $webhook->save();
     }
 
     public function orderCreateWebhook(Request $request){

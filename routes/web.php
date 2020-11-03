@@ -77,15 +77,15 @@ Route::group(['middleware' => 'auth'], function () {
 
 
 
-// Webhooks
-//Route::get('create/webhooks', 'AdminController@createWebhooks');
-//Route::get('get/webhooks', 'AdminController@getWebhooks');
-//
-//Route::post('webhook/product/create', 'AdminController@productCreateWebhook');
-//Route::post('webhook/product/delete', 'AdminController@productDeleteWebhook');
-//Route::post('webhook/order/create', 'AdminController@orderCreateWebhook');
-//Route::post('webhook/customer/create', 'AdminController@customerCreateWebhook');
-//Route::post('webhook/order/fulfilled', 'AdminController@orderFulfilledWebhook');
+//Webhooks
+Route::get('create/webhooks', 'AdminController@createWebhooks');
+Route::get('get/webhooks', 'AdminController@getWebhooks');
+Route::get('delete/webhooks', 'AdminController@deleteWebhooks');
+
+Route::post('webhook/product/create', 'AdminController@productCreateWebhook');
+Route::post('webhook/product/update', 'AdminController@productUpdateWebhook');
+Route::post('webhook/order/create', 'AdminController@orderCreateWebhook');
+Route::post('webhook/order/update', 'AdminController@orderUpdatedWebhook');
 //
 //
 //Route::get('/test', function() {
