@@ -70,7 +70,13 @@
             $('.show-images-btn').click(function() {
                 var id  = $(this).attr('id');
                 var modal = $(`#imagesModal${id}`);
+                modal.css({ "display": "block",
+                            "width": "100%",
+                            "height": "100vh",
+                            "background": "rgba(0,0,0,0.3)"});
                 modal.show();
+
+
 
                 $.ajax({
                     url: `/admin/show/line/images/${id}`,
