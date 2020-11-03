@@ -289,7 +289,45 @@
                                                 @if(!(is_null($item->sku)) && $item->sku != '')<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif
                                                 @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
-                                                @if($order->ful_check && $item->vendor_chk)
+                                                @if($item->shopify_variant->shopify_product->product_images->count() > 0)
+                                                <button type="button" class="btn btn-sm btn-dark mt-2" data-toggle="modal" data-target="#imagesModal{{$item->id}}">
+                                                    View all images
+                                                </button>
+                                                @endif
+                                                <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
+                                                    <div class="modal-dialog modal-md" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="block block-themed block-transparent mb-0">
+                                                                <div class="block-header bg-primary-dark">
+                                                                    <h3 class="block-title">Images</h3>
+                                                                    <div class="block-options">
+                                                                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                                                                            <i class="fa fa-fw fa-times"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="block-content font-size-sm pb-5">
+                                                                    <div class="row">
+                                                                        @if($item->shopify_variant->shopify_product->product_images->count() > 0)
+                                                                            @foreach($item->shopify_variant->shopify_product->product_images as $image)
+                                                                                <div class="col-md-4">
+                                                                                    <a href='{{ $image->src }}' target='_blank'>
+                                                                                        <img src="{{ $image->src }}" alt='No Image Found' class="img-fluid hover-img" style="width: 100%; height: auto; z-index: 9999;">
+                                                                                    </a>
+                                                                                </div>
+                                                                            @endforeach
+                                                                        @else
+                                                                            <p>No Images</p>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
                                                     <span class="d-block font-weight-bolder">Vendors: </span>
 
@@ -366,7 +404,44 @@
                                                 <span class="d-block font-weight-lighter">{{$item->title}}     @if(!(is_null($item->sku)) && $item->sku != '')<span class=" font-weight-lighter"><span class="font-weight-bold"> [SKU: </span> {{$item->sku}}]</span>@endif</span>
                                                 @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
-                                                @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
+                                                @if($item->shopify_variant->shopify_product->product_images->count() > 0)
+                                                    <button type="button" class="btn btn-sm btn-dark mt-2" data-toggle="modal" data-target="#imagesModal{{$item->id}}">
+                                                        View all images
+                                                    </button>
+                                                @endif
+                                                <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
+                                                    <div class="modal-dialog modal-md" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="block block-themed block-transparent mb-0">
+                                                                <div class="block-header bg-primary-dark">
+                                                                    <h3 class="block-title">Images</h3>
+                                                                    <div class="block-options">
+                                                                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                                                                            <i class="fa fa-fw fa-times"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="block-content font-size-sm pb-5">
+                                                                    <div class="row">
+                                                                        @if($item->shopify_variant->shopify_product->product_images->count() > 0)
+                                                                            @foreach($item->shopify_variant->shopify_product->product_images as $image)
+                                                                                <div class="col-md-4">
+                                                                                    <a href='{{ $image->src }}' target='_blank'>
+                                                                                        <img src="{{ $image->src }}" alt='No Image Found' class="img-fluid hover-img" style="width: 100%; height: auto; z-index: 9999;">
+                                                                                    </a>
+                                                                                </div>
+                                                                            @endforeach
+                                                                        @else
+                                                                            <p>No Images</p>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
 
                                                 @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">

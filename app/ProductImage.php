@@ -17,4 +17,8 @@ class ProductImage extends Model
         'variant_ids'
     ];
 
+    public function shopify_product() {
+        return $this->belongsTo(ShopifyProduct::class);
+    }
+
 }

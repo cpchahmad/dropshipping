@@ -57,6 +57,10 @@ class ShopifyProduct extends Model
         return $this->hasMany(ProductVendorDetail::class);
     }
 
+    public function product_images() {
+        return $this->hasMany(ProductImage::class, 'product_id');
+    }
+
 
     public function getVariantDetailsAttribute() {
 
