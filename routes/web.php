@@ -46,6 +46,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/admin/reject/products/{id}', 'AdminController@rejectProduct')->name('admin.reject.products');
     Route::get('/admin/products/{id}', 'AdminController@showProductDetails')->name('admin.products.details');
     Route::get('/admin/orders/{id}', 'AdminController@showOrderDetails')->name('admin.orders.details');
+    Route::get('/admin/show/line/images/{id}', 'AdminController@showLineImages')->name('admin.show.line.images');
     Route::post('/admin/add/vendor/{id}', 'AdminController@addVendorForProduct')->name('admin.add.product.vendor');
     Route::delete('/admin/delete/vendor/{id}', 'AdminController@deleteVendorForProduct')->name('admin.delete.product.vendor');
     Route::put('/admin/edit/vendor/{id}', 'AdminController@editVendorForProduct')->name('admin.edit.product.vendor');

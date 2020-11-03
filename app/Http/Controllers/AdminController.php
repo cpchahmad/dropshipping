@@ -1118,6 +1118,15 @@ class AdminController extends Controller
         return view('orders.print')->with('order', ShopifyOrder::find($id))->with('items', $items);
     }
 
+    public function showLineImages($id) {
+        $item = LineItem::find($id);
+
+        $images = $item->shopify_variant->shopify_product->product_images;
+
+        return view('orders.line_images')->with('images',$images)->render();
+
+    }
+
 
 
 
