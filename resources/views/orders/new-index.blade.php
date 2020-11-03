@@ -294,34 +294,34 @@
                                                     View all images
                                                 </button>
                                                 @endif
-                                                <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
-                                                    <div class="modal-dialog modal-md" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="block block-themed block-transparent mb-0">
-                                                                <div class="block-header bg-primary-dark">
-                                                                    <h3 class="block-title">Images</h3>
-                                                                    <div class="block-options">
-                                                                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
-                                                                            <i class="fa fa-fw fa-times"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
+{{--                                                <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">--}}
+{{--                                                    <div class="modal-dialog modal-md" role="document">--}}
+{{--                                                        <div class="modal-content">--}}
+{{--                                                            <div class="block block-themed block-transparent mb-0">--}}
+{{--                                                                <div class="block-header bg-primary-dark">--}}
+{{--                                                                    <h3 class="block-title">Images</h3>--}}
+{{--                                                                    <div class="block-options">--}}
+{{--                                                                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">--}}
+{{--                                                                            <i class="fa fa-fw fa-times"></i>--}}
+{{--                                                                        </button>--}}
+{{--                                                                    </div>--}}
+{{--                                                                </div>--}}
 
-                                                                <div class="block-content font-size-sm pb-5 ">
-                                                                    <div class="row">
-                                                                        @foreach($item->shopify_variant->shopify_product->product_images as $image)
-                                                                            <div class="col-md-4">
-                                                                                <a href='{{ $image->src }}' target='_blank'>
-                                                                                    <img src="{{ $image->src }}" alt='No Image Found' class="img-fluid hover-img" style="width: 100%; height: auto; z-index: 9999;">
-                                                                                </a>
-                                                                            </div>
-                                                                        @endforeach
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+{{--                                                                <div class="block-content font-size-sm pb-5 ">--}}
+{{--                                                                    <div class="row">--}}
+{{--                                                                        @foreach($item->shopify_variant->shopify_product->product_images as $image)--}}
+{{--                                                                            <div class="col-md-4">--}}
+{{--                                                                                <a href='{{ $image->src }}' target='_blank'>--}}
+{{--                                                                                    <img src="{{ $image->src }}" alt='No Image Found' class="img-fluid hover-img" style="width: 100%; height: auto; z-index: 9999;">--}}
+{{--                                                                                </a>--}}
+{{--                                                                            </div>--}}
+{{--                                                                        @endforeach--}}
+{{--                                                                    </div>--}}
+{{--                                                                </div>--}}
+{{--                                                            </div>--}}
+{{--                                                        </div>--}}
+{{--                                                    </div>--}}
+{{--                                                </div>--}}
 
                                             @if($order->ful_check && $item->vendor_chk)
                                                     <input type="hidden" value="{{ $item->id }}" name="line[]">
@@ -405,34 +405,34 @@
                                                         View all images
                                                     </button>
                                                 @endif
-                                                <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
-                                                    <div class="modal-dialog modal-md" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="block block-themed block-transparent mb-0">
-                                                                <div class="block-header bg-primary-dark">
-                                                                    <h3 class="block-title">Images</h3>
-                                                                    <div class="block-options">
-                                                                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
-                                                                            <i class="fa fa-fw fa-times"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
+{{--                                                <div class="modal" id="imagesModal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">--}}
+{{--                                                    <div class="modal-dialog modal-md" role="document">--}}
+{{--                                                        <div class="modal-content">--}}
+{{--                                                            <div class="block block-themed block-transparent mb-0">--}}
+{{--                                                                <div class="block-header bg-primary-dark">--}}
+{{--                                                                    <h3 class="block-title">Images</h3>--}}
+{{--                                                                    <div class="block-options">--}}
+{{--                                                                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">--}}
+{{--                                                                            <i class="fa fa-fw fa-times"></i>--}}
+{{--                                                                        </button>--}}
+{{--                                                                    </div>--}}
+{{--                                                                </div>--}}
 
-                                                                <div class="block-content font-size-sm pb-5">
-                                                                    <div class="row">
-                                                                            @foreach($item->shopify_variant->shopify_product->product_images as $image)
-                                                                                <div class="col-md-4">
-                                                                                    <a href='{{ $image->src }}' target='_blank'>
-                                                                                        <img src="{{ $image->src }}" alt='No Image Found' class="img-fluid hover-img" style="width: 100%; height: auto; z-index: 9999;">
-                                                                                    </a>
-                                                                                </div>
-                                                                            @endforeach
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+{{--                                                                <div class="block-content font-size-sm pb-5">--}}
+{{--                                                                    <div class="row">--}}
+{{--                                                                            @foreach($item->shopify_variant->shopify_product->product_images as $image)--}}
+{{--                                                                                <div class="col-md-4">--}}
+{{--                                                                                    <a href='{{ $image->src }}' target='_blank'>--}}
+{{--                                                                                        <img src="{{ $image->src }}" alt='No Image Found' class="img-fluid hover-img" style="width: 100%; height: auto; z-index: 9999;">--}}
+{{--                                                                                    </a>--}}
+{{--                                                                                </div>--}}
+{{--                                                                            @endforeach--}}
+{{--                                                                    </div>--}}
+{{--                                                                </div>--}}
+{{--                                                            </div>--}}
+{{--                                                        </div>--}}
+{{--                                                    </div>--}}
+{{--                                                </div>--}}
                                             @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
 
                                                 @if($order->ful_check && $item->vendor_chk)
