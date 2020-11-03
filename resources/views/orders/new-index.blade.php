@@ -311,7 +311,7 @@
                                                 @if(!(is_null($item->fulfillment_response)))<span class="badge badge-primary font-weight-bold" style="font-size: 12px; !important;">This Line is fulfilled in: {{$item->fulfillment_response}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
 
-                                                <a type="button" class="btn-link mt-2 show-images-btn" style="color: #0e7a8a !important; text-decoration: underline;" id="{{ $item->id }}" >
+                                                <a type="button" class="btn-link mt-2 show-images-btn" style=" text-decoration: underline;" id="{{ $item->id }}" >
                                                     View all images
                                                 </a>
 
@@ -416,7 +416,7 @@
                                                 @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 <span> {{ $item->prop }}</span>
 
-                                                <a type="button" class="btn-link mt-2 show-images-btn" style="color: #0e7a8a !important; text-decoration: underline;" id="{{ $item->id }}" >
+                                                <a type="button" class="btn-link mt-2 show-images-btn" style=" text-decoration: underline;" id="{{ $item->id }}" >
                                                     View all images
                                                 </a>
 
