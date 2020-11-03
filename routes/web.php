@@ -82,10 +82,10 @@ Route::get('create/webhooks', 'AdminController@createWebhooks');
 Route::get('get/webhooks', 'AdminController@getWebhooks');
 Route::get('delete/webhooks', 'AdminController@deleteWebhooks');
 
-Route::post('webhook/product/create', 'AdminController@productCreateWebhook');
-Route::post('webhook/product/update', 'AdminController@productUpdateWebhook');
-Route::post('webhook/order/create', 'AdminController@orderCreateWebhook');
-Route::post('webhook/order/update', 'AdminController@orderUpdatedWebhook');
+Route::post('webhook/products-create', 'AdminController@productCreateWebhook');
+Route::post('webhook/products-update', 'AdminController@productUpdateWebhook');
+Route::post('webhook/orders-create', 'AdminController@orderCreateWebhook');
+Route::post('webhook/orders-update', 'AdminController@orderUpdatedWebhook');
 //
 //
 //Route::get('/test', function() {
