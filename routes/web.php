@@ -85,7 +85,7 @@ Route::get('delete/webhooks', 'AdminController@deleteWebhooks');
 
 Route::post('webhook/products-create', 'AdminController@productCreateWebhook');
 Route::post('webhook/products-update', 'AdminController@productUpdateWebhook');
-Route::post('webhook/orders-create', 'AdminController@orderCreateWebhook');
+Route::any('webhook/orders-create', 'AdminController@orderCreateWebhook');
 Route::post('webhook/orders-update', 'AdminController@orderUpdatedWebhook');
 //
 //
