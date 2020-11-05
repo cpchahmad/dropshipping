@@ -1002,9 +1002,14 @@ class AdminController extends Controller
     }
 
     public function orderCreateWebhook(Request $request){
-        $input = file_get_contents('php://input');
-        $order = json_decode($input, true);
-        $this->createOrder($order);
+//        $input = file_get_contents('php://input');
+//        $order = json_decode($input, true);
+//        $this->createOrder($order);
+
+        $webhook = new Webhook();
+        $webhook->content = 'aa';
+        $webhook->save();
+
     }
 
 
