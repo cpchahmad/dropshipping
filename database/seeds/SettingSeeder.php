@@ -20,10 +20,10 @@ class SettingSeeder extends Seeder
 
         \App\Shop::create([
             'shop_domain' => 'elightin.myshopify.com',
-            'api_key' => ' 0bf5a0bc1a50d0c57a43a7097f791dfc',
-            'api_secret' => '4836695a8deb3db20f50ce41e02aca00',
-            'api_version' => '2020-01',
-            'api_password' => '13e58d41bef4e7386d3f49144f3c65c4'
+            'api_key' => ' fbf86340f6fe88c3050b8d645a187d92',
+            'api_secret' => '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',
+            'api_version' => '2020-10',
+            'api_password' => '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'
         ]);
 
 //        \App\Shop::create([

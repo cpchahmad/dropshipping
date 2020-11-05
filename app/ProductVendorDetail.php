@@ -13,6 +13,11 @@ class ProductVendorDetail extends Model
       'cost',
       'moq',
       'leads_time',
+      'weight',
+      'height',
+      'length',
+      'width',
+      'volume',
     ];
 
 

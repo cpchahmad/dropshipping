@@ -91,7 +91,7 @@ class ShopifyProduct extends Model
                     echo "
                         <div class='d-flex align-items-center  py-2'>
                             <div>
-                                <a href='$image_src' target='_blank'>
+                                <a href='$image_src' class=\"fancybox\" rel=\"group\">
                                     <img src='$image_src' alt='No img' class=\"img-fluid hover-img\" style='width: 70px; height: auto;'>
                                 </a>
                             </div>
@@ -113,7 +113,7 @@ class ShopifyProduct extends Model
                     echo "
                         <div class='d-flex align-items-center border-bottom py-2'>
                             <div>
-                                <a href='$image_src' target='_blank'>
+                                <a href='$image_src' class=\"fancybox\" rel=\"group\">
                                     <img src='$image_src' alt='No img' class=\"img-fluid hover-img\" style='width: 70px; height: auto;'>
                                 </a>
                             </div>
@@ -122,6 +122,75 @@ class ShopifyProduct extends Model
 
                                 <span><span class=\"font-weight-bold\">SKU: </span>$varient->sku</span><br>
                                 <span><strong>$$varient->price</strong></span>
+                            </div>
+                        </div>
+                    ";
+                }
+
+                $counter++;
+
+            }
+        }
+    }
+
+    public function getVariantDetailsForNonAdminAttribute() {
+
+
+        $varients = ShopifyVarient::where('shopify_product_id',$this->id)->get();
+        $image_src = null;
+        $counter = 0;
+
+        if(count($varients) >0){
+            foreach ($varients as $varient) {
+                $image_id = $varient->image_id;
+                $image = ProductImage::where('shopify_id', $image_id)->first();
+                if($image){
+                    $image_src = $image->src;
+                }
+                else{
+                    $image_src = $this->getImgAttribute();
+                }
+
+                if( $counter == count( $varients ) - 1) {
+                    if($varient->title == 'Default Title') {
+                        $title = '';
+                    }
+                    else {
+                        $title = $varient->title;
+                    }
+
+                    echo "
+                        <div class='d-flex align-items-center  py-2'>
+                            <div>
+                                <a href='$image_src' class=\"fancybox\" rel=\"group\">
+                                    <img src='$image_src' alt='No img' class=\"img-fluid hover-img\" style='width: 70px; height: auto;'>
+                                </a>
+                            </div>
+                            <div class='ml-2 text-left'>
+                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\">$title</span>
+                                <span><span class=\"font-weight-bold\">SKU: </span>$varient->sku</span><br>
+                            </div>
+                        </div>
+                    ";
+                }
+                else{
+                    if($varient->title == 'Default Title') {
+                        $title = '';
+                    }
+                    else {
+                        $title = $varient->title;
+                    }
+                    echo "
+                        <div class='d-flex align-items-center border-bottom py-2'>
+                            <div>
+                                <a href='$image_src' class=\"fancybox\" rel=\"group\">
+                                    <img src='$image_src' alt='No img' class=\"img-fluid hover-img\" style='width: 70px; height: auto;'>
+                                </a>
+                            </div>
+                            <div class='ml-2 text-left'>
+                                <span class=\"d-block font-weight-bold\" style=\"font-size: 14px;\"> $title</span>
+
+                                <span><span class=\"font-weight-bold\">SKU: </span>$varient->sku</span><br>
                             </div>
                         </div>
                     ";

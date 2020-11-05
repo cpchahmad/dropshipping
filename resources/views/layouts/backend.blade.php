@@ -242,11 +242,19 @@
 
                         @if( \Illuminate\Support\Facades\Auth::user()->role == "Shipping Team, Source Team")
                             <li class="nav-main-item">
+                                <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('shopify.products') }}">
+                                    <i class="nav-main-link-icon si si-layers"></i>
+                                    <span class="nav-main-link-name">Shopify Products</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-main-item">
                                 <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('products.index') }}">
                                     <i class="nav-main-link-icon si si-layers"></i>
                                     <span class="nav-main-link-name">Products</span>
                                 </a>
                             </li>
+
                             <li class="nav-main-item">
                                 <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.orders') }}">
                                     <i class="nav-main-link-icon si si-bag"></i>
@@ -254,6 +262,12 @@
                                 </a>
                             </li>
                         @elseif(\Illuminate\Support\Facades\Auth::user()->role == "Shipping Team")
+                        <li class="nav-main-item">
+                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('shopify.products') }}">
+                                <i class="nav-main-link-icon si si-layers"></i>
+                                <span class="nav-main-link-name">Products</span>
+                            </a>
+                        </li>
 
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.orders') }}">
@@ -264,11 +278,19 @@
                         @elseif(\Illuminate\Support\Facades\Auth::user()->role == "Source Team")
 
                         <li class="nav-main-item">
-                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('products.index') }}">
+                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('shopify.products') }}">
                                 <i class="nav-main-link-icon si si-layers"></i>
-                                <span class="nav-main-link-name">Products</span>
+                                <span class="nav-main-link-name">Shopify Products</span>
                             </a>
                         </li>
+
+                        <li class="nav-main-item">
+                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('products.index') }}">
+                                <i class="nav-main-link-icon si si-layers"></i>
+                                <span class="nav-main-link-name">My Products</span>
+                            </a>
+                        </li>
+
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.orders') }}">
                                 <i class="nav-main-link-icon si si-bag"></i>
@@ -277,13 +299,7 @@
                         </li>
                         @endif
 
-                        <!-- <li class="nav-main-heading">More</li>
-                        <li class="nav-main-item open">
-                            <a class="nav-main-link" href="/">
-                                <i class="nav-main-link-icon si si-globe"></i>
-                                <span class="nav-main-link-name">Landing</span>
-                            </a>
-                        </li> -->
+
                     </ul>
                 </div>
                 <!-- END Side Navigation -->

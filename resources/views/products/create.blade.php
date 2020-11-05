@@ -253,6 +253,18 @@
                         <td class=" ">
                             <input type="text" class="form-control" name="leads_time[]">
                         </td>
+                        <td class=" ">
+                            <input type="number" required step="any" class="form-control" name="weight[]">
+                        </td>
+                        <td class=" ">
+                            <input type="number" step="any" class="form-control" name="length[]">
+                        </td>
+                        <td class=" ">
+                            <input type="number" step="any" class="form-control" name="width[]">
+                        </td>
+                        <td class=" ">
+                            <input type="number" step="any" class="form-control" name="height[]">
+                        </td>
                     </tr>
                 `);
         }
@@ -414,11 +426,15 @@
                                     <table class="table table-striped table-vcenter">
                                         <thead>
                                         <tr>
-                                            <th>Vendor name</th>
-                                            <th style="width: 12%;">Product cost</th>
-                                            <th>Product link</th>
-                                            <th style="width: 8%;">Minimum quantity</th>
-                                            <th>Leads time</th>
+                                            <th style="width: 10%">Vendor name</th>
+                                            <th style="width: 4%;">Product cost</th>
+                                            <th style="width: 14%;">Product link</th>
+                                            <th style="width: 2%;">Minimum quantity</th>
+                                            <th style="width: 12%">Leads time</th>
+                                            <th style="width: 4%;">Weight</th>
+                                            <th style="width: 4%;">Length</th>
+                                            <th style="width: 4%;">Width</th>
+                                            <th style="width: 4%;">Height</th>
                                         </tr>
                                         </thead>
                                         <tbody id="dynamicTable">
@@ -437,6 +453,18 @@
                                             </td>
                                             <td class=" ">
                                                 <input type="text" class="form-control" name="leads_time[]">
+                                            </td>
+                                            <td class=" ">
+                                                <input type="number" required step="any" class="form-control" name="weight[]">
+                                            </td>
+                                            <td class=" ">
+                                                <input type="number" step="any" class="form-control" name="length[]">
+                                            </td>
+                                            <td class=" ">
+                                                <input type="number" step="any" class="form-control" name="width[]">
+                                            </td>
+                                            <td class=" ">
+                                                <input type="number" step="any" class="form-control" name="height[]">
                                             </td>
                                         </tr>
                                         </tbody>

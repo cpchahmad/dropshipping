@@ -24,6 +24,10 @@ class Product extends Model
         return $this->hasMany(ProductVendorDetail::class, 'shopify_product_id');
     }
 
+    public function user() {
+        return $this->belongsTo(User::class, 'outsource_id');
+    }
+
     public function getImageAttribute() {
         $first_image = $this->prod_images()->first();
 

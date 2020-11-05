@@ -4,6 +4,7 @@
     <!-- Page JS Plugins CSS -->
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables/dataTables.bootstrap4.css') }}">
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables/buttons-bs4/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" type="text/css" media="screen" />
     <style type='text/css'>
         .li-content{
            display: none !important;
@@ -20,12 +21,16 @@
     <script src="{{ asset('js/plugins/datatables/buttons/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables/buttons/buttons.flash.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables/buttons/buttons.colVis.min.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
 
     <!-- Page JS Code -->
     <script src="{{ asset('js/pages/tables_datatables.js') }}"></script>
 
     <script>
         $(document).ready(function () {
+            $(".fancybox").fancybox();
+
             $(".status_select").change(function(){
                 var id = $(this).find("option:selected").val();
 
@@ -75,13 +80,11 @@
                             "height": "100vh",
                             "background": "rgba(0,0,0,0.3)"});
                 modal.show();
-
-
-
                 $.ajax({
                     url: `/admin/show/line/images/${id}`,
                     type: 'GET',
                     success: function(res) {
+
                         modal.find('.row').empty();
                         modal.find('.row').append(res);
                     }
@@ -306,7 +309,7 @@
                                             <form class='row d-flex align-items-center py-2' action="{{ route('admin.store.order.vendor') }}" method="POST">
                                             @csrf
                                             <div class="col-3">
-                                                <a href='{{ $item->img }}' target='_blank'>
+                                                <a class="fancybox" rel="group" href='{{ $item->img }}'>
                                                     <img src="{{ $item->img }}" alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto; z-index: 9999;">
                                                 </a>
                                             </div>
@@ -351,14 +354,6 @@
                                                     @foreach ($item->shopify_variant->shopify_product->product_vendor_details as $details)
                                                         <li class='mb-2 ml-3 list-unstyled font-weight-bold'>
                                                             <div class='row d-flex'>
-{{--                                                                <div class='mr-2'>--}}
-{{--                                                                    <input type='radio' class='from-control' name='vendors[]' value='{{ $details->id }}'--}}
-{{--                                                                    @if($details->checkbox)--}}
-{{--                                                                        checked--}}
-{{--                                                                    @endif>--}}
-{{--                                                                    <input type='hidden' value='{{ $details->shopify_product_id }}'>--}}
-{{--                                                                    <input type='hidden' value='{{ $details->id }}'>--}}
-{{--                                                                </div>--}}
                                                                 <div class='mr-2'>
                                                                     {{ $details->name }}
                                                                 </div>
@@ -413,7 +408,7 @@
                                             <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">
                                             @csrf
                                             <div class="col-3">
-                                                <a href='{{ $item->img }}' target='_blank'>
+                                                <a class="fancybox" rel="group" href='{{ $item->img }}' >
                                                     <img src="{{ $item->img }}" alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto;">
                                                 </a>
                                             </div>

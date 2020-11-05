@@ -91,6 +91,11 @@ class ProductsController extends Controller
             $vendor_name_array = [];
             $moq_array = [];
             $lead_time_array = [];
+            $weight_array = [];
+            $length_array = [];
+            $width_array = [];
+            $height_array = [];
+            $volume_array = [];
 
 
             $product_price_array = array_merge($product_price_array, $request->product_price);
@@ -98,6 +103,10 @@ class ProductsController extends Controller
             $vendor_name_array = array_merge($vendor_name_array, $request->vendor_name);
             $moq_array = array_merge($moq_array, $request->moq);
             $lead_time_array = array_merge($lead_time_array, $request->leads_time);
+            $weight_array = array_merge($weight_array, $request->weight);
+            $length_array = array_merge($length_array, $request->length);
+            $width_array = array_merge($width_array, $request->width);
+            $height_array = array_merge($height_array, $request->height);
 
 
             for($i =0; $i< count($vendor_name_array); $i++) {
@@ -110,6 +119,11 @@ class ProductsController extends Controller
                         'url' => $product_link_array[$i],
                         'moq' => $moq_array[$i],
                         'leads_time' => $lead_time_array[$i],
+                        'weight' => $weight_array[$i],
+                        'length' => $length_array[$i],
+                        'width' => $width_array[$i],
+                        'height' => $height_array[$i],
+                        'volume' => ($length_array[$i] * $width_array[$i] * $height_array[$i])
                     ]);
                 }
 
@@ -218,6 +232,13 @@ class ProductsController extends Controller
             $vendor_name_array = [];
             $moq_array = [];
             $lead_time_array = [];
+            $weight_array = [];
+            $length_array = [];
+            $width_array = [];
+            $height_array = [];
+            $volume_array = [];
+
+
 
 
             $product_price_array = array_merge($product_price_array, $request->product_price);
@@ -225,6 +246,10 @@ class ProductsController extends Controller
             $vendor_name_array = array_merge($vendor_name_array, $request->vendor_name);
             $moq_array = array_merge($moq_array, $request->moq);
             $lead_time_array = array_merge($lead_time_array, $request->leads_time);
+            $weight_array = array_merge($weight_array, $request->weight);
+            $length_array = array_merge($length_array, $request->length);
+            $width_array = array_merge($width_array, $request->width);
+            $height_array = array_merge($height_array, $request->height);
 
 
             for($i =0; $i< count($vendor_name_array); $i++) {
@@ -237,6 +262,11 @@ class ProductsController extends Controller
                         'url' => $product_link_array[$i],
                         'moq' => $moq_array[$i],
                         'leads_time' => $lead_time_array[$i],
+                        'weight' => $weight_array[$i],
+                        'length' => $length_array[$i],
+                        'width' => $width_array[$i],
+                        'height' => $height_array[$i],
+                        'volume' => ($length_array[$i] * $width_array[$i] * $height_array[$i])
                     ]);
                 }
 

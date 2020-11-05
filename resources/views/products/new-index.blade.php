@@ -4,6 +4,8 @@
     <!-- Page JS Plugins CSS -->
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables/dataTables.bootstrap4.css') }}">
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables/buttons-bs4/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" type="text/css" media="screen" />
+
 @endsection
 
 @section('js_after')
@@ -15,11 +17,13 @@
     <script src="{{ asset('js/plugins/datatables/buttons/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables/buttons/buttons.flash.min.js') }}"></script>
     <script src="{{ asset('js/plugins/datatables/buttons/buttons.colVis.min.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 
     <!-- Page JS Code -->
     <script src="{{ asset('js/pages/tables_datatables.js') }}"></script>
     <script>
         $(document).ready(function() {
+            $(".fancybox").fancybox();
             $('.rejectBtn').click(function (event) {
                 event.preventDefault();
                 var id = $(this).attr('id');
@@ -75,6 +79,10 @@
                 var moqs = $(`input[name=moqs${id}]`).val();
                 var lead_time = $(`input[name=lead_time${id}]`).val();
                 var price = $(`input[name=price${id}]`).val();
+                var weight = $(`input[name=weight${id}]`).val();
+                var length = $(`input[name=length${id}]`).val();
+                var width = $(`input[name=width${id}]`).val();
+                var height = $(`input[name=height${id}]`).val();
 
                 $.ajaxSetup({
                     headers: {
@@ -84,7 +92,7 @@
 
                 $.ajax({
                     url: `/admin/edit/vendor/${id}`,
-                    data: { name : name, link : link, moqs : moqs, lead_time : lead_time, price : price},
+                    data: { name : name, link : link, moqs : moqs, lead_time : lead_time, price : price, weight : weight, length : length, width : width, height : height},
                     type: 'PUT',
                     success: function(res) {
                         var response = res.data;
@@ -96,6 +104,11 @@
                             $('li#'+id).find('.leads').html(res.vendor.leads_time);
                             $('li#'+id).find('.url').html(res.vendor.url);
                             $('li#'+id).find('.moq').html(res.vendor.moq);
+                            $('li#'+id).find('.width').html(res.vendor.width);
+                            $('li#'+id).find('.height').html(res.vendor.height);
+                            $('li#'+id).find('.weight').html(res.vendor.weight);
+                            $('li#'+id).find('.length').html(res.vendor.length);
+                            $('li#'+id).find('.volume').html(res.vendor.volume);
                             $('#editModal'+id).modal('hide');
                         }
                     }
@@ -122,6 +135,18 @@
                         </td>
                         <td class=" ">
                             <input type="text" class="form-control" name="leads_time[]">
+                        </td>
+                        <td class=" ">
+                            <input type="number" required step="any" class="form-control" name="weight[]">
+                        </td>
+                        <td class=" ">
+                            <input type="number" step="any" class="form-control" name="length[]">
+                        </td>
+                        <td class=" ">
+                            <input type="number" step="any" class="form-control" name="width[]">
+                        </td>
+                        <td class=" ">
+                            <input type="number" step="any" class="form-control" name="height[]">
                         </td>
                     </tr>
                 `);
@@ -210,7 +235,9 @@
                                             <tr>
                                                 <td class="">
                                                     <div class="text-left pt-3">
+                                                        <a href='{{ $product->img }}'  class="fancybox" rel="group">
                                                             <img src="{{ $product->img }}" alt="No Image Availble" style="width: 90px; height: auto" class="hover-img">
+                                                        </a>
                                                     </div>
                                                     <div class=" d-flex flex-column " style="font-size: 12px !important;">
                                                         <span class="font-weight-bolder" style="font-size: 14px !important;">{{ $product->title}}</span>
@@ -234,6 +261,11 @@
                                                                             <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">MOQ:</span> <span class="moq">{{$details->moq}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Weight:</span> <span class="weight">{{$details->weight}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Length:</span> <span class="length">{{$details->length}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Width:</span> <span class="width">{{$details->width}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Height:</span> <span class="height">{{$details->height}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Volume:</span> <span class="volume">{{$details->volume}}</span></span>
                                                                             <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                         </div>
                                                                         <div class="btn-group align-items-center">
@@ -253,6 +285,11 @@
                                                                             <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">MOQ:</span> <span class="moq">{{$details->moq}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Weight:</span> <span class="weight">{{$details->weight}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Length:</span> <span class="length">{{$details->length}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Width:</span> <span class="width">{{$details->width}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Height:</span> <span class="height">{{$details->height}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Volume:</span> <span class="volume">{{$details->volume}}</span></span>
                                                                             <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                         </div>
                                                                         <div class="btn-group align-items-center">
@@ -292,7 +329,7 @@
                                                                     </div>
 
                                                                     <div class="modal fade" id="editModal{{$details->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                                        <div class="modal-dialog"  style="max-width: 70% !important;" role="document">
+                                                                        <div class="modal-dialog"  style="max-width: 90% !important;" role="document">
                                                                             <div class="modal-content">
                                                                                 <div class="block block-themed block-transparent mb-0">
                                                                                     <div class="block-header bg-primary-dark">
@@ -312,11 +349,15 @@
                                                                                                 <table class="table table-striped table-vcenter">
                                                                                                     <thead>
                                                                                                     <tr>
-                                                                                                        <th>Vendor name</th>
-                                                                                                        <th style="width: 12%;">Product cost</th>
-                                                                                                        <th>Product link</th>
-                                                                                                        <th style="width: 8%;">Minimum quantity</th>
-                                                                                                        <th>Leads time</th>
+                                                                                                        <th style="width: 10%">Vendor name</th>
+                                                                                                        <th style="width: 4%;">Product cost</th>
+                                                                                                        <th style="width: 14%;">Product link</th>
+                                                                                                        <th style="width: 2%;">Minimum quantity</th>
+                                                                                                        <th style="width: 12%">Leads time</th>
+                                                                                                        <th style="width: 4%;">Weight</th>
+                                                                                                        <th style="width: 4%;">Length</th>
+                                                                                                        <th style="width: 4%;">Width</th>
+                                                                                                        <th style="width: 4%;">Height</th>
                                                                                                     </tr>
                                                                                                     </thead>
                                                                                                     <tbody>
@@ -335,6 +376,18 @@
                                                                                                         </td>
                                                                                                         <td class=" ">
                                                                                                             <input type="text" class="form-control" name="lead_time{{$details->id}}" value="{{ $details->leads_time}}"}>
+                                                                                                        </td>
+                                                                                                        <td class=" ">
+                                                                                                            <input type="number" required step="any" class="form-control" name="weight{{$details->id}}" value="{{ $details->weight}}">
+                                                                                                        </td>
+                                                                                                        <td class=" ">
+                                                                                                            <input type="number" step="any" class="form-control" name="length{{$details->id}}" value="{{ $details->length}}">
+                                                                                                        </td>
+                                                                                                        <td class=" ">
+                                                                                                            <input type="number" step="any" class="form-control" name="width{{$details->id}}" value="{{ $details->width}}">
+                                                                                                        </td>
+                                                                                                        <td class=" ">
+                                                                                                            <input type="number" step="any" class="form-control" name="height{{$details->id}}" value="{{ $details->height}}">
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                     </tbody>
@@ -364,7 +417,7 @@
                                                     <button type="button" class="btn btn-sm btn-primary push" data-toggle="modal" data-target="#addModal{{$product->id}}">Add Vendor</button>
 
                                                     <div class="modal p-0" id="addModal{{$product->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
-                                                        <div class="modal-dialog" style="max-width: 70% !important;" role="document">
+                                                        <div class="modal-dialog" style="max-width: 90% !important;" role="document">
                                                             <div class="modal-content">
                                                                 <div class="block block-themed block-transparent mb-0">
                                                                     <div class="block-header bg-primary-dark">
@@ -387,11 +440,15 @@
                                                                                     <table class="table table-striped table-vcenter">
                                                                                         <thead>
                                                                                         <tr>
-                                                                                            <th>Vendor name</th>
-                                                                                            <th style="width: 12%;">Product cost</th>
-                                                                                            <th>Product link</th>
-                                                                                            <th style="width: 8%;">Minimum quantity</th>
-                                                                                            <th>Leads time</th>
+                                                                                            <th style="width: 10%">Vendor name</th>
+                                                                                            <th style="width: 4%;">Product cost</th>
+                                                                                            <th style="width: 14%;">Product link</th>
+                                                                                            <th style="width: 2%;">Minimum quantity</th>
+                                                                                            <th style="width: 12%">Leads time</th>
+                                                                                            <th style="width: 4%;">Weight</th>
+                                                                                            <th style="width: 4%;">Length</th>
+                                                                                            <th style="width: 4%;">Width</th>
+                                                                                            <th style="width: 4%;">Height</th>
                                                                                         </tr>
                                                                                         </thead>
                                                                                         <tbody id="dynamicTable">
@@ -410,6 +467,18 @@
                                                                                                 </td>
                                                                                                 <td class=" ">
                                                                                                     <input type="text" class="form-control" name="leads_time[]">
+                                                                                                </td>
+                                                                                                <td class=" ">
+                                                                                                    <input type="number" required step="any" class="form-control" name="weight[]">
+                                                                                                </td>
+                                                                                                <td class=" ">
+                                                                                                    <input type="number" step="any" class="form-control" name="length[]">
+                                                                                                </td>
+                                                                                                <td class=" ">
+                                                                                                    <input type="number" step="any" class="form-control" name="width[]">
+                                                                                                </td>
+                                                                                                <td class=" ">
+                                                                                                    <input type="number" step="any" class="form-control" name="height[]">
                                                                                                 </td>
                                                                                             </tr>
                                                                                         </tbody>
@@ -468,7 +537,9 @@
                                         <tr>
                                             <td class="">
                                                 <div class="text-left ">
-                                                    <img src="{{ $product->image }}" alt="No Image Availble" style="width: 70px; height: auto" class="hover-img">
+                                                    <a href='{{ $product->image }}'  class="fancybox" rel="group">
+                                                        <img src="{{ $product->image }}" alt="No Image Availble" style="width: 70px; height: auto" class="hover-img">
+                                                    </a>
                                                 </div>
                                                 <div class=" d-flex flex-column" style="font-size: 12px !important;">
                                                     <span class="font-weight-bolder" style="font-size: 14px !important;">{{ $product->title}}</span>
@@ -524,6 +595,7 @@
                                                     </ul>
                                                 @endif
                                                 <span><strong style="font-size: 16px !important">Approved Status:</strong>{{ $product->approved_status }}</span><br>
+                                                <span><strong style="font-size: 16px !important">Source Team: </strong> {{ $product->user->email }}</span><br>
                                             </td>
 
                                             <td class="text-center align-middle" style="font-size: 12px !important;">

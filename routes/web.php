@@ -39,6 +39,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/admin/customers', 'AdminController@getCustomers')->name('admin.customers');
     Route::get('/admin/orders', 'AdminController@getOrders')->name('admin.orders');
     Route::get('/admin/products', 'AdminController@getProducts')->name('admin.products');
+    Route::get('/all/products', 'AdminController@allProducts')->name('shopify.products');
     Route::get('/admin/products/reports', 'AdminController@getReports')->name('admin.products.reports');
     Route::get('/admin/users/logs', 'AdminController@getLogs')->name('admin.logs');
     Route::get('/admin/outsource/products', 'AdminController@getOutsourceProducts')->name('admin.outsource.products');
