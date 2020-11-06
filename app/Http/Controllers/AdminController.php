@@ -36,7 +36,10 @@ class AdminController extends Controller
     public function getProducts(Request $request) {
 
         if ($request->has('search')) {
-            $products = ShopifyProduct::where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
+            $products = ShopifyProduct::where('title', 'LIKE', '%' . $request->input('search') . '%')->orWhereHas('shopify_varients', function($q) use ($request) {
+                $q->where('sku', 'LIKE', '%' . $request->input('search') . '%');
+            })->paginate(20);
+
             $prods = Product::where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
         }
         else{

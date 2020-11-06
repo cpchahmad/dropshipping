@@ -106,11 +106,11 @@
                             $('li#'+id).find('.leads').html(res.vendor.leads_time);
                             $('li#'+id).find('.url').html(res.vendor.url);
                             $('li#'+id).find('.moq').html(res.vendor.moq);
-                            $('li#'+id).find('.width').html(res.vendor.width);
-                            $('li#'+id).find('.height').html(res.vendor.height);
-                            $('li#'+id).find('.weight').html(res.vendor.weight);
-                            $('li#'+id).find('.length').html(res.vendor.length);
-                            $('li#'+id).find('.volume').html(res.vendor.volume);
+                            $('li#'+id).find('.width').html(res.vendor.width + " cm");
+                            $('li#'+id).find('.height').html(res.vendor.height + " cm");
+                            $('li#'+id).find('.weight').html(res.vendor.weight + " kg");
+                            $('li#'+id).find('.length').html(res.vendor.length + " cm");
+                            $('li#'+id).find('.volume').html(res.vendor.volume + " cm");
                             $('#editModal'+id).modal('hide');
                         }
                     }
@@ -254,11 +254,11 @@
                                                                             <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">MOQ:</span> <span class="moq">{{$details->moq}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Weight:</span> <span class="weight">{{$details->weight}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Length:</span> <span class="length">{{$details->length}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Width:</span> <span class="width">{{$details->width}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Height:</span> <span class="height">{{$details->height}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Volume:</span> <span class="volume">{{$details->volume}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Weight:</span> <span class="weight">{{$details->weight}} kg</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Length:</span> <span class="length">{{$details->length ? $details->length."cm" : 'Not provided'}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Width:</span> <span class="width">{{$details->width ? $details->width."cm" : 'Not provided'}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Height:</span> <span class="height">{{$details->height ? $details->height."cm" : 'Not provided'}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Volume:</span> <span class="volume">{{$details->volume ? $details->volume."cm" : 'Not provided'}}</span></span>
                                                                             <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                         </div>
                                                                         <div class="btn-group align-items-center">
@@ -278,11 +278,11 @@
                                                                             <span class="d-block"><span class="font-weight-bold">Cost:</span> $<span class="cost">{{number_format($details->cost, 2)}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">MOQ:</span> <span class="moq">{{$details->moq}}</span></span>
                                                                             <span class="d-block"><span class="font-weight-bold">Lead time:</span> <span class="leads">{{$details->leads_time}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Weight:</span> <span class="weight">{{$details->weight}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Length:</span> <span class="length">{{$details->length}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Width:</span> <span class="width">{{$details->width}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Height:</span> <span class="height">{{$details->height}}</span></span>
-                                                                            <span class="d-block"><span class="font-weight-bold">Volume:</span> <span class="volume">{{$details->volume}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Weight:</span> <span class="weight">{{$details->weight}} kg</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Length:</span> <span class="length">{{$details->length ? $details->length."cm" : 'Not provided'}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Width:</span> <span class="width">{{$details->width ? $details->width."cm" : 'Not provided'}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Height:</span> <span class="height">{{$details->height ? $details->height."cm" : 'Not provided'}}</span></span>
+                                                                            <span class="d-block"><span class="font-weight-bold">Volume:</span> <span class="volume">{{$details->volume ? $details->volume."cm" : 'Not provided'}}</span></span>
                                                                             <a href="{{$details->url }}" target=_blank\" class="url"> View Product </a >
                                                                         </div>
                                                                         <div class="btn-group align-items-center">
