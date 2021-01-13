@@ -47,7 +47,7 @@
                                 <div class="col-lg-12">
                                     <div class="form-group">
                                             <label for="">Shop Domain</label>
-                                            <input type="text" class="form-control @error('shop_domain') is-invalid @enderror" id="" name="shop_domain" placeholder="Enter shop domain.." value="{{ old('shop_domain', $shop->shop_domain) }}">
+                                            <input type="text" class="form-control @error('shop_domain') is-invalid @enderror" id="" name="shop_domain" placeholder="Enter shop domain.." value="">
                                             @error('shop_domain')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -55,7 +55,7 @@
 
                                     <div class="form-group">
                                         <label for="">API key</label>
-                                        <input type="text" class="form-control @error('api_key') is-invalid @enderror" id="" name="api_key" placeholder="Enter API key.." value="{{ old('api_key', $shop->api_key) }}">
+                                        <input type="text" class="form-control @error('api_key') is-invalid @enderror" id="" name="api_key" placeholder="Enter API key.." value="">
                                         @error('api_key')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -63,7 +63,7 @@
 
                                     <div class="form-group">
                                         <label for="">API secret</label>
-                                        <input type="text" class="form-control @error('api_secret') is-invalid @enderror" id="" name="api_secret" placeholder="Enter API secret.." value="{{ old('api_secret', $shop->api_secret) }}">
+                                        <input type="text" class="form-control @error('api_secret') is-invalid @enderror" id="" name="api_secret" placeholder="Enter API secret.." value="">
                                         @error('api_secret')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -71,7 +71,7 @@
 
                                     <div class="form-group">
                                         <label for="">API password</label>
-                                        <input type="text" class="form-control @error('api_password') is-invalid @enderror" id="" name="api_password" placeholder="Enter API password.." value="{{ old('api_password', $shop->api_password) }}">
+                                        <input type="text" class="form-control @error('api_password') is-invalid @enderror" id="" name="api_password" placeholder="Enter API password.." value="">
                                         @error('api_password')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -79,7 +79,7 @@
 
                                     <div class="form-group">
                                         <label for="">API version</label>
-                                        <input type="text" class="form-control @error('api_version') is-invalid @enderror" id="" name="api_version" placeholder="Enter API version.." value="{{ old('api_version', $shop->api_version) }}">
+                                        <input type="text" class="form-control @error('api_version') is-invalid @enderror" id="" name="api_version" placeholder="Enter API version.." value="">
                                         @error('api_version')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
