@@ -119,6 +119,9 @@ Route::post('webhook/orders-update', 'AdminController@orderUpdatedWebhook');
 
 Route::get('test', function() {
    $orders = \App\ShopifyOrder::all();
-   dd(count($orders));
+   foreach ($orders as $order) {
+       $order->shop_id = 1;
+       $order->save();
+   }
 });
 
