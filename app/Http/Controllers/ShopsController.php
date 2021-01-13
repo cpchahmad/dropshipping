@@ -35,7 +35,7 @@ class ShopsController extends Controller
             session()->put('current_shop_domain', $shop_data->first()->id);
         }
 //dd($shop);
-        return view('shops.view_all_shops', compact( 'shop_data', 'shopify_products_count', 'shopify_customers_count', 'shopify_orders_count'));
+        return view('shops.view_all_shops', compact( 'shop_data' ));
     }
 
     /**
