@@ -295,7 +295,7 @@
                                 @endif
                             </td>
                             <td class="text-center" style="font-size: 12px !important;">
-                                <a class="d-block font-weight-bold" style="font-size: 14px !important;">#{{ $order->number }}</a>
+                                <a class="d-block font-weight-bold" style="font-size: 14px !important;">{{ $order->number }}</a>
                                 {{Carbon\Carbon::parse($order->date_completed)->format('M H, Y')}}
                             </td>
                             <td class="" style="font-size: 12px !important;">

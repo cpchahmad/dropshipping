@@ -125,7 +125,7 @@
                                                         @if(isset($order->payment_method) && $order->payment_method != "")
                                                             {{ $order->payment_method }}
                                                         @else
-                                                            Not Given!
+                                                            Not Given Yet!
                                                         @endif
                                                     </td>
                                                     @role('admin')
