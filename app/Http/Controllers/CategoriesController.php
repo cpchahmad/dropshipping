@@ -15,7 +15,8 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        return view('expenses.category')->with('categories', Category::paginate(20));
+        $category = Category::where('shop_id', session()->get('current_shop_domain'))->paginate(20);
+        return view('expenses.category')->with('categories', $category);
     }
 
     /**
@@ -41,6 +42,7 @@ class CategoriesController extends Controller
        ]);
 
        $category = new Category();
+       $category->shop_id = session()->get('current_shop_domain');
        $category->category_name = $request->name;
        $category->save();
 
@@ -82,7 +84,7 @@ class CategoriesController extends Controller
             'name' => 'required'
         ]);
 
-        $category = Category::find($id);
+        $category = Category::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
         $category->category_name = $request->name;
         $category->save();
 
@@ -97,10 +99,10 @@ class CategoriesController extends Controller
      */
     public function destroy($id)
     {
-        if(Expense::where('category_id', $id)->exists()) {
+        if(Expense::where('shop_id', session()->get('current_shop_domain'))->where('category_id', $id)->exists()) {
             return redirect()->back()->with('error', 'Category cannot be deleted since it is attached to some expense!');
         }
-        $category = Category::find($id);
+        $category = Category::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
 
         $category->delete();
 

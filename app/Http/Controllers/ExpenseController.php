@@ -15,7 +15,8 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        return view('expenses.index')->with('expenses', Expense::paginate(20));
+        $expenses = Expense::where('shop_id', session()->get('current_shop_domain'))->paginate(20);
+        return view('expenses.index')->with('expenses', $expenses);
     }
 
     /**
@@ -28,8 +29,8 @@ class ExpenseController extends Controller
         if(Category::count() <= 0) {
             return redirect(route('categories.index'))->with('error', 'Expense cannot be created since no category exists!');
         }
-
-        return view('expenses.create')->with('categories', Category::all());
+        $category = Category::where('shop_id', session()->get('current_shop_domain'))->get();
+        return view('expenses.create')->with('categories', $category);
     }
 
     /**
@@ -50,6 +51,7 @@ class ExpenseController extends Controller
             'currency' => 'required',
         ]);
 
+        $expense->shop_id = session()->get('current_shop_domain');
         $expense->title = $request->title;
         $expense->notes = $request->notes;
         $expense->category_id = $request->category;
@@ -88,8 +90,9 @@ class ExpenseController extends Controller
      */
     public function edit($id)
     {
-        $expense = Expense::find($id);
-        return view('expenses.create')->with('expense', $expense)->with('categories', Category::all());
+        $expense = Expense::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
+        $category = Category::where('shop_id', session()->get('current_shop_domain'))->get();
+        return view('expenses.create')->with('expense', $expense)->with('categories', $category);
     }
 
     /**
@@ -101,7 +104,7 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $expense = Expense::find($id);
+        $expense = Expense::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
 
         $this->validate($request, [
             'title' => 'required',
@@ -136,7 +139,7 @@ class ExpenseController extends Controller
      */
     public function destroy($id)
     {
-        $expense = Expense::find($id);
+        $expense = Expense::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
         $expense->delete();
         return redirect(route('expenses.index'))->with('success', 'Expense Deleted sucessfully!');
 

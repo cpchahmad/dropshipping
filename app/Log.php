@@ -2,6 +2,7 @@
 
 namespace App;
 
+
 use Illuminate\Database\Eloquent\Model;
 
 class Log extends Model
@@ -27,6 +28,7 @@ class Log extends Model
     }
 
     public function getItemAttribute() {
+//        dd($this->shopify_product_id);
         if($this->type == "Product Updated" || $this->type == "Product Added" || $this->type == "Product Vendor Added") {
             $product = Product::find($this->shopify_product_id);
 
@@ -40,25 +42,27 @@ class Log extends Model
 
         }
 
-        if($this->type == "Order Fulfilled" || $this->type == "Order Shipping Price added" || $this->type == "Order Notes Added" || $this->type == "Vendor added to order") {
-            $order = ShopifyOrder::find($this->shopify_order_id);
+        if(isset($order)){
 
-            echo "
-                <a href='/admin/orders?search=$order->name' target='_blank' style='font-size: 12px !important; color: white!important;'>
-                    #$order->name
-                </a>
-            ";
+            if($this->type == "Order Fulfilled" || $this->type == "Order Shipping Price added" || $this->type == "Order Notes Added" || $this->type == "Vendor added to order") {
+                $order = ShopifyOrder::where('shop_id', session()->get('current_shop_domain'))->where('id', $this->shopify_order_id)->first();
+                echo "
+                        <a href='/admin/orders?search=$order->name' target='_blank' style='font-size: 12px !important; color: white!important;'>
+                            #$order->name
+                        </a>
+                    ";
+            }
         }
 
 
     }
-
-    public function getLocationAttribute() {
-        $ip = $this->attempt_location_ip;
-
-        $data = \Location::get($ip);
-
-        return $data->countryName .", ". $data->cityName;
-    }
+//
+//    public function getLocationAttribute() {
+//        $ip = $this->attempt_location_ip;
+//
+//        $data = \Location::get($ip);
+////dd($data);
+//        return $data->countryName .", ". $data->cityName;
+//    }
 
 }

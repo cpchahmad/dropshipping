@@ -85,6 +85,15 @@
                                         @enderror
                                     </div>
 
+                                    <div class="form-group">
+                                        <label for="">Shop Type</label>
+                                        <select name="shop_type" class="form-control @error('shop_type') is-invalid @enderror" >
+                                            <option value="" >Select Shop Type</option>
+                                            <option value="shopify" >Shopify</option>
+                                            <option value="wordpress" >Wordpress</option>
+                                        </select>
+                                    </div>
+
                                     <div class="form-group d-flex justify-content-end">
                                         <button type="submit" class="btn btn-primary">Add Shop</button>
                                     </div>

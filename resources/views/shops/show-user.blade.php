@@ -42,6 +42,7 @@
                     <div class="my-3">
                         <img class="img-avatar img-avatar-thumb" src="{{ asset('media/avatars/avatar13.jpg') }}" alt="">
                     </div>
+{{--                    @dd($user)--}}
                     <h1 class="h2 text-white mb-0">{{ $user->name }}</h1>
                     <span class="text-white-75">{{ $user->email }}</span><br>
                     <span class="text-white-75"><strong>Account created on: </strong>{{ $user->create }}</span><br>

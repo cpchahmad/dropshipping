@@ -51,7 +51,7 @@ class LineItem extends Model
 
     public function getVendorChkAttribute() {
         $varient = $this->shopify_variant;
-
+//        dd($varient);
         $vendor_details = null;
 
         if($varient) {

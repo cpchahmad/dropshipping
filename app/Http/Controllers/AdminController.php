@@ -23,47 +23,101 @@ use App\Tracking;
 use App\User;
 use App\Vendor;
 use App\Webhook;
+use App\WordpressLineItem;
+use App\WordpressOrder;
+use App\WordpressProduct;
+use Automattic\WooCommerce\Client;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use SebastianBergmann\Diff\Line;
 
 class AdminController extends Controller
 {
 
-    public function getProducts(Request $request) {
+    public function createShopSection(Request $request){
 
-        if ($request->has('search')) {
-            $products = ShopifyProduct::where('title', 'LIKE', '%' . $request->input('search') . '%')->orWhereHas('shopify_varients', function($q) use ($request) {
-                $q->where('sku', 'LIKE', '%' . $request->input('search') . '%');
-            })->paginate(20);
+        $request->session()->put('current_shop_domain', $request->shop_domain);
 
-            $prods = Product::where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
+        return response()->json();
+    }
+
+    public function get_products(Request $request) {
+
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
+
+        if($shop_type['shop_type'] == "wordpress"){
+
+            if ($request->has('search')) {
+                $products = WordpressProduct::where('name', 'LIKE', '%' . $request->input('search') . '%')->orWhereHas('wordpress_product_variations', function($q) use ($request) {
+                    $q->where('sku', 'LIKE', '%' . $request->input('search') . '%');
+                })->paginate(20);
+
+                $prods = Product::where('shop_id', session()->get('current_shop_domain'))->where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
+            }
+            else{
+                $products = WordpressProduct::where('shop_id', session()->get('current_shop_domain'))->orderBy('updated_at', 'DESC')->paginate(20);
+                $prods = Product::where('shop_id', session()->get('current_shop_domain'))->orderBy('updated_at', 'DESC')->paginate(20);
+            }
+
+//            $products = WordpressProduct::where('shop_id', session()->get('current_shop_domain'))->orderBy('updated_at', 'DESC')->paginate(20);
+            $vendors = Vendor::all();
+
+            return view('products.wordpress_products_index')->with('products',$products)->with('prods',$prods)->with('vendors', $vendors)->with('search', $request->input('search'));
         }
-        else{
-            $products = ShopifyProduct::orderBy('updated_at', 'DESC')->paginate(20);
-            $prods = Product::orderBy('updated_at', 'DESC')->paginate(20);
+        elseif($shop_type['shop_type'] == "shopify"){
+
+            if ($request->has('search')) {
+                $products = ShopifyProduct::where('title', 'LIKE', '%' . $request->input('search') . '%')->orWhereHas('shopify_varients', function($q) use ($request) {
+                    $q->where('sku', 'LIKE', '%' . $request->input('search') . '%');
+                })->paginate(20);
+
+                $prods = Product::where('shop_id', session()->get('current_shop_domain'))->where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
+            }
+            else{
+                $products = ShopifyProduct::where('shop_id', session()->get('current_shop_domain'))->orderBy('updated_at', 'DESC')->paginate(20);
+                $prods = Product::where('shop_id', session()->get('current_shop_domain'))->orderBy('updated_at', 'DESC')->paginate(20);
+            }
+            $vendors = Vendor::all();
+
+            return view('products.new-index')->with('products',$products)->with('prods',$prods)->with('vendors', $vendors)->with('search', $request->input('search'));
         }
-        $vendors = Vendor::all();
 
-
-        return view('products.new-index')->with('products',$products)->with('prods',$prods)->with('vendors', $vendors)->with('search', $request->input('search'));
     }
 
     public function allProducts(Request $request) {
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
 
-        if ($request->has('search')) {
-            $products = ShopifyProduct::where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
+        if($shop_type['shop_type'] == "shopify") {
+            if ($request->has('search')) {
+                $products = ShopifyProduct::where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
+            } else {
+                $products = ShopifyProduct::orderBy('updated_at', 'DESC')->paginate(20);
+            }
+            $vendors = Vendor::all();
+
+            return view('products.all')->with('products', $products)->with('vendors', $vendors)->with('search', $request->input('search'));
+        }elseif($shop_type['shop_type'] == "wordpress"){
+
+            if ($request->has('search')) {
+                $products = WordpressProduct::where('name', 'LIKE', '%' . $request->input('search') . '%')->orWhereHas('wordpress_product_variations', function($q) use ($request) {
+                    $q->where('sku', 'LIKE', '%' . $request->input('search') . '%');
+                })->paginate(20);
+
+                $prods = Product::where('shop_id', session()->get('current_shop_domain'))->where('title', 'LIKE', '%' . $request->input('search') . '%')->paginate(20);
+            }
+            else{
+                $products = WordpressProduct::where('shop_id', session()->get('current_shop_domain'))->orderBy('updated_at', 'DESC')->paginate(20);
+                $prods = Product::where('shop_id', session()->get('current_shop_domain'))->orderBy('updated_at', 'DESC')->paginate(20);
+            }
+            $vendors = Vendor::all();
+
+            return view('products.all_wordpress_product')->with('products',$products)->with('prods',$prods)->with('vendors', $vendors)->with('search', $request->input('search'));
+
         }
-        else{
-            $products = ShopifyProduct::orderBy('updated_at', 'DESC')->paginate(20);
-        }
-        $vendors = Vendor::all();
-
-
-        return view('products.all')->with('products',$products)->with('vendors', $vendors)->with('search', $request->input('search'));
     }
 
     public function showProductDetails($id) {
@@ -89,79 +143,108 @@ class AdminController extends Controller
 
     public function getOrders(Request $request) {
 
-        $orders = ShopifyOrder::with(['items.shopify_variant.shopify_product.product_vendor_details'])->newQuery();
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
+//        Wordpress Orders
+        if($shop_type['shop_type'] == "wordpress"){
 
-        if ($request->has('search')) {
-            $orders->where('name', 'LIKE', '%' . $request->input('search') . '%');
+            $orders = WordpressOrder::query();
+            if ($request->has('search')) {
+               $orders = $orders->where('shop_id', session()->get('current_shop_domain'))->where('wordpress_order_id', 'LIKE', '%' . $request->input('search') . '%')
+                   ->orderBy('date_paid', 'DESC')->paginate(30);
+            }else{
+                $orders =WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->orderBy('date_paid', 'DESC')->paginate(30);
+            }
+
+            return view('orders.wordpress_orders_index')->with([
+                'orders' => $orders,
+                'search' => $request->input('search'),
+                'status' => $request->input('status')
+            ]);
+
+
+//            Shopify Orders
+        }elseif($shop_type['shop_type'] == "shopify"){
+            $orders = ShopifyOrder::with(['items.shopify_variant.shopify_product.product_vendor_details'])->newQuery();
+
+            if ($request->has('search')) {
+                $orders->where('name', 'LIKE', '%' . $request->input('search') . '%');
+            }
+            if($request->has('status')){
+                if($request->input('status') == 'unfulfilled'){
+                    $orders->where('fulfillment_status', null);
+                }
+                else if($request->input('status') == 'paid'){
+                    $orders->where('financial_status', 'paid')->get();
+                }
+                else if($request->input('status') == 'partially_refunded'){
+                    $orders->where('financial_status', 'partially_refunded');
+                }
+                else if($request->input('status') == 'authorized'){
+                    $orders->where('financial_status', 'authorized');
+                }
+                else if($request->input('status') == 'pending'){
+                    $orders->where('financial_status', 'pending');
+                }
+                else if($request->input('status') == 'partially_paid'){
+                    $orders->where('financial_status', 'partially_paid');
+                }
+                else if($request->input('status') == 'refunded'){
+                    $orders->where('financial_status', 'refunded');
+                }
+                else if($request->input('status') == 'voided'){
+                    $orders->where('financial_status', 'voided');
+                }
+                else
+                {
+                    $orders->where('fulfillment_status', $request->input('status'));
+                }
+            }
+            if($request->query('customer')){
+                $customer_id = $request->query('customer');
+                $orders->where('customer', $customer_id)->get();
+            }
+
+            $orders = $orders->where('shop_id', session()->get('current_shop_domain'))->orderBy('processed_at', 'DESC')->paginate(30);
+
+            return view('orders.new-index')->with([
+                'orders' => $orders,
+                'search' => $request->input('search'),
+                'status' => $request->input('status')
+            ]);
         }
-        if($request->has('status')){
-            if($request->input('status') == 'unfulfilled'){
-                $orders->where('fulfillment_status', null);
-            }
-            else if($request->input('status') == 'paid'){
-                $orders->where('financial_status', 'paid')->get();
-            }
-            else if($request->input('status') == 'partially_refunded'){
-                $orders->where('financial_status', 'partially_refunded');
-            }
-            else if($request->input('status') == 'authorized'){
-                $orders->where('financial_status', 'authorized');
-            }
-            else if($request->input('status') == 'pending'){
-                $orders->where('financial_status', 'pending');
-            }
-            else if($request->input('status') == 'partially_paid'){
-                $orders->where('financial_status', 'partially_paid');
-            }
-            else if($request->input('status') == 'refunded'){
-                $orders->where('financial_status', 'refunded');
-            }
-            else if($request->input('status') == 'voided'){
-                $orders->where('financial_status', 'voided');
-            }
-            else
-            {
-                $orders->where('fulfillment_status', $request->input('status'));
-            }
-        }
-        if($request->query('customer')){
-            $customer_id = $request->query('customer');
-            $orders->where('customer', $customer_id)->get();
-        }
 
-
-        $orders = $orders->orderBy('processed_at', 'DESC')->paginate(30);
-
-
-        return view('orders.new-index')->with([
-            'orders' => $orders,
-            'search' => $request->input('search'),
-            'status' => $request->input('status')
-        ]);
     }
 
-    public function adminSyncOrders() {
-        $api = ShopsController::config();
-        $orders = $api->rest('GET', '/admin/orders.json', [
-            'limit' => 100,
-        ]);
+    public function adminSyncOrders($id) {
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
+//        Wordpress Orders
+        if($shop_type['shop_type'] == "shopify") {
+            $api = ShopsController::config($id);
+            $orders = $api->rest('GET', '/admin/orders.json', [
+                'limit' => 100,
+            ]);
 
-        if(!$orders['errors'])
-        {
-            foreach ($orders['body']['container']['orders'] as $order) {
-                $this->createOrder($order);
+            if (!$orders['errors']) {
+                foreach ($orders['body']['container']['orders'] as $order) {
+                    $this->createOrder($order, session()->get('current_shop_domain'));
+                }
+
+                return redirect()->back()->with('success', 'Orders Synced Successfully!');
             }
-
-            return redirect()->back()->with('success', 'Orders Synced Successfully!');
+            return redirect()->back()->with('error', 'Your Request cannot be procceed, Please try again!');
+        }elseif($shop_type['shop_type'] == "wordpress"){
+            $wordpress = new WordpressController();
+            $wordpress->sync_wordpress_order($id);
+            return redirect()->back()->with('success', 'Order Sync Successfully !');
         }
 
 
-        return redirect()->back()->with('error', 'Your Request cannot be procceed, Please try again!');
     }
 
-    public function storeOrders($next = null)
+    public function storeOrders($id, $next = null)
     {
-        $api = ShopsController::config();
+        $api = ShopsController::config($id);
+
         $orders = $api->rest('GET', '/admin/orders.json', [
             'limit' => 250,
             'page_info' => $next
@@ -169,7 +252,7 @@ class AdminController extends Controller
 
 
         foreach ($orders['body']['container']['orders'] as $order) {
-            $this->createOrder($order);
+            $this->createOrder($order, $id);
         }
 
         if (isset($orders['link']['next'])) {
@@ -180,30 +263,58 @@ class AdminController extends Controller
 
     public function showBulkFulfillments(Request $request)
     {
-        $orders_array = explode(',', $request->input('orders'));
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
 
-        if (count($orders_array) > 0) {
-            $orders = ShopifyOrder::whereIn('id', $orders_array)->newQuery();
+        if($shop_type['shop_type'] == "shopify") {
+            $orders_array = explode(',', $request->input('orders'));
 
-            $orders->whereHas('items', function ($q) {
-                $q->where('quantity', '>', 0);
-            });
-            $orders = $orders->get();
+            if (count($orders_array) > 0) {
+                $orders =ShopifyOrder::whereIn('id', $orders_array)->newQuery();
 
-            $total_quantity = 0;
-            $fulfillable_quantity = 0;
 
-            return view('orders.bulk-fulfillment')->with([
-                'orders' => $orders,
-            ]);
-        } else {
-            return redirect()->back();
+                $orders->whereHas('items', function ($q) {
+                    $q->where('quantity', '>', 0);
+                });
+                $orders = $orders->get();
+
+                $total_quantity = 0;
+                $fulfillable_quantity = 0;
+
+                return view('orders.bulk-fulfillment')->with([
+                    'orders' => $orders,
+                ]);
+            } else {
+                return redirect()->back();
+            }
+
+        }elseif($shop_type['shop_type'] == "wordpress"){
+            $orders_array = explode(',', $request->input('orders'));
+
+            if (count($orders_array) > 0) {
+//                dd($orders_array);
+                $orders =WordpressOrder::whereIn('wordpress_order_id', $orders_array)->newQuery();
+
+                $orders->whereHas('items', function ($q) {
+                    $q->where('quantity', '>', 0);
+                });
+                $orders = $orders->get();
+//                dd($orders);
+                $total_quantity = 0;
+                $fulfillable_quantity = 0;
+
+                return view('orders.wordpress-bulk-fulfillment')->with([
+                    'orders' => $orders,
+                ]);
+            } else {
+                return redirect()->back();
+            }
         }
+
     }
 
-    public function createOrder($order) {
+    public function createOrder($order, $id) {
 
-        if(ShopifyOrder::where('id', $order['id'])->exists()) {
+        if(ShopifyOrder::where('id', $order['id'])->where('shop_id', $id)->exists()) {
             $o = ShopifyOrder::find($order['id']);
         }
         else {
@@ -226,6 +337,7 @@ class AdminController extends Controller
         }
 
         $o->id = $order['id'];
+        $o->shop_id = $id;
         $o->total_line_item_price = $order['total_line_items_price'];
         $o->total_price = $order['total_price'];
         $o->currency = $order['currency'];
@@ -241,7 +353,7 @@ class AdminController extends Controller
 
 
         foreach ($order['line_items'] as $item) {
-            if(LineItem::where('id', $item['id'])->exists()) {
+            if(LineItem::where('id', $item['id'])->where('shop_id', $id)->exists()) {
                 $line = LineItem::find($item['id']);
             }
             else {
@@ -249,6 +361,7 @@ class AdminController extends Controller
             }
 
             $line->id = $item['id'];
+            $line->shop_id = $id;
             $line->variant_id = $item['variant_id'];
             $line->title = $item['title'];
             $line->quantity = $item['quantity'];
@@ -314,9 +427,10 @@ class AdminController extends Controller
     }
 
 
-    public function storeProducts($next = null)
+    public function storeProducts($id,$next = null)
     {
-        $api = ShopsController::config();
+//        dd($id);
+        $api = ShopsController::config($id);
 
         $products = $api->rest('GET', '/admin/products.json', [
             'limit' => 250,
@@ -324,7 +438,7 @@ class AdminController extends Controller
         ]);
 
         foreach ($products['body']['container']['products'] as $product) {
-            $this->createProduct($product);
+            $this->createProduct($product, $id);
         }
 
         if (isset($products['link']['next'])) {
@@ -332,9 +446,9 @@ class AdminController extends Controller
         }
     }
 
-    public function createProduct($product) {
+    public function createProduct($product, $id) {
 
-        if(ShopifyProduct::where('id', $product['id'])->exists()) {
+        if(ShopifyProduct::where('id', $product['id'])->where('shop_id', $id)->exists()) {
             $p = ShopifyProduct::find($product['id']);
         }
         else {
@@ -342,6 +456,7 @@ class AdminController extends Controller
         }
 
         $p->id = $product['id'];
+        $p->shop_id = $id;
         $p->title =  $product['title'];
         $p->body_html = $product['body_html'];
         $p->vendor =  $product['vendor'];
@@ -360,7 +475,7 @@ class AdminController extends Controller
         if($p->variants){
             $variants = json_decode($p->variants);
             foreach ($variants as $variant) {
-                if(ShopifyVarient::where('id', $variant->id)->exists()) {
+                if(ShopifyVarient::where('id', $variant->id)->where('shop_id', $id)->exists()) {
                     $var = ShopifyVarient::find($variant->id);
                 }
                 else {
@@ -368,6 +483,7 @@ class AdminController extends Controller
                 }
 
                 $var->id = $variant->id;
+                $var->shop_id = $id;
                 $var->shopify_product_id= $variant->product_id;
                 $var->title= $variant->title;
                 $var->price= $variant->price;
@@ -399,16 +515,21 @@ class AdminController extends Controller
             $images = json_decode($p->images);
 
             foreach ($images as $image) {
-                ProductImage::create([
-                    'shopify_id' => $image->id,
-                    'product_id'=> $image->product_id,
-                    'position'=> $image->position,
-                    'alt'=> $image->alt,
-                    'width'=> $image->width,
-                    'height'=> $image->height,
-                    'src'=> $image->src,
-                    'variant_ids' => json_encode($image->variant_ids),
-                ]);
+               $product_image = ProductImage::where('shopify_id', $image->id)->where('shop_id', $id)->first();
+               if($product_image === null){
+                   $product_image = new ProductImage();
+               }
+               $product_image->shop_id = $id;
+               $product_image->shopify_id = $image->id;
+               $product_image->product_id = $image->product_id;
+               $product_image->position = $image->position;
+               $product_image->alt = $image->alt;
+               $product_image->width = $image->width;
+               $product_image->height = $image->height;
+               $product_image->src = $image->src;
+               $product_image->variant_ids = json_encode($image->variant_ids);
+               $product_image->save();
+
             }
         }
     }
@@ -437,11 +558,12 @@ class AdminController extends Controller
         $width_array = array_merge($width_array, $request->width);
         $height_array = array_merge($height_array, $request->height);
 
-
+       $shop_id = intval(session()->get('current_shop_domain'));
         for($i =0; $i< count($vendor_name_array); $i++) {
 
             if(!(is_null($vendor_name_array[$i]))) {
-                ProductVendorDetail::create([
+                DB::table('product_vendor_details')->insert([
+                    'shop_id' => $shop_id,
                     'shopify_product_id' => $id,
                     'name' =>  $vendor_name_array[$i],
                     'cost' => $product_price_array[$i],
@@ -465,17 +587,18 @@ class AdminController extends Controller
 
     public function deleteVendorForProduct($id) {
 
-        if(OrderVendor::where('vendor_id', $id)->exists()) {
+        if(OrderVendor::where('shop_id', session()->get('current_shop_domain'))->where('vendor_id', $id)->exists()) {
             return response()->json(['data'=> 'error']);
         }
-        $vendor = ProductVendorDetail::find($id);
+//        dd($id);
+        $vendor = ProductVendorDetail::where('id', $id)->where('shop_id', session()->get('current_shop_domain'))->first();
         $vendor->delete();
 
         return response()->json(['data'=> 'success']);
     }
 
     public function editVendorForProduct(Request $request, $id) {
-        $vendor = ProductVendorDetail::find($id);
+        $vendor = ProductVendorDetail::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
         $vendor->name = $request->name;
         $vendor->cost = $request->price;
         $vendor->url = $request->link;
@@ -510,11 +633,13 @@ class AdminController extends Controller
             'type' => 'required'
         ]);
 
-        $user = User::create([
-           'name' => $request->name,
-           'email' => $request->email,
-           'password' => Hash::make($request->password)
-        ]);
+
+        $user = new User();
+        $user->shop_id = session()->get('current_shop_domain');
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->save();
 
         foreach ($request->type as $type) {
             $user->assignRole($type);
@@ -532,7 +657,7 @@ class AdminController extends Controller
     }
 
     public function approveProduct(Request $request, $id) {
-        $product = Product::find($id);
+        $product = Product::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
         $product->approved = 1;
         $product->notes = $request->notes;
         $product->save();
@@ -542,7 +667,7 @@ class AdminController extends Controller
     }
 
     public function rejectProduct(Request $request, $id) {
-        $product = Product::find($id);
+        $product = Product::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
         $product->approved = 2;
         $product->notes = $request->notes;
         $product->save();
@@ -550,9 +675,146 @@ class AdminController extends Controller
         return redirect()->back()->with('success', "Product Rejected!");
     }
 
-    public function changeOrderStatus(Request $request, $id) {
-        foreach ($request->input('item_id') as $line) {
-            if($request->input('item_vendor_'.$line)) {
+    public function changeOrderStatus(Request $request, $id ) {
+//        dd($request->all());
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
+
+        if($shop_type['shop_type'] == "wordpress"){
+
+            $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
+            $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+            $fulfillable_quantities = $request->input('item_fulfill_quantity');
+//            dd($request->input('item_fulfill_quantity'));
+            $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+            $data = [
+                'status' => 'completed',
+            ];
+
+
+//            $wordpress_order = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->where('wordpress_order_id', $id)->first();
+//            foreach (json_decode($wordpress_order->line_items) as $item){
+//
+//                foreach ($request->input('item_id') as $index => $items) {
+////                $line_item = LineItem::find($item);
+////                dd(json_decode($wordpress_order->line_items));
+//
+//                    if ($item != null && $fulfillable_quantities[$index] > 0) {
+//                        array_push($data['line_items'], [
+//                            "product_id" => $item->product_id,
+//                            "variation_id" => $item->variation_id,
+//                            "quantity" => $fulfillable_quantities[$index],
+//                        ]);
+//                    }
+//                }
+//            }
+
+            $fulffiled = $woocommerce->put('orders/'.$id, $data);
+
+            if($fulffiled->status == 'completed'){
+//                dd($request->all());
+                $order = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
+
+                $order_fulfillment = new OrderFulfillment();
+
+                if(!(is_null($request->shipping_price))) {
+
+                    if($request->shipping_currency == 'usd') {
+                        $order_fulfillment->shipping_price_usd = $request->shipping_price;
+                        $order_fulfillment->shipping_currency = $request->shipping_currency;
+                    }
+                    else{
+                        $order_fulfillment->shipping_price_usd = $request->shipping_price / 6.6;
+                        $order_fulfillment->shipping_price_rmb = ((double) $request->shipping_price);
+                        $order_fulfillment->shipping_currency = $request->shipping_currency;
+                    }
+
+                    DB::table('logs')->insert([
+                        'shop_id' => session()->get('current_shop_domain'),
+                        'user_id' => Auth::user()->id,
+                        'user_role' => Auth::user()->role,
+                        'attempt_time' => Carbon::now()->toDateTimeString(),
+                        'attempt_location_ip' => $request->getClientIp(),
+                        'type' => 'Order Shipping Price added',
+                        'shopify_order_id' => $id
+                    ]);
+
+                }
+
+                foreach ($request->input('item_id') as $line) {
+
+                    if ($request->input('item_vendor_' . $line)) {
+
+                        $vendor_array = array();
+
+                        $vendorDetail = ProductVendorDetail::where('shop_id', session()->get('current_shop_domain'))->where('id', $request->input('item_vendor_' . $line))->first();
+
+                        if (OrderVendor::where(['line_id' => $line, 'vendor_product_id' => $vendorDetail->shopify_product_id])->exists()) {
+                            OrderVendor::where(['line_id' => $line, 'vendor_product_id' => $vendorDetail->shopify_product_id])->delete();
+                        }
+
+                        $order_vendor = new OrderVendor();
+                        $order_vendor->shop_id = session()->get('current_shop_domain');
+                        $order_vendor->vendor_id = $vendorDetail->id;
+                        $order_vendor->vendor_product_id = $vendorDetail->shopify_product_id;
+                        $order_vendor->product_price = $request->input('product_price_' . $line);
+                        $order_vendor->line_id = $line;
+                        $order_vendor->save();
+
+                        array_push($vendor_array, $vendorDetail->id);
+//                        $wordpress_order = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->where('wordpress_order_id', $id)->first();
+//                        foreach (json_decode($wordpress_order->line_items) as $item) {
+//                            $item->vendor = $vendor_array;
+//                            $item->save();
+//                        }
+
+                        $line_item = WordpressLineItem::where('shop_id', session()->get('current_shop_domain'))->where('id', $line)->first();
+                        $line_item->vendor = $vendor_array;
+                        $line_item->save();
+
+                        DB::table('logs')->insert([
+                            'shop_id' => session()->get('current_shop_domain'),
+                            'user_id' => Auth::user()->id,
+                            'user_role' => Auth::user()->role,
+                            'attempt_time' => Carbon::now()->toDateTimeString(),
+                            'attempt_location_ip' => $request->getClientIp(),
+                            'type' => 'Vendor added to order',
+                            'shopify_order_id' => $id
+                        ]);
+                    }
+                }
+
+                if(is_null($request->tracking_number) && is_null($request->tracking_url)) {
+                    $order_fulfillment->shop_id = session()->get('current_shop_domain');
+                    $order_fulfillment->shopify_order_id = $id;
+                    $order_fulfillment->save();
+                }
+                //6122438719
+                else {
+                    $order_fulfillment->shopify_order_id = $id;
+                    $order_fulfillment->shop_id = session()->get('current_shop_domain');
+                    $order_fulfillment->tracking_number = $request->tracking_number;
+                    $order_fulfillment->tracking_url = $request->tracking_url;
+                    $order_fulfillment->tracking_company = $request->shipping_carrier;
+
+                    $order_fulfillment->save();
+                }
+
+                $order_fulfilled_update = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->where('wordpress_order_id', $id)->first();
+                $order_fulfilled_update->status = 'completed';
+                $order_fulfilled_update->update();
+
+                return redirect()->back()->with('success', 'Order Fulfilled Successfully!');
+            }elseif($fulffiled->status != 'completed'){
+                return redirect()->back()->with('error', 'Order not Fulfilled!');
+            }
+
+        }elseif($shop_type['shop_type'] == "shopify"){
+
+            $shop_id = session()->get('current_shop_domain');
+
+            foreach ($request->input('item_id') as $line) {
+
+                if($request->input('item_vendor_'.$line)) {
 
                     $vendor_array = array();
 
@@ -563,6 +825,7 @@ class AdminController extends Controller
                     }
 
                     $order_vendor = new OrderVendor();
+                    $order_vendor->shop_id = session()->get('current_shop_domain');
                     $order_vendor->vendor_id = $vendorDetail->id;
                     $order_vendor->vendor_product_id = $vendorDetail->shopify_product_id;
                     $order_vendor->product_price = $request->input('product_price_'.$line);
@@ -571,13 +834,12 @@ class AdminController extends Controller
 
                     array_push($vendor_array, $vendorDetail->id);
 
-
-
                     $line_item = LineItem::find($line);
                     $line_item->vendor = $vendor_array;
                     $line_item->save();
 
-                    Log::create([
+                    DB::table('logs')->insert([
+                        'shop_id' => session()->get('current_shop_domain'),
                         'user_id' => Auth::user()->id,
                         'user_role' => Auth::user()->role,
                         'attempt_time' => Carbon::now()->toDateTimeString(),
@@ -587,101 +849,103 @@ class AdminController extends Controller
                     ]);
                 }
 
-        }
-
-
-        $order = ShopifyOrder::find($id);
-        $order_fulfillment = new OrderFulfillment();
-        $fulfillable_quantities = $request->input('item_fulfill_quantity');
-
-        if(!(is_null($request->shipping_price))) {
-            if($request->shipping_currency == 'usd') {
-                $order_fulfillment->shipping_price_usd = $request->shipping_price;
-                $order_fulfillment->shipping_currency = $request->shipping_currency;
-                $order_fulfillment->shopify_order_id = $id;
-            }
-            else{
-                $order_fulfillment->shipping_price_usd = $request->shipping_price / 6.6;
-                $order_fulfillment->shipping_price_rmb = ((double) $request->shipping_price);
-                $order_fulfillment->shipping_currency = $request->shipping_currency;
-                $order_fulfillment->shopify_order_id = $id;
             }
 
-            Log::create([
-                'user_id' => Auth::user()->id,
-                'user_role' => Auth::user()->role,
-                'attempt_time' => Carbon::now()->toDateTimeString(),
-                'attempt_location_ip' => $request->getClientIp(),
-                'type' => 'Order Shipping Price added',
-                'shopify_order_id' => $order->id
-            ]);
+            $order = ShopifyOrder::where('shop_id', session()->get('current_shop_domain'))->where('id', $id)->first();
+            $order_fulfillment = new OrderFulfillment();
+            $fulfillable_quantities = $request->input('item_fulfill_quantity');
+//dd($fulfillable_quantities);
+            if(!(is_null($request->shipping_price))) {
+                if($request->shipping_currency == 'usd') {
+                    $order_fulfillment->shop_id = session()->get('current_shop_domain');
+                    $order_fulfillment->shipping_price_usd = $request->shipping_price;
+                    $order_fulfillment->shipping_currency = $request->shipping_currency;
+                    $order_fulfillment->shopify_order_id = $id;
+                }
+                else{
+                    $order_fulfillment->shop_id = session()->get('current_shop_domain');
+                    $order_fulfillment->shipping_price_usd = $request->shipping_price / 6.6;
+                    $order_fulfillment->shipping_price_rmb = ((double) $request->shipping_price);
+                    $order_fulfillment->shipping_currency = $request->shipping_currency;
+                    $order_fulfillment->shopify_order_id = $id;
+                }
 
-        }
-
-
-        if(is_null($request->tracking_number) && is_null($request->tracking_url)) {
-            $data = [
-                "fulfillment" => [
-                    "location_id" => "8749154419",
-                    "tracking_number"=> null,
-                    "line_items" => [
-
-                    ]
-                ]
-            ];
-        }
-        //6122438719
-        else {
-            $data = [
-                "fulfillment" => [
-                    "location_id" => "8749154419",
-                    "tracking_number"=> $request->tracking_number,
-                    "tracking_url"=> $request->tracking_url,
-                    "tracking_company"=> $request->shipping_carrier,
-                    "line_items" => [
-
-                    ]
-                ]
-            ];
-
-            $order_fulfillment->tracking_number = $request->tracking_number;
-            $order_fulfillment->tracking_url = $request->tracking_url;
-            $order_fulfillment->tracking_company = $request->shipping_carrier;
-
-        }
-
-
-
-
-        foreach ($request->input('item_id') as $index => $item) {
-            $line_item = LineItem::find($item);
-            if ($line_item != null && $fulfillable_quantities[$index] > 0) {
-                array_push($data['fulfillment']['line_items'], [
-                    "id" => $line_item->id,
-                    "quantity" => $fulfillable_quantities[$index],
+                DB::table('logs')->insert([
+                    'shop_id' => session()->get('current_shop_domain'),
+                    'user_id' => Auth::user()->id,
+                    'user_role' => Auth::user()->role,
+                    'attempt_time' => Carbon::now()->toDateTimeString(),
+                    'attempt_location_ip' => $request->getClientIp(),
+                    'type' => 'Order Shipping Price added',
+                    'shopify_order_id' => $order->id
                 ]);
+
+            }
+
+            if(is_null($request->tracking_number) && is_null($request->tracking_url)) {
+                $data = [
+                    "fulfillment" => [
+                        "location_id" => "6122438719",
+                        "tracking_number"=> null,
+                        "line_items" => [
+
+                        ]
+                    ]
+                ];
+            }
+            //6122438719
+            else {
+                $data = [
+                    "fulfillment" => [
+                        "location_id" => "6122438719",
+                        "tracking_number"=> $request->tracking_number,
+                        "tracking_url"=> $request->tracking_url,
+                        "tracking_company"=> $request->shipping_carrier,
+                        "line_items" => [
+
+                        ]
+                    ]
+                ];
+
+                $order_fulfillment->shop_id = session()->get('current_shop_domain');
+                $order_fulfillment->tracking_number = $request->tracking_number;
+                $order_fulfillment->tracking_url = $request->tracking_url;
+                $order_fulfillment->tracking_company = $request->shipping_carrier;
+
+            }
+
+
+//dd($request->fulfillable_quantities);
+            foreach ($request->input('item_id') as $index => $item) {
+                $line_item = LineItem::find($item);
+                if ($line_item != null && $fulfillable_quantities[$index] > 0) {
+                    array_push($data['fulfillment']['line_items'], [
+                        "id" => $line_item->id,
+                        "quantity" => $fulfillable_quantities[$index],
+                    ]);
+                }
+            }
+
+            $api = ShopsController::config($shop_id);
+//        dd($data);
+
+            $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $data);
+//        dd($response);
+            if(!$response['errors']) {
+                return $this->set_fulfilments($request, $id, $fulfillable_quantities, $order, $response, $order_fulfillment);
+                return redirect()->back()->with('success', 'Order Mark as fulfilled successfully!');
+            }
+            else {
+                return redirect()->back()->with('error', 'Request cannot be proceed');
             }
         }
-
-        $api = ShopsController::config();
-        $response = $api->rest('POST', 'admin/orders/'.$order->id.'/fulfillments.json', $data, [],true);
-
-        if(!$response['errors']) {
-            return $this->set_fulfilments($request, $id, $fulfillable_quantities, $order, $response, $order_fulfillment);
-            return redirect()->back()->with('success', 'Order Mark as fulfilled successfully!');
-        }
-        else {
-            dd($response);
-            return redirect()->back()->with('error', 'Request cannot be proceed');
-        }
-
     }
 
     public function set_fulfilments(Request $request, $id, $fulfillable_quantities, $order, $response, $order_fulfillment): \Illuminate\Http\RedirectResponse
     {
         $flag = 0;
         foreach ($request->input('item_id') as $index => $item) {
-            $line_item = LineItem::find($item);
+            $line_item = LineItem::where('shop_id', session()->get('current_shop_domain'))->where('id', $item)->first();
             if ($line_item != null && $fulfillable_quantities[$index] > 0) {
                 if ($fulfillable_quantities[$index] == $line_item->fulfillable_quantity) {
                     $line_item->fulfillment_status = 'fulfilled';
@@ -708,7 +972,8 @@ class AdminController extends Controller
         $order_fulfillment->save();
         $order->save();
 
-        Log::create([
+        DB::table('logs')->insert([
+            'shop_id' => session()->get('current_shop_domain'),
             'user_id' => Auth::user()->id,
             'user_role' => Auth::user()->role,
             'attempt_time' => Carbon::now()->toDateTimeString(),
@@ -716,8 +981,6 @@ class AdminController extends Controller
             'type' => 'Order Fulfilled',
             'shopify_order_id' => $order->id
         ]);
-
-
 
         return redirect()->back()->with('success', 'Order Mark as fulfilled successfully!');
 
@@ -753,11 +1016,13 @@ class AdminController extends Controller
 
         $notes = new ShopifyOrderNote();
 
+        $notes->shop_id = session()->get('current_shop_domain');
         $notes->notes = $request->notes;
         $notes->shopify_order_id = $request->id;
         $notes->save();
 
-        Log::create([
+        DB::table('logs')->insert([
+            'shop_id' =>  session()->get('current_shop_domain'),
             'user_id' => Auth::user()->id,
             'user_role' => Auth::user()->role,
             'attempt_time' => Carbon::now()->toDateTimeString(),
@@ -817,10 +1082,10 @@ class AdminController extends Controller
     }
 
     public function showUser($id) {
-        $user = User::find($id);
+        $user = User::where('id', $id)->first();
         $products = Product::where('outsource_id', $id)->paginate(10);
         $last_product = Product::where('outsource_id', $id)->orderBy('updated_at', 'DESC')->first();
-        $logs = Log::where('user_id', $id)->paginate(20);
+        $logs = Log::where('user_id', $id)->orderBy('updated_at', 'DESC')->paginate(20);
 
         return view('shops.show-user')->with('user', $user)->with('products', $products)->with('product', $last_product)->with('logs', $logs);
     }
@@ -870,40 +1135,98 @@ class AdminController extends Controller
 
     public function getReports(Request $request) {
 
-        if($request->query('datefilter')) {
-            $query = $request->query('datefilter');
-            $dates_array = explode('- ', $query);
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
 
-            $start_date = date('Y-m-d h:i:s',strtotime($dates_array[0]));
-            $end_date = date('Y-m-d h:i:s',strtotime($dates_array[1]));
+        if($shop_type['shop_type'] == "wordpress"){
+            if($request->query('datefilter')) {
+                $query = $request->query('datefilter');
+                $dates_array = explode('- ', $query);
 
-            $orders_total_price = ShopifyOrder::whereBetween('processed_at', [$start_date, $end_date])->sum('total_price');
+                $start_date = date('Y-m-d h:i:s',strtotime($dates_array[0]));
+                $end_date = date('Y-m-d h:i:s',strtotime($dates_array[1]));
 
-            $ordersQ = DB::table('shopify_orders')
-                ->select(DB::raw('DATE(processed_at) as date'), DB::raw('count(*) as total, sum(total_price) as total_sum'))
-                ->whereBetween('processed_at', [$start_date, $end_date])
-                ->groupBy('date')
-                ->get();
+                $orders_total_price = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->whereBetween('date_paid', [$start_date, $end_date])->sum('total');
 
-        }
-        else{
-            $orders_total_price = ShopifyOrder::sum('total_price');
+                $ordersQ = DB::table('wordpress_orders')
+                    ->select(DB::raw('DATE(date_paid) as date'), DB::raw('count(*) as total, sum(total) as total_sum'))
+                    ->whereBetween('created_at', [$start_date, $end_date])
+                    ->groupBy('date')
+                    ->get();
 
-            $ordersQ = DB::table('shopify_orders')
-                ->select(DB::raw('DATE(processed_at) as date'), DB::raw('count(*) as total, sum(total_price) as total_sum'))
-                ->groupBy('date')
-                ->get();
+            }
+            else {
+                $orders_total_price = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->sum('total');
 
-        }
+                $ordersQ = DB::table('wordpress_orders')
+                    ->select(DB::raw('DATE(date_paid) as date'), DB::raw('count(*) as total, sum(total) as total_sum'))
+                    ->groupBy('date')
+                    ->get();
 
-        // Graph calculations
-        $graph_one_order_dates = $ordersQ->pluck('date')->toArray();
-        $graph_one_order_values = $ordersQ->pluck('total')->toArray();
-        $graph_two_order_values = $ordersQ->pluck('total_sum')->toArray();
+            }
 
 
-        // Vendor cost calculation
-        $price = 0;
+            // Graph calculations
+            $graph_one_order_dates = $ordersQ->pluck('date')->toArray();
+            $graph_one_order_values = $ordersQ->pluck('total')->toArray();
+            $graph_two_order_values = $ordersQ->pluck('total_sum')->toArray();
+//dd($graph_two_order_values);
+            $price = OrderVendor::where('shop_id', session()->get('current_shop_domain'))->sum('product_price');
+
+            $cost =  number_format($price, 2);
+
+            $expenses_sum = Expense::where('shop_id', session()->get('current_shop_domain'))->sum('usd_price');
+            $shipping_sum = OrderFulfillment::where('shop_id', session()->get('current_shop_domain'))->sum('shipping_price_usd');
+
+            return view('products.reports')->with([
+                'orders_sum' => $orders_total_price,
+                'graph_one_labels' => $graph_one_order_dates,
+                'graph_one_values' => $graph_one_order_values,
+                'graph_two_values' => $graph_two_order_values,
+//            'top_products_stores' => $top_products_stores,
+                'cost' => $cost,
+                'expenses_sum' => $expenses_sum,
+                'shipping_sum' => $shipping_sum,
+            ]);
+
+
+        }elseif($shop_type['shop_type'] == "shopify"){
+
+            if($request->query('datefilter')) {
+                $query = $request->query('datefilter');
+                $dates_array = explode('- ', $query);
+
+                $start_date = date('Y-m-d h:i:s',strtotime($dates_array[0]));
+                $end_date = date('Y-m-d h:i:s',strtotime($dates_array[1]));
+
+                $orders_total_price = ShopifyOrder::whereBetween('processed_at', [$start_date, $end_date])->sum('total_price');
+
+                $ordersQ = DB::table('shopify_orders')
+                    ->select(DB::raw('DATE(processed_at) as date'), DB::raw('count(*) as total, sum(total_price) as total_sum'))
+                    ->whereBetween('processed_at', [$start_date, $end_date])
+                    ->groupBy('date')
+                    ->get();
+
+            }
+            else{
+                $orders_total_price = ShopifyOrder::where('shop_id', session()->get('current_shop_domain'))->sum('total_price');
+
+                $ordersQ = DB::table('shopify_orders')
+                    ->select(DB::raw('DATE(processed_at) as date'), DB::raw('count(*) as total, sum(total_price) as total_sum'))
+                    ->groupBy('date')
+                    ->get();
+
+            }
+
+
+            // Graph calculations
+            $graph_one_order_dates = $ordersQ->pluck('date')->toArray();
+            $graph_one_order_values = $ordersQ->pluck('total')->toArray();
+            $graph_two_order_values = $ordersQ->pluck('total_sum')->toArray();
+//        dd($graph_one_order_dates);
+
+
+            // Vendor cost calculation
+            $price = 0;
 
 //        foreach (LineItem::whereNotNull('vendor')->get() as $item) {
 //            $vendor = $item->vendor;
@@ -914,24 +1237,24 @@ class AdminController extends Controller
 //                }
 //        }
 
-        $price = OrderVendor::sum('product_price');
+            $price = OrderVendor::sum('product_price');
 
-        $cost =  number_format($price, 2);
+            $cost =  number_format($price, 2);
 
-        $expenses_sum = Expense::sum('usd_price');
-        $shipping_sum = OrderFulfillment::sum('shipping_price_usd');
+            $expenses_sum = Expense::where('shop_id', session()->get('current_shop_domain'))->sum('usd_price');
+            $shipping_sum = OrderFulfillment::sum('shipping_price_usd');
 
-        return view('products.reports')->with([
-            'orders_sum' => $orders_total_price,
-            'graph_one_labels' => $graph_one_order_dates,
-            'graph_one_values' => $graph_one_order_values,
-            'graph_two_values' => $graph_two_order_values,
+            return view('products.reports')->with([
+                'orders_sum' => $orders_total_price,
+                'graph_one_labels' => $graph_one_order_dates,
+                'graph_one_values' => $graph_one_order_values,
+                'graph_two_values' => $graph_two_order_values,
 //            'top_products_stores' => $top_products_stores,
-            'cost' => $cost,
-            'expenses_sum' => $expenses_sum,
-            'shipping_sum' => $shipping_sum,
-        ]);
-
+                'cost' => $cost,
+                'expenses_sum' => $expenses_sum,
+                'shipping_sum' => $shipping_sum,
+            ]);
+        }
     }
 
     public static function setDate($d) {
@@ -953,9 +1276,9 @@ class AdminController extends Controller
         }
         else {
 
-            $logs = Log::orderBy('updated_at', 'DESC')->paginate(30);
+            $logs = Log::where('shop_id', session()->get('current_shop_domain'))->orderBy('created_at', 'DESC')->paginate(30);
         }
-
+//        dd($logs);
         return view('shops.log')->with('logs', $logs)->with('users', User::all());
     }
 
@@ -1067,51 +1390,89 @@ class AdminController extends Controller
 
     public function fulfillOrders(Request $request) {
 
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
 
-        if(isset($request->tracking_number)) {
-            $fulfillment_array_to_be_passed = [
-                "fulfillment"=> [
-                    "tracking_number"=> $request->tracking_number,
-                    "tracking_url"=> $request->tracking_url,
-                    "tracking_company"=> $request->tracking_company,
-                    "location_id" => '8749154419'
-                ]
-            ];
-        }
-        else {
-            $fulfillment_array_to_be_passed = [
-                "fulfillment"=> [
-                    "tracking_number"=> null,
-                    "location_id" => '8749154419'
-                ]
-            ];
-        }
-        $orders = $request->orders;
+        if($shop_type['shop_type'] == "wordpress"){
 
-        foreach ($orders as $id) {
-            $order = ShopifyOrder::find($id);
-            $order->fulfillment_status = 'fulfilled';
-            $order->save();
+            $orders = $request->orders;
 
-            Log::create([
-                'user_id' => Auth::user()->id,
-                'user_role' => Auth::user()->role,
-                'attempt_time' => Carbon::now()->toDateTimeString(),
-                'attempt_location_ip' => $request->getClientIp(),
-                'type' => 'Order Status Changed',
-                'shopify_order_id' => $order->id
-            ]);
+            foreach ($orders as $id) {
 
-            $api = ShopsController::config();
-            $response = $api->rest('POST', 'admin/orders/'.$id.'/fulfillments.json', $fulfillment_array_to_be_passed, [],true);
+                $order_fulfilled_update = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->where('wordpress_order_id', $id)->first();
+                $order_fulfilled_update->status = 'completed';
+                $order_fulfilled_update->save();
 
-            if($response['errors']) {
-                dd($response);
-                return redirect(route('admin.orders'))->with('error', 'Request cannot be proceed for order #'.$order->name);
+                DB::table('logs')->insert([
+                    'shop_id' => session()->get('current_shop_domain'),
+                    'user_id' => Auth::user()->id,
+                    'user_role' => Auth::user()->role,
+                    'attempt_time' => Carbon::now()->toDateTimeString(),
+                    'attempt_location_ip' => $request->getClientIp(),
+                    'type' => 'Order Status Changed',
+                    'shopify_order_id' => $order_fulfilled_update->id
+                ]);
+
+                $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
+                $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+                $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+                $data = [
+                    'status' => 'completed',
+                ];
+                $response = $woocommerce->put('orders/'.$id, $data);
+
+//                if($response['errors']) {
+//                    dd($response);
+//                    return redirect(route('admin.orders'))->with('error', 'Request cannot be proceed for order #'.$order->number);
+//                }
             }
+            return redirect(route('admin.orders'))->with('success', 'Orders Fulfilled Successfully!');
+
+        }elseif($shop_type['shop_type'] == "shopify"){
+            if(isset($request->tracking_number)) {
+                $fulfillment_array_to_be_passed = [
+                    "fulfillment"=> [
+                        "tracking_number"=> $request->tracking_number,
+                        "tracking_url"=> $request->tracking_url,
+                        "tracking_company"=> $request->tracking_company,
+                        "location_id" => '8749154419'
+                    ]
+                ];
+            }
+            else {
+                $fulfillment_array_to_be_passed = [
+                    "fulfillment"=> [
+                        "tracking_number"=> null,
+                        "location_id" => '8749154419'
+                    ]
+                ];
+            }
+            $orders = $request->orders;
+
+            foreach ($orders as $id) {
+                $order = ShopifyOrder::find($id);
+                $order->fulfillment_status = 'fulfilled';
+                $order->save();
+
+                Log::create([
+                    'user_id' => Auth::user()->id,
+                    'user_role' => Auth::user()->role,
+                    'attempt_time' => Carbon::now()->toDateTimeString(),
+                    'attempt_location_ip' => $request->getClientIp(),
+                    'type' => 'Order Status Changed',
+                    'shopify_order_id' => $order->id
+                ]);
+
+                $api = ShopsController::config();
+                $response = $api->rest('POST', 'admin/orders/'.$id.'/fulfillments.json', $fulfillment_array_to_be_passed, [],true);
+
+                if($response['errors']) {
+                    dd($response);
+                    return redirect(route('admin.orders'))->with('error', 'Request cannot be proceed for order #'.$order->name);
+                }
+            }
+            return redirect(route('admin.orders'))->with('success', 'Orders Fulfilled Successfully!');
         }
 
-        return redirect(route('admin.orders'))->with('success', 'Orders Fulfilled Successfully!');
     }
 
     public function addOrderShippingPrice(Request $request, $id) {
@@ -1168,9 +1529,20 @@ class AdminController extends Controller
         return view('orders.line_images')->with('images',$images)->render();
 
     }
+    public function showWordpressLineImages($line_item_product_id) {
 
+        $product_image = WordpressProduct::where('wordpress_product_id', $line_item_product_id)->get();
+//dd($product_image);
+        $images = [];
+        foreach($product_image as $img){
+//            dd(json_decode($img->images));
+            array_push($images, json_decode($img->images));
+        }
 
+        $images = json_decode(json_encode($images),true);
+//        dd($images);
+        return view('orders.wordpress_line_images')->with('images',$images)->render();
 
-
+    }
 
 }

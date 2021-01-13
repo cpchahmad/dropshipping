@@ -46,7 +46,6 @@
 
     <!-- Page Content -->
     <div class="content">
-
         <form class="js-form-icon-search push" action="" method="get">
             <div class="form-group">
                 <div class="input-group">
@@ -87,12 +86,13 @@
                     <ul class="list-group px-1 list-unstyled">
 
                         @foreach($logs as $log)
+{{--                            @dd($log)--}}
                             <li class="pb-3">
-                                    <span class="badge badge-success">{{ $log->user->name }}</span>
-                                    <strong class="badge badge-primary">{{ $log->user->role }}</strong>
-                                    <strong>{{ $log->type }} </strong><span class="badge badge-success text-white">{{ $log->item }}</span>
+                                    <span class="badge badge-success">@if(isset($log->user->name)){{ $log->user->name }}@endif</span>
+                                    <strong class="badge badge-primary">@if(isset($log->user->role)){{ $log->user->role }}@endif</strong>
+                                    <strong>{{ $log->type }} </strong><span class="badge badge-success text-white">@if(isset($log->item)){{ $log->item }}@endif</span>
                                     ( {{ $log->date }} )
-                                    {{ $log->location }}
+{{--                                    {{ $log->location }}--}}
                             </li>
                         @endforeach
                     </ul>

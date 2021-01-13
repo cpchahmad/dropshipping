@@ -177,8 +177,6 @@
                                                                         <option value="outsource_team">Source Team</option>
                                                                     @endif
 
-
-
                                                                 </select>
                                                                 @error('type')
                                                                 <div class="invalid-feedback">{{ $message }}</div>

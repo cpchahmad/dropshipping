@@ -88,13 +88,13 @@ class User extends Authenticatable
         return date('d,M,Y h:i:s', $date);
     }
 
-    public function getLocationAttribute() {
-        $ip = $this->last_login_ip;
-
-        $data = \Location::get($ip);
-
-        return $data->countryName .", ". $data->cityName;
-    }
+//    public function getLocationAttribute() {
+//        $ip = $this->last_login_ip;
+//
+//        $data = \Location::get($ip);
+//
+//        return $data->countryName .", ". $data->cityName;
+//    }
 
     public function getCreateAttribute() {
         $str = $this->created_at;

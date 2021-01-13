@@ -13,6 +13,7 @@
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+
         <!-- Icons -->
         <link rel="shortcut icon" href="{{ asset('media/favicons/favicon.png') }}">
         <link rel="icon" sizes="192x192" type="image/png" href="{{ asset('media/favicons/favicon-192x192.png') }}">
@@ -23,6 +24,7 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400italic,600,700%7COpen+Sans:300,400,400italic,600,700">
         <link rel="stylesheet" id="css-main" href="{{ asset('css/oneui.css') }}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+        <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <style>
             .hover-img {
                 transition: transform .4s; /* Animation */
@@ -165,24 +167,70 @@
                             </a>
                         </li>
                         @role('admin')
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('shops.create') }}">--}}
+{{--                                <i class="nav-main-link-icon fa fa-store"></i>--}}
+{{--                                <span class="nav-main-link-name">Shop Settings</span>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
+
                         <li class="nav-main-item">
-                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('shops.create') }}">
-                                <i class="nav-main-link-icon fa fa-store"></i>
-                                <span class="nav-main-link-name">Shop Settings</span>
-                            </a>
-                        </li>
-                        <li class="nav-main-item">
-                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.products') }}">
+                            <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                                 <i class="nav-main-link-icon si si-layers"></i>
+                                <span class="nav-main-link-name">Shops</span>
+                            </a>
+                            <ul class="nav-main-submenu">
+                                <li class="nav-main-item">
+                                    <a class="nav-main-link" href="{{route('shops.create')}}">
+                                        <i class="nav-main-link-icon si si-bag"></i>
+                                        <span class="nav-main-link-name">Add Shop</span>
+                                    </a>
+                                </li>
+                                <li class="nav-main-item">
+                                    <a class="nav-main-link" href="{{route('shops.index')}}">
+                                        <i class="nav-main-link-icon si si-bag"></i>
+                                        <span class="nav-main-link-name">View All Shops</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+{{--                        <li class="nav-main-item">--}}
+{{--                            <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">--}}
+{{--                                <i class="nav-main-link-icon si si-layers"></i>--}}
+{{--                                <span class="nav-main-link-name">Products</span>--}}
+{{--                            </a>--}}
+{{--                            <ul class="nav-main-submenu">--}}
+{{--                                <?php--}}
+{{--                                $shop_type =\App\Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_type')->first();--}}
+{{--                                ?>--}}
+{{--                                @if($shop_type == "shopify")--}}
+{{--                                    <li class="nav-main-item">--}}
+{{--                                        <a class="nav-main-link" href="{{ route('admin.products') }}">--}}
+{{--                                            <i class="nav-main-link-icon si si-bag"></i>--}}
+{{--                                            <span class="nav-main-link-name">Shopify Products</span>--}}
+{{--                                        </a>--}}
+{{--                                    </li>--}}
+{{--                                @elseif($shop_type == "wordpress")--}}
+{{--                                    <li class="nav-main-item">--}}
+{{--                                        <a class="nav-main-link" href="{{route('admin.products')}}">--}}
+{{--                                            <i class="nav-main-link-icon si si-bag"></i>--}}
+{{--                                            <span class="nav-main-link-name">Products</span>--}}
+{{--                                        </a>--}}
+{{--                                    </li>--}}
+{{--                                @endif--}}
+
+{{--                            </ul>--}}
+{{--                        </li>--}}
+
+
+{{--                        @elseif($shop_type == "wordpress")--}}
+                        <li class="nav-main-item">
+                            <a class="nav-main-link" href="{{route('admin.products')}}">
+                                <i class="nav-main-link-icon si si-bag"></i>
                                 <span class="nav-main-link-name">Products</span>
                             </a>
                         </li>
-{{--                        <li class="nav-main-item">--}}
-{{--                            <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.customers') }}">--}}
-{{--                                <i class="nav-main-link-icon si si-user"></i>--}}
-{{--                                <span class="nav-main-link-name">Customers</span>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
 
                         <li class="nav-main-item">
                             <a class="nav-main-link"  aria-haspopup="true" aria-expanded="true" href="{{ route('admin.orders') }}">
@@ -344,6 +392,23 @@
 
                     <!-- Right Section -->
                     <div class="d-flex align-items-center">
+                        <div class="">
+                            <?php
+                               $shop_data = \App\Shop::all();
+                            ?>
+{{--                            <form id="shop-form" action="{{route('shop')}}" >--}}
+{{--                                @csrf--}}
+                                <select class="form-control" id="shop-domain" name="shop_domain" onchange="setShopDomain(this);">
+                                    @foreach($shop_data as $shop)
+                                        <option value="{{$shop->id}}"
+                                            @if($shop->id == session()->get('current_shop_domain'))  selected @endif   >
+                                            {{$shop->shop_domain}}</option>
+                                    @endforeach
+                                </select>
+{{--                            </form>--}}
+                        </div>
+{{--                        <h1>{{session()->get('current_shop_domain')}}</h1>--}}
+
                         <div class="dropdown d-inline-block ml-2">
                             <button type="button" class="btn btn-sm btn-dual" id="page-header-user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img class="rounded" src="{{ asset('media/avatars/avatar10.jpg') }}" alt="Header Avatar" style="width: 18px;">
@@ -519,3 +584,38 @@
         @yield('js_after')
     </body>
 </html>
+<script>
+
+    function setShopDomain(element)
+    {
+        var x = document.getElementById("shop-domain").value;
+        var route =window.location.pathname;
+        console.log(x);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type:'post',
+            url: '/shop_domain',
+            data: {
+                shop_domain: x,
+            },
+            success:function(data) {
+                window.location.href = route;
+                console.log(data.shop_domain);
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        // var first_option =$("#shop-domain option:first-child").val();
+        // console.log(first_option);
+    });
+
+
+</script>

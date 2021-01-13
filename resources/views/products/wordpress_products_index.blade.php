@@ -92,7 +92,10 @@
 
                 $.ajax({
                     url: `/admin/edit/vendor/${id}`,
-                    data: { name : name, link : link, moqs : moqs, lead_time : lead_time, price : price, weight : weight, length : length, width : width, height : height},
+                    data: { name : name, link : link, moqs : moqs, lead_time : lead_time,
+                            price : price, weight : weight, length : length, width : width,
+                            height : height
+                        },
                     type: 'PUT',
                     success: function(res) {
                         var response = res.data;
@@ -200,10 +203,12 @@
         </div>
         @endrole
 
+
+
         <div class="block">
             <ul class="nav nav-tabs nav-tabs-block" data-toggle="tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#shopify_products">Shopify Products</a>
+                    <a class="nav-link active" href="#shopify_products">Wordpress Products</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#source_products">Source Team Products</a>
@@ -214,16 +219,17 @@
                     <!-- Shopify Product Table Full -->
                     <div class="block mt-3" id="">
                         <div class="block-header">
-                            <h3 class="block-title">Shopify Products</h3>
+                            <h3 class="block-title">Wordpress Products</h3>
                         </div>
                         <div class="block-content block-content-full">
                             <div class="">
+
                                 @if(count($products)>0)
                                     <table class="table table-striped table-vcenter table-bordered ">
                                         <thead>
                                         <tr>
                                             <th class="text-left" style="width: 20%">Product</th>
-                                            <th class="text-left" style="width: 40%">Variants</th>
+                                            <th class="text-left" style="width: 40%">Variations</th>
                                             <th class="text-left" style="width: 30%">Added Vendors</th>
                                             <th class="text-center" style="width: 10%">Add Vendor</th>
                                         </tr>
@@ -233,26 +239,101 @@
                                             <tr>
                                                 <td class="">
                                                     <div class="text-left pt-3">
-                                                        <a href='{{ $product->img }}'  class="fancybox" rel="group">
-                                                            <img src="{{ $product->img }}" alt="No Image Availble" style="width: 90px; height: auto" class="hover-img">
+{{--                                                        @dd(json_decode($product->images))--}}
+                                                        <?php
+                                                        if(isset($product->images) && $product->images != null){
+                                                            foreach (json_decode($product->images) as $image){
+                                                                $img = $image->src;
+                                                            }
+                                                        }
+
+                                                        ?>
+                                                        <a @if(isset($img)) href='{{ $img }}' @else href="{{asset('random_product.jpg')}}" @endif  class="fancybox" rel="group">
+                                                            <img @if(isset($img))  src="{{ $img }}" @else src="{{asset('random_product.jpg')}}" @endif alt="No Image Availble" style="width: 90px; height: auto" class="hover-img">
                                                         </a>
                                                     </div>
                                                     <div class=" d-flex flex-column " style="font-size: 12px !important;">
-                                                        <span class="font-weight-bolder" style="font-size: 14px !important;">{{ $product->title}}</span>
-                                                        <em>{{ $product->date }}</em>
+                                                        <span class="font-weight-bolder" style="font-size: 14px !important;">{{ $product->name}}</span>
+                                                        <em>{{ date_format($product->updated_at, 'M H, Y') }}</em>
                                                     </div>
                                                 </td>
-                                                <td class="" style="font-size: 12px !important;">
-                                                    {{ $product->variant_details}}
+                                                <td class="custom-td" style="font-size: 12px !important;">
+
+                                                    <?php
+                                                        $variations = \App\WordpressProductVariation::where('shop_id', $product->shop_id)->where('wordpress_product_id', $product->wordpress_product_id)->get();
+                                                    ?>
+                                                    @foreach($variations as $variation)
+                                                        <div class="d-flex align-items-center">
+                                                            <div class=" ">
+                                                                {{--                                                        @dd(json_decode($product->images))--}}
+                                                                <?php
+                                                                if(isset($variation->images)){
+                                                                    foreach (json_decode($variation->images) as $image){
+                                                                        $img = $image->src;
+                                                                    }
+                                                                }
+
+                                                                ?>
+                                                                <a href='{{ $img }}'  class="fancybox" rel="group">
+                                                                    <img src="{{ $img }}" alt="No Image Availble" style="width: 90px; height: auto" class="hover-img">
+                                                                </a>
+                                                            </div>
+                                                            <div style="margin-left: 8px;">
+                                                                <?php
+                                                                $option = '';
+                                                                if(isset($variation->attributes)){
+                                                                    foreach (json_decode($variation->attributes) as $attribute){
+                                                                        $option = $attribute->option;
+                                                                    }
+                                                                }
+
+                                                                ?>
+                                                                <span >
+                                                                    <span  class="font-weight-bold" style="font-size: 18px;">{{$option}}</span>
+                                                                </span>
+                                                                    <?php
+                                                                    if(isset($variation->sku)){
+                                                                        $sku = $variation->sku;
+                                                                    }
+
+                                                                    ?>
+                                                                <span class="d-flex ">
+                                                                    @if($variation->sku != null)
+                                                                    <span class="font-weight-bold">SKU: </span>
+                                                                    <span style="margin-left: 3px;"> {{$sku}}</span>
+                                                                    @endif
+                                                                </span>
+                                                                    <?php
+                                                                    if(isset($variation->price)){
+                                                                        $price = $variation->price;
+                                                                    }
+
+                                                                    ?>
+                                                                <span>
+                                                                @if($price != null)
+                                                                    <span class="font-weight-bold"> {{'$'.$price}}</span>
+                                                                @endif
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <hr class="custom-hr">
+                                                    @endforeach
                                                 </td>
+
+{{--                                                <script>--}}
+
+{{--                                                    alert("ok");--}}
+{{--                                                    console.log('work');--}}
+{{--                                                </script>--}}
                                                 <td class="d-flex border-bottom-0" style="font-size: 14px !important;">
-                                                    @if($product->product_vendor_details->count()>0)
+                                                    @if(count(\App\ProductVendorDetail::all())>0)
                                                         <ul class="pl-1 w-100">
                                                             @php
                                                                 $counter = 0;
+                                                                $product_vendors = \App\ProductVendorDetail::where('shopify_product_id', $product->wordpress_product_id)->get();
                                                             @endphp
-                                                            @foreach($product->product_vendor_details as $details)
-                                                                @if($counter == count( $product->product_vendor_details  ) - 1)
+                                                            @foreach($product_vendors as $details)
+                                                                @if($counter == ($details->count()) - 1)
                                                                     <li class='mb-2 list-unstyled mt-2 d-flex justify-content-between' id="{{ $details->id }}">
                                                                         <div class="mb-2">
                                                                             <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
@@ -419,14 +500,14 @@
                                                             <div class="modal-content">
                                                                 <div class="block block-themed block-transparent mb-0">
                                                                     <div class="block-header bg-primary-dark">
-                                                                        <h3 class="block-title">Add vendor details for {{ $product->title }}</h3>
+                                                                        <h3 class="block-title">Add vendor details for ({{ $product->name }})</h3>
                                                                         <div class="block-options">
                                                                             <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
                                                                                 <i class="fa fa-fw fa-times"></i>
                                                                             </button>
                                                                         </div>
                                                                     </div>
-                                                                    <form class="col-md-12" method="POST" action="{{ route('admin.add.product.vendor', $product->id) }}">
+                                                                    <form class="col-md-12" method="POST" action="{{ route('admin.add.product.vendor', $product->wordpress_product_id) }}">
                                                                         @csrf
                                                                         <div class="block mt-3">
 
@@ -509,7 +590,7 @@
                         </div>
                     </div>
                     <!-- Shopify Product Table Full -->
-
+{{--                    @dd($prods)--}}
                 </div>
                 <div class="tab-pane fade" id="source_products" role="tabpanel">
                     <!-- Source Product Table Full -->
@@ -519,7 +600,7 @@
                         </div>
                         <div class="block-content block-content-full">
                             <!-- DataTables init on table by adding .js-dataTable-full class, functionality is initialized in js/pages/tables_datatables.js -->
-                            @if(count($prods)>0)
+                            @if(count($products)>0)
                                 <table class="table table-striped table-bordered">
                                     <thead>
                                     <tr>
@@ -527,10 +608,13 @@
                                         <th class="text-center" style="width: 40%;">Vendors</th>
                                         <th class="text-center" style="width: 40%;">Details</th>
                                         <th class="text-center" style="width: 5%;">Approve/Approved</th>
+
                                     </tr>
                                     </thead>
                                     <tbody>
+
                                     @foreach($prods as $product)
+{{--                                        @dd($product)--}}
                                         <tr>
                                             <td class="">
                                                 <div class="text-left ">
@@ -543,8 +627,9 @@
                                                     <em>{{ $product->created_at->format('M,d,Y') }}</em>
                                                 </div>
                                             </td>
+
                                             <td class="d-flex border-bottom-0" style="font-size: 14px !important;">
-{{--                                                @dd($product)--}}
+{{--                                                @dd($prods)--}}
                                                 @if($product->product_vendor_details->count()>0)
                                                     <ul class="pl-1 w-100">
                                                         @php
@@ -552,6 +637,7 @@
                                                         @endphp
                                                         @foreach($product->product_vendor_details as $details)
                                                             @if($counter == count( $product->product_vendor_details  ) - 1)
+
                                                                 <li class='mb-2 list-unstyled mt-2 d-flex justify-content-between' id="{{ $details->id }}">
                                                                     <div class="mb-2">
                                                                         <span class="d-block"><span class="font-weight-bold">Vendor name:</span> <span class="name">{{$details->name}}</span></span>
@@ -593,16 +679,16 @@
                                                 @endif
                                             </td>
                                             <td class="" style="font-size: 12px !important;">
-                                                @if(isset($product->description))<span><strong style="font-size: 14px !important">Description:</strong>{!! $product->description  !!}</span>@endif
+                                                @if(isset($product->description))<span><strong style="font-size: 14px !important">Description: </strong>{!! $product->description  !!}</span>@endif
                                                 @if($product->product_links->count() > 0)
-                                                    <strong style="font-size: 14px !important">Refrence Links:</strong>
+                                                    <strong style="font-size: 14px !important">Refrence Links: </strong>
                                                     <ul class="p-0 list-unstyled">
                                                         @foreach($product->product_links as $link)
                                                             <li><a href="{{ $link->link }}" target="_blank">{{ $link->link }}</a></li>
                                                         @endforeach
                                                     </ul>
                                                 @endif
-                                                <span><strong style="font-size: 16px !important">Approved Status:</strong>{{ $product->approved_status }}</span><br>
+                                                <span><strong style="font-size: 16px !important">Approved Status: </strong>@if(isset($product->approved_status)){{ $product->approved_status }}@endif </span><br>
                                                 <span><strong style="font-size: 16px !important">Source Team: </strong> @if(isset($product->user->email)){{ $product->user->email }}@endif</span><br>
                                             </td>
 
@@ -643,16 +729,12 @@
                                     @endforeach
                                     </tbody>
                                     <div class="d-flex justify-content-end">
-                                        {{ $prods->links() }}
+                                        {{ $products->links() }}
                                     </div>
                                 </table>
                             @else
                                 <p>No data!</p>
                             @endif
-
-
-
-
 
                         </div>
                     </div>
@@ -662,3 +744,9 @@
     </div>
     <!-- END Page Content -->
 @endsection
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $( '.custom-hr' ).last().css( "display", "none" );
+    });
+</script>

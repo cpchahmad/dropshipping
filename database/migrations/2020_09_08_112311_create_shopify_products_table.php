@@ -16,6 +16,7 @@ class CreateShopifyProductsTable extends Migration
         Schema::create('shopify_products', function (Blueprint $table) {
             $table->bigInteger('id');
 //            $table->bigInteger('shopify_id');
+
             $table->string('title')->nullable();
             $table->text('body_html')->nullable();
             $table->string('vendor')->nullable();

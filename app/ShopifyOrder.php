@@ -457,6 +457,8 @@ class ShopifyOrder extends Model
         }
     }
 
+
+
     public function getBgAttribute() {
         if($this->fulfillment_status == 'fulfilled') {
             return "green";

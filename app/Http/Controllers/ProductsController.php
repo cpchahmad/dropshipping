@@ -13,6 +13,7 @@ use App\Variant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -25,7 +26,7 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        return view('products.index')->with('products', Product::where('outsource_id', auth()->user()->id)->simplePaginate(20));
+        return view('products.index')->with('products', Product::where('shop_id', session()->get('current_shop_domain'))->where('outsource_id', auth()->user()->id)->simplePaginate(20));
     }
 
     /**
@@ -52,24 +53,23 @@ class ProductsController extends Controller
             'title' => 'required',
         ]);
 
-
-
-        $product = Product::create([
-           'title' => $request->title,
-           'description' => $request->description,
-           'outsource_id' => auth()->user()->id,
-        ]);
-
+        $product = new Product;
+        $product->shop_id = session()->get('current_shop_domain') ;
+        $product->title = $request->title ;
+        $product->description = $request->description ;
+        $product->outsource_id = auth()->user()->id ;
+        $product->save();
 
         if($request->hasFile('images')) {
             foreach ($request->images as $image)
             {
                 $image_url = $image->store('products');
 
-                ProdImage::create([
-                    'image' => $image_url,
-                    'product_id' => $product->id
-                ]);
+                $product_image = new ProdImage;
+                $product_image->shop_id = session()->get('current_shop_domain') ;
+                $product_image->image = $image_url;
+                $product_image->product_id = $product->id ;
+                $product_image->save();
             }
         }
 
@@ -78,6 +78,7 @@ class ProductsController extends Controller
             {
                 if(!(is_null($lin))) {
                     $link = new ProductLink();
+                    $link->shop_id = session()->get('current_shop_domain');
                     $link->link = $lin;
                     $link->product_id = $product->id;
                     $link->save();
@@ -112,7 +113,8 @@ class ProductsController extends Controller
             for($i =0; $i< count($vendor_name_array); $i++) {
 
                 if(!(is_null($vendor_name_array[$i]))) {
-                    ProductVendorDetail::create([
+                    DB::table('product_vendor_details')->insert([
+                        'shop_id' => session()->get('current_shop_domain'),
                         'shopify_product_id' => $product->id,
                         'name' =>  $vendor_name_array[$i],
                         'cost' => $product_price_array[$i],
@@ -130,7 +132,8 @@ class ProductsController extends Controller
             }
 
 
-            Log::create([
+            DB::table('logs')->insert([
+                'shop_id' => session()->get('current_shop_domain'),
                 'user_id' => Auth::user()->id,
                 'attempt_time' => Carbon::now()->toDateTimeString(),
                 'attempt_location_ip' => $request->getClientIp(),
@@ -143,7 +146,8 @@ class ProductsController extends Controller
 
 
 
-        Log::create([
+        DB::table('logs')->insert([
+            'shop_id' => session()->get('current_shop_domain'),
             'user_id' => Auth::user()->id,
             'attempt_time' => Carbon::now()->toDateTimeString(),
             'attempt_location_ip' => $request->getClientIp(),
