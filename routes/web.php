@@ -117,5 +117,8 @@ Route::post('webhook/orders-update', 'AdminController@orderUpdatedWebhook');
 //    return redirect()->route('login');
 //})->name('logout');
 
-
+Route::get('test', function() {
+   $orders = \App\ShopifyOrder::all();
+   dd(count($orders));
+});
 
