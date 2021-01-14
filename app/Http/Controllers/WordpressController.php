@@ -42,7 +42,20 @@ class WordpressController extends Controller
             $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
 
             try {
-                $products = $woocommerce->get('products', ['filter[limit]' => -1]);
+                $page = 1;
+                $products = [];
+                $all_products = [];
+                do{
+                    try {
+                        $products = $woocommerce->get('products',['per_page' => 100, 'page' => $page]);
+                    }catch(HttpClientException $e){
+                        die("Can't get products: $e");
+                    }
+                    $all_products = array_merge($all_products,$products);
+                    $page++;
+                } while (count($products) > 0);
+
+                $products =  json_decode(json_encode($all_products), FALSE);
                 if($products != null) {
                     foreach ($products as $product) {
 
@@ -218,7 +231,22 @@ class WordpressController extends Controller
             $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
 
             try {
-                $orders = $woocommerce->get('orders');
+//                $orders = $woocommerce->get('orders');
+                $page = 1;
+                $orders = [];
+                $all_orders = [];
+                do{
+                    try {
+                        $products = $woocommerce->get('orders',['per_page' => 100, 'page' => $page]);
+                    }catch(HttpClientException $e){
+                        die("Can't get products: $e");
+                    }
+                    $all_orders = array_merge($all_orders,$orders);
+                    $page++;
+                } while (count($orders) > 0);
+
+                $orders =  json_decode(json_encode($all_orders), FALSE);
+
                 if($orders != null){
                     foreach ($orders as $order){
 
