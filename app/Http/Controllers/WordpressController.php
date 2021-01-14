@@ -237,7 +237,7 @@ class WordpressController extends Controller
                 $all_orders = [];
                 do{
                     try {
-                        $products = $woocommerce->get('orders',['per_page' => 100, 'page' => $page]);
+                        $orders = $woocommerce->get('orders',['per_page' => 100, 'page' => $page]);
                     }catch(HttpClientException $e){
                         die("Can't get products: $e");
                     }
