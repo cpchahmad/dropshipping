@@ -21,13 +21,28 @@ class WordpressController extends Controller
 
         if($current_shop_type == 'wordpress'){
 
+//            https://website.com/wc-api/v2/products?filter[limit]=-1&consumer_key=ck_1759xxx&consumer_secret=cs_49ecxxx
+
+//            $woocommerce = new Client(
+//		 'https://website.com',
+//		 $this->wc_consumer_key,
+//		 $this->wc_consumer_secret,
+//		  [
+//	            'wp_api' => true,
+//		    'version' => 'wc/v2',
+//	            'query_string_auth' => true
+//		 ]
+//	       );
+//$param = array( 'filter[limit]' => '-1' );
+//$product_list = $woocommerce->get( 'products', $param );
+
             $current_shop_domain = Shop::where('id', $id)->pluck('shop_domain')->first();
             $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
 
             $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
 
             try {
-                $products = $woocommerce->get('products');
+                $products = $woocommerce->get('products', ['filter[limit]' => -1]);
                 if($products != null) {
                     foreach ($products as $product) {
 
@@ -41,8 +56,16 @@ class WordpressController extends Controller
                         $wordpress_product->name = $product->name;
                         $wordpress_product->slug = $product->slug;
                         $wordpress_product->permalink = $product->permalink;
-                        $wordpress_product->created_at = Carbon::createFromTimeString($product->date_created)->format('Y-m-d H:i:s');
-                        $wordpress_product->updated_at = Carbon::createFromTimeString($product->date_modified)->format('Y-m-d H:i:s');
+                        if(isset($product->date_created)){
+                            $wordpress_product->created_at = Carbon::createFromTimeString($product->date_created)->format('Y-m-d H:i:s');
+                        }else{
+                            $wordpress_product->created_at = Carbon::now()->format('Y-m-d H:i:s' );
+                        }
+                        if(isset($product->updated_at)){
+                            $wordpress_product->updated_at = Carbon::createFromTimeString($product->date_modified)->format('Y-m-d H:i:s');
+                        }else{
+                            $wordpress_product->updated_at = Carbon::now()->format('Y-m-d H:i:s' );
+                        }
                         $wordpress_product->type = $product->type;
                         $wordpress_product->status = $product->status;
                         $wordpress_product->featured = $product->featured;
@@ -105,8 +128,16 @@ class WordpressController extends Controller
                                 $wordpress_product_variation->wordpress_product_id = $product->id;
                                 $wordpress_product_variation->shop_id = $wordpress_shop->id;
                                 $wordpress_product_variation->wordpress_variation_id = $variations->id;
-                                $wordpress_product_variation->created_at = Carbon::createFromTimeString($variations->date_created)->format('Y-m-d H:i:s');
-                                $wordpress_product_variation->updated_at = Carbon::createFromTimeString($variations->date_modified)->format('Y-m-d H:i:s');
+                                if(isset($variations->date_created)){
+                                    $wordpress_product_variation->created_at = Carbon::createFromTimeString($variations->date_created)->format('Y-m-d H:i:s');
+                                }else{
+                                    $wordpress_product_variation->created_at = Carbon::now()->format('Y-m-d H:i:s' );
+                                }
+                                if(isset($variations->updated_at)){
+                                    $wordpress_product_variation->updated_at = Carbon::createFromTimeString($variations->date_modified)->format('Y-m-d H:i:s');
+                                }else{
+                                    $wordpress_product_variation->updated_at = Carbon::now()->format('Y-m-d H:i:s' );
+                                }
                                 $wordpress_product_variation->description = $variations->description;
                                 $wordpress_product_variation->permalink = $variations->permalink;
                                 $wordpress_product_variation->sku = $variations->sku;
