@@ -398,6 +398,7 @@
                             ?>
 {{--                            <form id="shop-form" action="{{route('shop')}}" >--}}
 {{--                                @csrf--}}
+                            @role('admin')
                                 <select class="form-control" id="shop-domain" name="shop_domain" onchange="setShopDomain(this);">
                                     @foreach($shop_data as $shop)
                                         <option value="{{$shop->id}}"
@@ -406,6 +407,7 @@
                                     @endforeach
                                 </select>
 {{--                            </form>--}}
+                            @endrole
                         </div>
 {{--                        <h1>{{session()->get('current_shop_domain')}}</h1>--}}
 
