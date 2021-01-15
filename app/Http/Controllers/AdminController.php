@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ErrorLog;
 use App\Expense;
 use App\LineItem;
 use App\Log;
@@ -1406,10 +1407,18 @@ class AdminController extends Controller
         $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
         $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
 
+
+
+        $new = new ErrorLog();
+        $new->message = json_encode($request->all());
+        $new->save();
+
         $order_update = new WordpressController();
         $orders = $request->all();
         try {
-            $order_update->wordpress_store_order($orders, $woocommerce);
+            foreach($orders as $order){
+                $order_update->wordpress_store_order($order,$woocommerce );
+            }
         } catch (\Exception $exception)
         {
             $new = new ErrorLog();

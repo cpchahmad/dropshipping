@@ -283,8 +283,9 @@ class WordpressController extends Controller
     public function wordpress_store_order($order, $woocommerce){
 
         $end_lines=[];
-        $order=json_decode(json_encode($order),FALSE);
+//        $order=json_decode(json_encode($order),FALSE);
 //                        dd(json_decode(json_encode($order->line_items),true));
+//        dd($order);
         foreach (json_decode(json_encode($order->line_items),true) as $line_item){
             $variation_id = $line_item['variation_id'];
             $product_id = $line_item['product_id'];
