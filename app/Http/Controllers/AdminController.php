@@ -1419,7 +1419,7 @@ class AdminController extends Controller
             $new = new ErrorLog();
             $new->message = $order->id;
             $new->save();
-            $wordpress_order = WordpressOrder::find($order->id);
+            $wordpress_order = WordpressOrder::where('wordpress_order_id', $order->id)->first();
             $new = new ErrorLog();
             $new->message = $wordpress_order;
             $new->save();
