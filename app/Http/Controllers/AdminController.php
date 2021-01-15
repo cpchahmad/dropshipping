@@ -1403,9 +1403,9 @@ class AdminController extends Controller
 //        $this->createOrder($order);
         Storage::disk('public')->put('check.txt', json_encode($request->all()));
 
-        $current_shop_domain = Shop::where('id', 4)->pluck('shop_domain')->first();
-        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
-        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+//        $current_shop_domain = Shop::where('id', 4)->pluck('shop_domain')->first();
+//        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+//        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
 
 
 
