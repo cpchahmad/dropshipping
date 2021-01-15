@@ -1499,35 +1499,36 @@ class AdminController extends Controller
                     $wordpress_order->line_items = json_encode($end_lines);
                 }
 
-//                        dd($end_lines);
-                foreach ($end_lines as $line_item){
-
-                    $line_item_save = WordpressLineItem::where('shop_id', $wordpress_order->shop_id)->where('id', $line_item->id)->first();
-
-                    if($line_item_save === null){
-                        $line_item_save = new WordpressLineItem();
-                    }
-                    $line_item_save->id = $line_item->id;
-                    $line_item_save->shop_id = $wordpress_order->shop_id;
-                    $line_item_save->wordpress_order_id = $request->id;
-                    $line_item_save->wordpress_product_id = $line_item->product_id;
-                    $line_item_save->wordpress_variation_id = $line_item->variation_id;
-                    $line_item_save->name = $line_item->name;
-                    $line_item_save->quantity = $line_item->quantity;
-                    $line_item_save->sku = $line_item->sku;
-                    $line_item_save->meta_data = json_encode($line_item->meta_data);
-                    $line_item_save->taxes = json_encode($line_item->taxes);
-                    $line_item_save->total = $line_item->total;
-                    $line_item_save->total_tax = $line_item->total_tax;
-                    $line_item_save->subtotal = $line_item->subtotal;
-                    $line_item_save->subtotal_tax = $line_item->subtotal_tax;
-                    $line_item_save->tax_class = $line_item->tax_class;
-                    if(isset($line_item->image) && $line_item->image != ""){
-                        $line_item_save->image = $line_item->image;
-                    }
-
-                    $line_item_save->update();
-                }
+//                    $wordpress_order->line_items = json_encode($end_lines);
+////                        dd($end_lines);
+//                    foreach ($end_lines as $line_item){
+//
+//                        $line_item_save = WordpressLineItem::where('shop_id', session()->get('current_shop_domain'))->where('id', $line_item->id)->first();
+//
+//                        if($line_item_save === null){
+//                            $line_item_save = new WordpressLineItem();
+//                        }
+//                        $line_item_save->id = $line_item->id;
+//                        $line_item_save->shop_id = session()->get('current_shop_domain');
+//                        $line_item_save->wordpress_order_id = $request->id;
+//                        $line_item_save->wordpress_product_id = $line_item->product_id;
+//                        $line_item_save->wordpress_variation_id = $line_item->variation_id;
+//                        $line_item_save->name = $line_item->name;
+//                        $line_item_save->quantity = $line_item->quantity;
+//                        $line_item_save->sku = $line_item->sku;
+//                        $line_item_save->meta_data = json_encode($line_item->meta_data);
+//                        $line_item_save->taxes = json_encode($line_item->taxes);
+//                        $line_item_save->total = $line_item->total;
+//                        $line_item_save->total_tax = $line_item->total_tax;
+//                        $line_item_save->subtotal = $line_item->subtotal;
+//                        $line_item_save->subtotal_tax = $line_item->subtotal_tax;
+//                        $line_item_save->tax_class = $line_item->tax_class;
+//                        if(isset($line_item->image) && $line_item->image != ""){
+//                            $line_item_save->image = $line_item->image;
+//                        }
+//
+//                        $line_item_save->save();
+//                    }
                 $wordpress_order->tax_lines = json_encode($request->tax_lines);
                 $wordpress_order->shipping_lines = json_encode($request->shipping_lines);
                 $wordpress_order->fee_lines = json_encode($request->fee_lines);
