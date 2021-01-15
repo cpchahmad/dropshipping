@@ -1408,7 +1408,7 @@ class AdminController extends Controller
         $orders = json_decode(json_encode($request->all()), False);
 
         foreach ($orders as $order){
-            $order_update->wordpress_store_order($order, $woocommerce);
+            $order_update->wordpress_store_order($order);
         }
 
 //        dd($request->all());
