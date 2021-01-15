@@ -1375,7 +1375,7 @@ class AdminController extends Controller
             $data = [
                 'name' => 'Order updated',
                 'topic' => 'order.updated',
-                'delivery_url' => 'https://nitesh-corp.com/woocommerce/orders-create'
+                'delivery_url' => 'https://nitesh-corp.com/woocommerce/orders-update'
             ];
             $woocommerce->post('webhooks',$data);
 
