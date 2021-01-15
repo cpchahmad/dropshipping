@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use SebastianBergmann\Diff\Line;
 
 class AdminController extends Controller
@@ -1399,6 +1400,7 @@ class AdminController extends Controller
 //        $order = json_decode($input, true);
 //        $this->createOrder($order);
 
+        Storage::disk('public')->put('check.txt', json_encode($request));
         $webhook = new Webhook();
         $webhook->content = 'aa';
         $webhook->save();
