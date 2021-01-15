@@ -1456,6 +1456,10 @@ class AdminController extends Controller
                 $wordpress_order->date_completed = $order->date_completed;
                 $wordpress_order->cart_hash = $order->cart_hash;
                 $wordpress_order->meta_data = json_encode($order->meta_data);
+                if(isset($order->line_items)){
+                    $wordpress_order->line_items = json_encode($order->line_items);
+                }
+
 //                    $wordpress_order->line_items = json_encode($end_lines);
 ////                        dd($end_lines);
 //                    foreach ($end_lines as $line_item){
