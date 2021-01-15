@@ -1416,7 +1416,13 @@ class AdminController extends Controller
         $order_update = new WordpressController();
         $order = $request->all();
         try {
-            $wordpress_order = WordpressOrder::find($order->id)->first();
+            $new = new ErrorLog();
+            $new->message = $order->id;
+            $new->save();
+            $wordpress_order = WordpressOrder::find($order->id);
+            $new = new ErrorLog();
+            $new->message = $wordpress_order;
+            $new->save();
             if(isset($wordpress_order) ){
                 $wordpress_order->wordpress_order_id = $order->id;
 
