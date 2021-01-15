@@ -1371,12 +1371,21 @@ class AdminController extends Controller
             $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
             $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
             $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+
             $data = [
                 'name' => 'Order updated',
                 'topic' => 'order.updated',
                 'delivery_url' => 'https://nitesh-corp.com/woocommerce/orders-create'
             ];
-            dd($woocommerce->post('webhooks',$data));
+            $woocommerce->post('webhooks',$data);
+
+            $data = [];
+            $data = [
+                'name' => 'Order Created',
+                'topic' => 'order.created',
+                'delivery_url' => 'https://nitesh-corp.com/woocommerce/orders-create'
+            ];
+            $woocommerce->post('webhooks',$data);
             dd('ok');
             //        print_r($woocommerce->get('webhooks/142'));
         }elseif($shop_type['shop_type'] == "shopify") {
