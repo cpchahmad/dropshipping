@@ -249,6 +249,15 @@ class WordpressController extends Controller
 
                 $this->worpress_store_order($orders);
 
+                if($orders != null){
+                    foreach ($orders as $order){
+                        $this->wordpress_store_order($order);
+                    }
+                    return redirect()->back()->with('success', 'Wordpress Order Sync Successfully !');
+                }else{
+                    return redirect()->back()->with('error', 'Orders not Found !');
+                }
+
             }
             catch(HttpClientException $e) {
                 $error_msg = $e->getMessage(); // Error message.
@@ -271,133 +280,131 @@ class WordpressController extends Controller
         }
     }
 
-    public function wordpress_store_order($orders){
-        if($orders != null){
-            foreach ($orders as $order){
+    public function wordpress_store_order($order){
 
-                $end_lines=[];
-                $order=json_decode(json_encode($order),FALSE);
+        $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
+        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+
+        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+
+        $end_lines=[];
+        $order=json_decode(json_encode($order),FALSE);
 //                        dd(json_decode(json_encode($order->line_items),true));
-                foreach (json_decode(json_encode($order->line_items),true) as $line_item){
-                    $variation_id = $line_item['variation_id'];
-                    $product_id = $line_item['product_id'];
+        foreach (json_decode(json_encode($order->line_items),true) as $line_item){
+            $variation_id = $line_item['variation_id'];
+            $product_id = $line_item['product_id'];
 //                            dd($variation_id);
-                    if($variation_id != null  && $product_id!= null){
+            if($variation_id != null  && $product_id!= null){
 //                                $product_api_data = $shop->api()->rest('GET', '/admin/api/2020-10/products/'.$product_id.'.json')['body']['product'];
 //                                $variant_api_data = $shop->api()->rest('GET', '/admin/api/2020-10/variants/'.$variant_id.'.json')['body']['variant'];
-                        $products = $woocommerce->get('products/'.$product_id);
+                $products = $woocommerce->get('products/'.$product_id);
 //                                dd($products);
-                        $variations = $woocommerce->get('products/'.$products->id.'/variations/'.$variation_id);
+                $variations = $woocommerce->get('products/'.$products->id.'/variations/'.$variation_id);
 //                                dd($products->src);
-                        $product_images_array = $products->images;
+                $product_images_array = $products->images;
 //                                dd($product_images_array);
-                        foreach ($product_images_array as $product_image){
+                foreach ($product_images_array as $product_image){
 //                                    dd($variations->image->id);
-                            if( $product_image->id === $variations->image->id){
-                                $line_item['image']=$variations->image->src;
-                            }elseif($product_image->id != null){
-                                $line_item['image']=$product_image->src;
+                    if( $product_image->id === $variations->image->id){
+                        $line_item['image']=$variations->image->src;
+                    }elseif($product_image->id != null){
+                        $line_item['image']=$product_image->src;
 //                                        dd($line_item['image']);
-                            }else{
-                                $line_item['image']= "null";
-                            }
-                        }
-                    }elseif ($product_id!= 0 || $variation_id == 0){
-
-                        $products = $woocommerce->get('products/'.$product_id);
-                        $product_images_array = $products->images;
-
-                        foreach ($product_images_array as $product_image){
-                            $line_item['image']=$product_image->src;
-                        }
-                    }elseif ($product_id == 0){
+                    }else{
                         $line_item['image']= "null";
                     }
-                    array_push($end_lines, $line_item);
                 }
-//                        dd($end_lines);
-                $end_lines=json_decode(json_encode($end_lines),FALSE);
-//                        dd($end_lines);
-                $wordpress_order = WordpressOrder::where('shop_id', $wordpress_shop->id)->where('wordpress_order_id', $order->id)->first();
-                if($wordpress_order === null){
-                    $wordpress_order = new WordpressOrder();
+            }elseif ($product_id!= 0 || $variation_id == 0){
+
+                $products = $woocommerce->get('products/'.$product_id);
+                $product_images_array = $products->images;
+
+                foreach ($product_images_array as $product_image){
+                    $line_item['image']=$product_image->src;
                 }
-                $wordpress_order->wordpress_order_id = $order->id;
-                $wordpress_order->shop_id = $wordpress_shop->id;
-                $wordpress_order->parent_id = $order->parent_id;
-                $wordpress_order->number = $order->number;
-                $wordpress_order->order_key = $order->order_key;
-                $wordpress_order->created_via = $order->created_via;
-                $wordpress_order->version = $order->version;
-                $wordpress_order->status = $order->status;
-                $wordpress_order->currency = $order->currency;
-                $wordpress_order->created_at = Carbon::createFromTimeString($order->date_created)->format('Y-m-d H:i:s');
-                $wordpress_order->updated_at = Carbon::createFromTimeString($order->date_modified)->format('Y-m-d H:i:s');
-                $wordpress_order->discount_total = $order->discount_total;
-                $wordpress_order->discount_tax = $order->discount_tax;
-                $wordpress_order->shipping_total = $order->shipping_total;
-                $wordpress_order->shipping_tax = $order->shipping_tax;
-                $wordpress_order->cart_tax = $order->cart_tax;
-                $wordpress_order->total = $order->total;
-                $wordpress_order->total_tax = $order->total_tax;
-                $wordpress_order->prices_include_tax = $order->prices_include_tax;
-                $wordpress_order->customer_id = $order->customer_id;
-                $wordpress_order->customer_ip_address = $order->customer_ip_address;
-                $wordpress_order->customer_user_agent = $order->customer_user_agent;
-                $wordpress_order->customer_note = $order->customer_note;
-                $wordpress_order->billing = json_encode($order->billing);
-                $wordpress_order->shipping = json_encode($order->shipping);
-                $wordpress_order->payment_method = $order->payment_method;
-                $wordpress_order->payment_method_title = $order->payment_method_title;
-                $wordpress_order->transaction_id = $order->transaction_id;
-                $wordpress_order->date_paid = $order->date_paid;
-                $wordpress_order->date_completed = $order->date_completed;
-                $wordpress_order->cart_hash = $order->cart_hash;
-                $wordpress_order->meta_data = json_encode($order->meta_data);
-                $wordpress_order->line_items = json_encode($end_lines);
-//                        dd($end_lines);
-                foreach ($end_lines as $line_item){
-
-                    $line_item_save = WordpressLineItem::where('shop_id', session()->get('current_shop_domain'))->where('id', $line_item->id)->first();
-
-                    if($line_item_save === null){
-                        $line_item_save = new WordpressLineItem();
-                    }
-                    $line_item_save->id = $line_item->id;
-                    $line_item_save->shop_id = session()->get('current_shop_domain');
-                    $line_item_save->wordpress_order_id = $order->id;
-                    $line_item_save->wordpress_product_id = $line_item->product_id;
-                    $line_item_save->wordpress_variation_id = $line_item->variation_id;
-                    $line_item_save->name = $line_item->name;
-                    $line_item_save->quantity = $line_item->quantity;
-                    $line_item_save->sku = $line_item->sku;
-                    $line_item_save->meta_data = json_encode($line_item->meta_data);
-                    $line_item_save->taxes = json_encode($line_item->taxes);
-                    $line_item_save->total = $line_item->total;
-                    $line_item_save->total_tax = $line_item->total_tax;
-                    $line_item_save->subtotal = $line_item->subtotal;
-                    $line_item_save->subtotal_tax = $line_item->subtotal_tax;
-                    $line_item_save->tax_class = $line_item->tax_class;
-                    if(isset($line_item->image) && $line_item->image != ""){
-                        $line_item_save->image = $line_item->image;
-                    }
-
-                    $line_item_save->save();
-                }
-                $wordpress_order->tax_lines = json_encode($order->tax_lines);
-                $wordpress_order->shipping_lines = json_encode($order->shipping_lines);
-                $wordpress_order->fee_lines = json_encode($order->fee_lines);
-                $wordpress_order->coupon_lines = json_encode($order->coupon_lines);
-                $wordpress_order->refunds = json_encode($order->refunds);
-                $wordpress_order->currency_symbol = $order->currency_symbol;
-                $wordpress_order->links = json_encode($order->_links);
-
-                $wordpress_order->save();
-
+            }elseif ($product_id == 0){
+                $line_item['image']= "null";
             }
-            return redirect()->back()->with('success', 'Wordpress Order Sync Successfully !');
-        }else{
-            return redirect()->back()->with('error', 'Orders not Found !');
+            array_push($end_lines, $line_item);
         }
+//                        dd($end_lines);
+        $end_lines=json_decode(json_encode($end_lines),FALSE);
+//                        dd($end_lines);
+        $wordpress_order = WordpressOrder::where('shop_id', $wordpress_shop->id)->where('wordpress_order_id', $order->id)->first();
+        if($wordpress_order === null){
+            $wordpress_order = new WordpressOrder();
+        }
+        $wordpress_order->wordpress_order_id = $order->id;
+        $wordpress_order->shop_id = $wordpress_shop->id;
+        $wordpress_order->parent_id = $order->parent_id;
+        $wordpress_order->number = $order->number;
+        $wordpress_order->order_key = $order->order_key;
+        $wordpress_order->created_via = $order->created_via;
+        $wordpress_order->version = $order->version;
+        $wordpress_order->status = $order->status;
+        $wordpress_order->currency = $order->currency;
+        $wordpress_order->created_at = Carbon::createFromTimeString($order->date_created)->format('Y-m-d H:i:s');
+        $wordpress_order->updated_at = Carbon::createFromTimeString($order->date_modified)->format('Y-m-d H:i:s');
+        $wordpress_order->discount_total = $order->discount_total;
+        $wordpress_order->discount_tax = $order->discount_tax;
+        $wordpress_order->shipping_total = $order->shipping_total;
+        $wordpress_order->shipping_tax = $order->shipping_tax;
+        $wordpress_order->cart_tax = $order->cart_tax;
+        $wordpress_order->total = $order->total;
+        $wordpress_order->total_tax = $order->total_tax;
+        $wordpress_order->prices_include_tax = $order->prices_include_tax;
+        $wordpress_order->customer_id = $order->customer_id;
+        $wordpress_order->customer_ip_address = $order->customer_ip_address;
+        $wordpress_order->customer_user_agent = $order->customer_user_agent;
+        $wordpress_order->customer_note = $order->customer_note;
+        $wordpress_order->billing = json_encode($order->billing);
+        $wordpress_order->shipping = json_encode($order->shipping);
+        $wordpress_order->payment_method = $order->payment_method;
+        $wordpress_order->payment_method_title = $order->payment_method_title;
+        $wordpress_order->transaction_id = $order->transaction_id;
+        $wordpress_order->date_paid = $order->date_paid;
+        $wordpress_order->date_completed = $order->date_completed;
+        $wordpress_order->cart_hash = $order->cart_hash;
+        $wordpress_order->meta_data = json_encode($order->meta_data);
+        $wordpress_order->line_items = json_encode($end_lines);
+//                        dd($end_lines);
+        foreach ($end_lines as $line_item){
+
+            $line_item_save = WordpressLineItem::where('shop_id', session()->get('current_shop_domain'))->where('id', $line_item->id)->first();
+
+            if($line_item_save === null){
+                $line_item_save = new WordpressLineItem();
+            }
+            $line_item_save->id = $line_item->id;
+            $line_item_save->shop_id = session()->get('current_shop_domain');
+            $line_item_save->wordpress_order_id = $order->id;
+            $line_item_save->wordpress_product_id = $line_item->product_id;
+            $line_item_save->wordpress_variation_id = $line_item->variation_id;
+            $line_item_save->name = $line_item->name;
+            $line_item_save->quantity = $line_item->quantity;
+            $line_item_save->sku = $line_item->sku;
+            $line_item_save->meta_data = json_encode($line_item->meta_data);
+            $line_item_save->taxes = json_encode($line_item->taxes);
+            $line_item_save->total = $line_item->total;
+            $line_item_save->total_tax = $line_item->total_tax;
+            $line_item_save->subtotal = $line_item->subtotal;
+            $line_item_save->subtotal_tax = $line_item->subtotal_tax;
+            $line_item_save->tax_class = $line_item->tax_class;
+            if(isset($line_item->image) && $line_item->image != ""){
+                $line_item_save->image = $line_item->image;
+            }
+
+            $line_item_save->save();
+        }
+        $wordpress_order->tax_lines = json_encode($order->tax_lines);
+        $wordpress_order->shipping_lines = json_encode($order->shipping_lines);
+        $wordpress_order->fee_lines = json_encode($order->fee_lines);
+        $wordpress_order->coupon_lines = json_encode($order->coupon_lines);
+        $wordpress_order->refunds = json_encode($order->refunds);
+        $wordpress_order->currency_symbol = $order->currency_symbol;
+        $wordpress_order->links = json_encode($order->_links);
+
+        $wordpress_order->save();
+
     }
 }
