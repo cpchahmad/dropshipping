@@ -251,7 +251,7 @@ class WordpressController extends Controller
 
                 if($orders != null){
                     foreach ($orders as $order){
-                        $this->wordpress_store_order($order);
+                        $this->wordpress_store_order($order, $woocommerce);
                     }
                     return redirect()->back()->with('success', 'Wordpress Order Sync Successfully !');
                 }else{
@@ -280,12 +280,12 @@ class WordpressController extends Controller
         }
     }
 
-    public function wordpress_store_order($order){
-
-        $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
-        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
-
-        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+    public function wordpress_store_order($order, $woocommerce){
+//
+//        $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
+//        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+//
+//        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
 
         $end_lines=[];
         $order=json_decode(json_encode($order),FALSE);
@@ -330,12 +330,12 @@ class WordpressController extends Controller
 //                        dd($end_lines);
         $end_lines=json_decode(json_encode($end_lines),FALSE);
 //                        dd($end_lines);
-        $wordpress_order = WordpressOrder::where('shop_id', $wordpress_shop->id)->where('wordpress_order_id', $order->id)->first();
+        $wordpress_order = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->where('wordpress_order_id', $order->id)->first();
         if($wordpress_order === null){
             $wordpress_order = new WordpressOrder();
         }
         $wordpress_order->wordpress_order_id = $order->id;
-        $wordpress_order->shop_id = $wordpress_shop->id;
+        $wordpress_order->shop_id = session()->get('current_shop_domain');
         $wordpress_order->parent_id = $order->parent_id;
         $wordpress_order->number = $order->number;
         $wordpress_order->order_key = $order->order_key;

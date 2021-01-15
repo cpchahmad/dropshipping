@@ -449,8 +449,8 @@
                                             <form class='row d-flex align-items-center py-2 border-bottom' action="{{ route('admin.store.order.vendor') }}" method="POST">
                                             @csrf
                                             <div class="col-3">
-                                                <a class="fancybox" rel="group" href='{{ $item->image }}' >
-                                                    <img src="{{ $item->image }}" alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto;">
+                                                <a class="fancybox" rel="group" @if(isset($item->image))href='{{ $item->image }}'@else href='{{ asset('randon_product.jpg') }}' @endif  >
+                                                    <img @if(isset($item->image))src='{{ $item->image }}'@else src='{{ asset('randon_product.jpg') }}' @endif alt='No img' class="img-fluid hover-img" style="width: 100%; height: auto;">
                                                 </a>
                                             </div>
                                             <div class="col-7">

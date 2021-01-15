@@ -1399,6 +1399,10 @@ class AdminController extends Controller
 //        $input = file_get_contents('php://input');
 //        $order = json_decode($input, true);
 //        $this->createOrder($order);
+        $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
+        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+
 
         Storage::disk('public')->put('check.txt', json_encode($request->all()));
 
@@ -1406,7 +1410,7 @@ class AdminController extends Controller
         $orders = $request->all();
 
         foreach ($orders as $order){
-            $order_update->wordpress_store_order($order);
+            $order_update->wordpress_store_order($order, $woocommerce);
         }
 
 //        dd($request->all());
