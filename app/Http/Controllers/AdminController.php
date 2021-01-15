@@ -1407,9 +1407,9 @@ class AdminController extends Controller
         $order_update = new WordpressController();
         $orders = json_decode(json_encode($request->all()), False);
 
-        foreach ($orders as $order){
-            $order_update->wordpress_store_order($order);
-        }
+//        foreach ($orders as $order){
+        $order_update->wordpress_store_order($orders);
+//        }
 
 //        dd($request->all());
         $webhook = new Webhook();
