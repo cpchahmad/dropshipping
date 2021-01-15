@@ -1414,51 +1414,52 @@ class AdminController extends Controller
         $new->save();
 
         $order_update = new WordpressController();
-        $order = $request->all();
+        $orders = $request->all();
         try {
-            $new = new ErrorLog();
-            $new->message = $order->id;
-            $new->save();
-            $wordpress_order = WordpressOrder::where('wordpress_order_id', $order->id)->first();
-            $new = new ErrorLog();
-            $new->message = $wordpress_order;
-            $new->save();
-            if(isset($wordpress_order) ){
-                $wordpress_order->wordpress_order_id = $order->id;
+            foreach ($orders as $order){
+                $new = new ErrorLog();
+                $new->message = $order->id;
+                $new->save();
+                $wordpress_order = WordpressOrder::where('wordpress_order_id', $order->id)->first();
+                $new = new ErrorLog();
+                $new->message = $wordpress_order;
+                $new->save();
+                if(isset($wordpress_order) ){
+                    $wordpress_order->wordpress_order_id = $order->id;
 
-                $wordpress_order->parent_id = $order->parent_id;
-                $wordpress_order->number = $order->number;
-                $wordpress_order->order_key = $order->order_key;
-                $wordpress_order->created_via = $order->created_via;
-                $wordpress_order->version = $order->version;
-                $wordpress_order->status = $order->status;
-                $wordpress_order->currency = $order->currency;
-                $wordpress_order->created_at = Carbon::createFromTimeString($order->date_created)->format('Y-m-d H:i:s');
-                $wordpress_order->updated_at = Carbon::createFromTimeString($order->date_modified)->format('Y-m-d H:i:s');
-                $wordpress_order->discount_total = $order->discount_total;
-                $wordpress_order->discount_tax = $order->discount_tax;
-                $wordpress_order->shipping_total = $order->shipping_total;
-                $wordpress_order->shipping_tax = $order->shipping_tax;
-                $wordpress_order->cart_tax = $order->cart_tax;
-                $wordpress_order->total = $order->total;
-                $wordpress_order->total_tax = $order->total_tax;
-                $wordpress_order->prices_include_tax = $order->prices_include_tax;
-                $wordpress_order->customer_id = $order->customer_id;
-                $wordpress_order->customer_ip_address = $order->customer_ip_address;
-                $wordpress_order->customer_user_agent = $order->customer_user_agent;
-                $wordpress_order->customer_note = $order->customer_note;
-                $wordpress_order->billing = json_encode($order->billing);
-                $wordpress_order->shipping = json_encode($order->shipping);
-                $wordpress_order->payment_method = $order->payment_method;
-                $wordpress_order->payment_method_title = $order->payment_method_title;
-                $wordpress_order->transaction_id = $order->transaction_id;
-                $wordpress_order->date_paid = $order->date_paid;
-                $wordpress_order->date_completed = $order->date_completed;
-                $wordpress_order->cart_hash = $order->cart_hash;
-                $wordpress_order->meta_data = json_encode($order->meta_data);
-                if(isset($order->line_items)){
-                    $wordpress_order->line_items = json_encode($order->line_items);
-                }
+                    $wordpress_order->parent_id = $order->parent_id;
+                    $wordpress_order->number = $order->number;
+                    $wordpress_order->order_key = $order->order_key;
+                    $wordpress_order->created_via = $order->created_via;
+                    $wordpress_order->version = $order->version;
+                    $wordpress_order->status = $order->status;
+                    $wordpress_order->currency = $order->currency;
+                    $wordpress_order->created_at = Carbon::createFromTimeString($order->date_created)->format('Y-m-d H:i:s');
+                    $wordpress_order->updated_at = Carbon::createFromTimeString($order->date_modified)->format('Y-m-d H:i:s');
+                    $wordpress_order->discount_total = $order->discount_total;
+                    $wordpress_order->discount_tax = $order->discount_tax;
+                    $wordpress_order->shipping_total = $order->shipping_total;
+                    $wordpress_order->shipping_tax = $order->shipping_tax;
+                    $wordpress_order->cart_tax = $order->cart_tax;
+                    $wordpress_order->total = $order->total;
+                    $wordpress_order->total_tax = $order->total_tax;
+                    $wordpress_order->prices_include_tax = $order->prices_include_tax;
+                    $wordpress_order->customer_id = $order->customer_id;
+                    $wordpress_order->customer_ip_address = $order->customer_ip_address;
+                    $wordpress_order->customer_user_agent = $order->customer_user_agent;
+                    $wordpress_order->customer_note = $order->customer_note;
+                    $wordpress_order->billing = json_encode($order->billing);
+                    $wordpress_order->shipping = json_encode($order->shipping);
+                    $wordpress_order->payment_method = $order->payment_method;
+                    $wordpress_order->payment_method_title = $order->payment_method_title;
+                    $wordpress_order->transaction_id = $order->transaction_id;
+                    $wordpress_order->date_paid = $order->date_paid;
+                    $wordpress_order->date_completed = $order->date_completed;
+                    $wordpress_order->cart_hash = $order->cart_hash;
+                    $wordpress_order->meta_data = json_encode($order->meta_data);
+                    if(isset($order->line_items)){
+                        $wordpress_order->line_items = json_encode($order->line_items);
+                    }
 
 //                    $wordpress_order->line_items = json_encode($end_lines);
 ////                        dd($end_lines);
@@ -1490,21 +1491,21 @@ class AdminController extends Controller
 //
 //                        $line_item_save->save();
 //                    }
-                $wordpress_order->tax_lines = json_encode($order->tax_lines);
-                $wordpress_order->shipping_lines = json_encode($order->shipping_lines);
-                $wordpress_order->fee_lines = json_encode($order->fee_lines);
-                $wordpress_order->coupon_lines = json_encode($order->coupon_lines);
-                $wordpress_order->refunds = json_encode($order->refunds);
-                $wordpress_order->currency_symbol = $order->currency_symbol;
-                $wordpress_order->links = json_encode($order->_links);
+                    $wordpress_order->tax_lines = json_encode($order->tax_lines);
+                    $wordpress_order->shipping_lines = json_encode($order->shipping_lines);
+                    $wordpress_order->fee_lines = json_encode($order->fee_lines);
+                    $wordpress_order->coupon_lines = json_encode($order->coupon_lines);
+                    $wordpress_order->refunds = json_encode($order->refunds);
+                    $wordpress_order->currency_symbol = $order->currency_symbol;
+                    $wordpress_order->links = json_encode($order->_links);
 
-                $wordpress_order->save();
-                return redirect()->back()->with('success', 'Wordpress Order Sync Successfully !');
-            }
-            else{
+                    $wordpress_order->save();
+                    return redirect()->back()->with('success', 'Wordpress Order Sync Successfully !');
+                }
+                else{
                     return redirect()->back()->with('error', 'Orders not Found !');
+                }
             }
-
         } catch (\Exception $exception)
         {
             $new = new ErrorLog();
