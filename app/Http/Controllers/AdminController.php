@@ -1542,7 +1542,7 @@ class AdminController extends Controller
             $current_shop_domain = Shop::where('id', 4)->pluck('shop_domain')->first();
             $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
             $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
-
+            $end_lines =[];
             foreach (json_decode(json_encode($request->line_items),true) as $line_item){
                 $variation_id = $line_item['variation_id'];
                 $product_id = $line_item['product_id'];
