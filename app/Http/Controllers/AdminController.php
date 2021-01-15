@@ -1530,12 +1530,28 @@ class AdminController extends Controller
         $webhook->save();
 
     }
-    public function orderCreateWebhook(Request $request){
+    public function orderCreateWebhook(Request $request)
+    {
         Storage::disk('public')->put('create_order.txt', json_encode($request->all()));
 
         $new = new ErrorLog();
         $new->message = json_encode($request->all());
         $new->save();
+
+        try {
+            $current_shop_domain = Shop::where('id', 4)->pluck('shop_domain')->first();
+            $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+            $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+
+            $order_create = new WordpressController();
+            $order_create->wordpress_store_order($request->all(), $woocommerce);
+
+        }catch (\Exception $exception)
+        {
+            $new = new ErrorLog();
+            $new->message = $exception->getMessage();
+            $new->save();
+        }
 
 
 
