@@ -247,7 +247,7 @@ class WordpressController extends Controller
 
                 $orders =  json_decode(json_encode($all_orders), FALSE);
 
-                $this->worpress_store_order($orders);
+//                $this->worpress_store_order($orders);
 
                 if($orders != null){
                     foreach ($orders as $order){
