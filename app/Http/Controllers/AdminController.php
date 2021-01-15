@@ -1400,7 +1400,7 @@ class AdminController extends Controller
 //        $order = json_decode($input, true);
 //        $this->createOrder($order);
 
-        Storage::disk('public')->put('check.txt', json_encode($request));
+        Storage::disk('public')->put('check.txt', json_encode($request->all()));
         $webhook = new Webhook();
         $webhook->content = 'aa';
         $webhook->save();
