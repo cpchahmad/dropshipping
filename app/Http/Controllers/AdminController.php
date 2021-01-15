@@ -1403,11 +1403,6 @@ class AdminController extends Controller
 //        $this->createOrder($order);
         Storage::disk('public')->put('check.txt', json_encode($request->all()));
 
-//        $current_shop_domain = Shop::where('id', 4)->pluck('shop_domain')->first();
-//        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
-//        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
-
-
 
         $new = new ErrorLog();
         $new->message = json_encode($request->all());
@@ -1418,6 +1413,52 @@ class AdminController extends Controller
         try {
 
             $wordpress_order = WordpressOrder::where('wordpress_order_id', $request->id)->first();
+
+            $current_shop_domain = Shop::where('id', $wordpress_order->shop_id)->pluck('shop_domain')->first();
+            $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+            $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+
+            $end_lines=[];
+
+            foreach (json_decode(json_encode($request->line_items),true) as $line_item){
+                $variation_id = $line_item['variation_id'];
+                $product_id = $line_item['product_id'];
+
+                if($variation_id != null  && $product_id!= null){
+
+                    $products = $woocommerce->get('products/'.$product_id);
+
+                    $variations = $woocommerce->get('products/'.$products->id.'/variations/'.$variation_id);
+
+                    $product_images_array = $products->images;
+
+                    foreach ($product_images_array as $product_image){
+
+                        if( $product_image->id === $variations->image->id){
+                            $line_item['image']=$variations->image->src;
+                        }elseif($product_image->id != null){
+                            $line_item['image']=$product_image->src;
+
+                        }else{
+                            $line_item['image']= "null";
+                        }
+                    }
+                }elseif ($product_id!= 0 || $variation_id == 0){
+
+                    $products = $woocommerce->get('products/'.$product_id);
+                    $product_images_array = $products->images;
+
+                    foreach ($product_images_array as $product_image){
+                        $line_item['image']=$product_image->src;
+                    }
+                }elseif ($product_id == 0){
+                    $line_item['image']= "null";
+                }
+                array_push($end_lines, $line_item);
+            }
+
+            $end_lines=json_decode(json_encode($end_lines),FALSE);
+
             if(isset($wordpress_order) ){
                 $new = new ErrorLog();
                 $new->message = $wordpress_order;
@@ -1455,7 +1496,7 @@ class AdminController extends Controller
                 $wordpress_order->cart_hash = $request->cart_hash;
                 $wordpress_order->meta_data = json_encode($request->meta_data);
                 if(isset($request->line_items)){
-                    $wordpress_order->line_items = json_encode($request->line_items);
+                    $wordpress_order->line_items = json_encode($end_lines);
                 }
 
 //                    $wordpress_order->line_items = json_encode($end_lines);
