@@ -151,8 +151,8 @@ class AdminController extends Controller
 
             $orders = WordpressOrder::query();
             if ($request->has('search')) {
-               $orders = $orders->where('shop_id', session()->get('current_shop_domain'))->where('number', 'LIKE', '%' . $request->input('search') . '%')
-                   ->orderBy('date_paid', 'DESC')->paginate(30);
+                $orders = $orders->where('shop_id', session()->get('current_shop_domain'))->where('number', 'LIKE', '%' . $request->input('search') . '%')
+                    ->orderBy('date_paid', 'DESC')->paginate(30);
             }else{
                 $orders =WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->orderBy('date_paid', 'DESC')->paginate(30);
             }
@@ -517,20 +517,20 @@ class AdminController extends Controller
             $images = json_decode($p->images);
 
             foreach ($images as $image) {
-               $product_image = ProductImage::where('shopify_id', $image->id)->where('shop_id', $id)->first();
-               if($product_image === null){
-                   $product_image = new ProductImage();
-               }
-               $product_image->shop_id = $id;
-               $product_image->shopify_id = $image->id;
-               $product_image->product_id = $image->product_id;
-               $product_image->position = $image->position;
-               $product_image->alt = $image->alt;
-               $product_image->width = $image->width;
-               $product_image->height = $image->height;
-               $product_image->src = $image->src;
-               $product_image->variant_ids = json_encode($image->variant_ids);
-               $product_image->save();
+                $product_image = ProductImage::where('shopify_id', $image->id)->where('shop_id', $id)->first();
+                if($product_image === null){
+                    $product_image = new ProductImage();
+                }
+                $product_image->shop_id = $id;
+                $product_image->shopify_id = $image->id;
+                $product_image->product_id = $image->product_id;
+                $product_image->position = $image->position;
+                $product_image->alt = $image->alt;
+                $product_image->width = $image->width;
+                $product_image->height = $image->height;
+                $product_image->src = $image->src;
+                $product_image->variant_ids = json_encode($image->variant_ids);
+                $product_image->save();
 
             }
         }
@@ -560,7 +560,7 @@ class AdminController extends Controller
         $width_array = array_merge($width_array, $request->width);
         $height_array = array_merge($height_array, $request->height);
 
-       $shop_id = intval(session()->get('current_shop_domain'));
+        $shop_id = intval(session()->get('current_shop_domain'));
         for($i =0; $i< count($vendor_name_array); $i++) {
 
             if(!(is_null($vendor_name_array[$i]))) {
@@ -1053,11 +1053,11 @@ class AdminController extends Controller
 
         $user = User::find($id);
         if($request->password) {
-           $this->validate($request, [
-               'password' => 'required|string|min:8|confirmed',
-               'password_confirmation' => 'required|string|min:8'
-           ]);
-           $user->password = Hash::make($request->password);
+            $this->validate($request, [
+                'password' => 'required|string|min:8|confirmed',
+                'password_confirmation' => 'required|string|min:8'
+            ]);
+            $user->password = Hash::make($request->password);
         }
 
         $this->validate($request, [
@@ -1400,15 +1400,25 @@ class AdminController extends Controller
 //        $input = file_get_contents('php://input');
 //        $order = json_decode($input, true);
 //        $this->createOrder($order);
-
-
         Storage::disk('public')->put('check.txt', json_encode($request->all()));
 
+        $current_shop_domain = Shop::where('id', 4)->pluck('shop_domain')->first();
+        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+
         $order_update = new WordpressController();
-        $orders = json_decode(json_encode($request->all()), False);
+        $orders = $request->all();
+        try {
+            $order_update->wordpress_store_order($orders, $woocommerce);
+        } catch (\Exception $exception)
+        {
+            $new = new ErrorLog();
+            $new->message = $exception->getMessage();
+            $new->save();
+        }
 
 //        foreach ($orders as $order){
-        $order_update->wordpress_store_order($orders);
+
 //        }
 
 //        dd($request->all());

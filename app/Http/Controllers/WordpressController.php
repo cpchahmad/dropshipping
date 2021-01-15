@@ -251,7 +251,7 @@ class WordpressController extends Controller
 
                 if($orders != null){
                     foreach ($orders as $order){
-                        $this->wordpress_store_order($order);
+                        $this->wordpress_store_order($order, $woocommerce);
                     }
                     return redirect()->back()->with('success', 'Wordpress Order Sync Successfully !');
                 }else{
@@ -280,11 +280,7 @@ class WordpressController extends Controller
         }
     }
 
-    public function wordpress_store_order($order){
-//
-        $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
-        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
-        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+    public function wordpress_store_order($order, $woocommerce){
 
         $end_lines=[];
         $order=json_decode(json_encode($order),FALSE);
