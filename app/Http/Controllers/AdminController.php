@@ -1401,6 +1401,12 @@ class AdminController extends Controller
 //        $this->createOrder($order);
 
         Storage::disk('public')->put('check.txt', json_encode($request->all()));
+
+        $order_update = new WordpressController();
+        $orders = $request->all();
+
+        $order_update->wordpress_store_order($orders);
+//        dd($request->all());
         $webhook = new Webhook();
         $webhook->content = 'aa';
         $webhook->save();
