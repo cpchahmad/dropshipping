@@ -99,6 +99,13 @@ Route::post('webhook/products-create', 'AdminController@productCreateWebhook');
 Route::post('webhook/products-update', 'AdminController@productUpdateWebhook');
 Route::any('webhook/orders-create', 'AdminController@orderCreateWebhook');
 Route::post('webhook/orders-update', 'AdminController@orderUpdatedWebhook');
+
+Route::post('woocommerce/products-create', 'AdminController@productCreateWebhook');
+Route::post('woocommerce/products-update', 'AdminController@productUpdateWebhook');
+Route::any('woocommerce/orders-create', 'AdminController@orderCreateWebhook');
+Route::post('woocommerce/orders-update', 'AdminController@orderUpdatedWebhook');
+
+
 //
 //
 //Route::get('/test', function() {

@@ -150,9 +150,9 @@ class AdminController extends Controller
             $orders = WordpressOrder::query();
             if ($request->has('search')) {
                $orders = $orders->where('shop_id', session()->get('current_shop_domain'))->where('number', 'LIKE', '%' . $request->input('search') . '%')
-                   ->orderBy('date_paid', 'Asc')->paginate(30);
+                   ->orderBy('date_paid', 'DESC')->paginate(30);
             }else{
-                $orders =WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->orderBy('date_paid', 'Asc')->paginate(30);
+                $orders =WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->orderBy('date_paid', 'DESC')->paginate(30);
             }
 
             return view('orders.wordpress_orders_index')->with([
@@ -1299,53 +1299,88 @@ class AdminController extends Controller
 
 
     public function createWebhooks(Request $request) {
-        $api = ShopsController::config();
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
 
-        $data = [
-            "webhook"=> [
-                "topic"=> "orders/create",
-                "address"=> "https://nitesh-corp.com/webhook/orders-create",
-                "format"=> "json",
-            ]
-        ];
-        $api->rest('POST', '/admin/webhooks.json', $data, [], true);
-        $data = [];
+        if($shop_type['shop_type'] == "wordpress"){
 
-        $data = [
-            "webhook"=> [
-                "topic"=> "orders/updated",
-                "address"=> "https://nitesh-corp.com/webhook/orders-update",
-                "format"=> "json",
-            ]
-        ];
-        $api->rest('POST', '/admin/webhooks.json', $data, [], true);
-        $data = [];
+            $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
+            $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+            $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+            $data = [
+                'name' => 'Order updated',
+                'topic' => 'order.updated',
+                'delivery_url' => 'https://nitesh-corp.com/get/webhooks'
+            ];
+            dd($woocommerce->get('webhooks/200'));
+            dd('ok');
+            //        print_r($woocommerce->get('webhooks/142'));
+        }elseif($shop_type['shop_type'] == "shopify"){
+            $api = ShopsController::config();
 
-        $data = [
-            "webhook"=> [
-                "topic"=> "products/create",
-                "address"=> "https://nitesh-corp.com/webhook/products-create",
-                "format"=> "json",
-            ]
-        ];
-        $api->rest('POST', '/admin/webhooks.json', $data, [], true);
-        $data = [];
+            $data = [
+                "webhook"=> [
+                    "topic"=> "orders/create",
+                    "address"=> "https://nitesh-corp.com/webhook/orders-create",
+                    "format"=> "json",
+                ]
+            ];
+            $api->rest('POST', '/admin/webhooks.json', $data, [], true);
+            $data = [];
 
-        $data = [
-            "webhook"=> [
-                "topic"=> "products/update",
-                "address"=> "https://nitesh-corp.com/webhook/products-update",
-                "format"=> "json",
-            ]
-        ];
-        $api->rest('POST', '/admin/webhooks.json', $data, [], true);
-        $data = [];
+            $data = [
+                "webhook"=> [
+                    "topic"=> "orders/updated",
+                    "address"=> "https://nitesh-corp.com/webhook/orders-update",
+                    "format"=> "json",
+                ]
+            ];
+            $api->rest('POST', '/admin/webhooks.json', $data, [], true);
+            $data = [];
+
+            $data = [
+                "webhook"=> [
+                    "topic"=> "products/create",
+                    "address"=> "https://nitesh-corp.com/webhook/products-create",
+                    "format"=> "json",
+                ]
+            ];
+            $api->rest('POST', '/admin/webhooks.json', $data, [], true);
+            $data = [];
+
+            $data = [
+                "webhook"=> [
+                    "topic"=> "products/update",
+                    "address"=> "https://nitesh-corp.com/webhook/products-update",
+                    "format"=> "json",
+                ]
+            ];
+            $api->rest('POST', '/admin/webhooks.json', $data, [], true);
+            $data = [];
+        }
+
     }
 
     public function getWebhooks() {
-        $api = ShopsController::config();
-        $response = $api->rest('GET', '/admin/webhooks.json', null, [], true);
-        dd($response);
+        $shop_type =Shop::where('id', session()->get('current_shop_domain'))->select('shop_type', 'id')->first();
+
+        if($shop_type['shop_type'] == "wordpress"){
+
+            $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
+            $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+            $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+            $data = [
+                'name' => 'Order updated',
+                'topic' => 'order.updated',
+                'delivery_url' => 'https://nitesh-corp.com/woocommerce/orders-create'
+            ];
+            dd($woocommerce->post('webhooks',$data));
+            dd('ok');
+            //        print_r($woocommerce->get('webhooks/142'));
+        }elseif($shop_type['shop_type'] == "shopify") {
+            $api = ShopsController::config();
+            $response = $api->rest('GET', '/admin/webhooks.json', null, [], true);
+            dd($response);
+        }
     }
 
     public function productCreateWebhook(Request $request){
