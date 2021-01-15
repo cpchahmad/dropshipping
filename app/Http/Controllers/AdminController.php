@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use phpDocumentor\Reflection\Types\False_;
 use SebastianBergmann\Diff\Line;
 
 class AdminController extends Controller
@@ -1399,15 +1400,12 @@ class AdminController extends Controller
 //        $input = file_get_contents('php://input');
 //        $order = json_decode($input, true);
 //        $this->createOrder($order);
-        $current_shop_domain = Shop::where('id', session()->get('current_shop_domain'))->pluck('shop_domain')->first();
-        $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
-        $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
 
 
         Storage::disk('public')->put('check.txt', json_encode($request->all()));
 
         $order_update = new WordpressController();
-        $orders = $request->all();
+        $orders = json_decode(json_encode($request->all()), False);
 
         foreach ($orders as $order){
             $order_update->wordpress_store_order($order, $woocommerce);
