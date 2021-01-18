@@ -92,7 +92,7 @@ Route::group(['middleware' => ['auth', 'currentShopSession']], function () {
 
 //Webhooks
 Route::get('create/webhooks', 'AdminController@createWebhooks');
-Route::get('get/webhooks', 'AdminController@getWebhooks');
+Route::get('get/webhooks', 'AdminController@getWebhooks');//To register webhook on woocommerce
 Route::get('delete/webhooks', 'AdminController@deleteWebhooks');
 
 Route::post('webhook/products-create', 'AdminController@productCreateWebhook');
@@ -100,8 +100,8 @@ Route::post('webhook/products-update', 'AdminController@productUpdateWebhook');
 Route::any('webhook/orders-create', 'AdminController@orderCreateWebhook');
 Route::post('webhook/orders-update', 'AdminController@orderUpdatedWebhook');
 
-Route::post('/woocommerce/products-create', 'AdminController@productCreateWebhook');
-Route::post('/woocommerce/products-update', 'AdminController@productUpdateWebhook');
+//Route::post('/woocommerce/products-create', 'AdminController@productCreateWebhook');
+//Route::post('/woocommerce/products-update', 'AdminController@productUpdateWebhook');
 Route::any('/woocommerce/orders-create', 'AdminController@orderCreateWebhook');
 Route::post('/woocommerce/orders-update', 'AdminController@orderUpdatedWebhook');
 
