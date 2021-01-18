@@ -245,13 +245,13 @@ class WordpressController extends Controller
                     $page++;
                 } while (count($orders) > 0);
 
-                $orders =  json_decode(json_encode($all_orders), FALSE);
-                foreach($orders as $order){
-                    $shop_domain = json_decode(json_encode($order->_links->self['0']->href),True);
-                    $data = explode("wp-json",$shop_domain);
-                    $current_shop_domain =$data['0'];
-                }
-
+//                $orders =  json_decode(json_encode($all_orders), FALSE);
+//                foreach($orders as $order){
+//                    $shop_domain = json_decode(json_encode($order->_links->self['0']->href),True);
+//                    $data = explode("wp-json",$shop_domain);
+//                    $current_shop_domain =$data['0'];
+//                }
+//
 //                $this->worpress_store_order($orders);
 
                 if($orders != null){
