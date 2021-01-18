@@ -246,6 +246,11 @@ class WordpressController extends Controller
                 } while (count($orders) > 0);
 
                 $orders =  json_decode(json_encode($all_orders), FALSE);
+                foreach($orders as $order){
+                    $shop_domain = json_decode(json_encode($order->_links->self['0']->href),True);
+                    $data = explode("wp-json",$shop_domain);
+                    $current_shop_domain =$data['0'];
+                }
 
 //                $this->worpress_store_order($orders);
 
@@ -283,29 +288,21 @@ class WordpressController extends Controller
     public function wordpress_store_order($order, $woocommerce){
 
         $end_lines=[];
-//        $order=json_decode(json_encode($order),FALSE);
-//                        dd(json_decode(json_encode($order->line_items),true));
-//        dd($order);
+
         foreach (json_decode(json_encode($order->line_items),true) as $line_item){
             $variation_id = $line_item['variation_id'];
             $product_id = $line_item['product_id'];
-//                            dd($variation_id);
+
             if($variation_id != null  && $product_id!= null){
-//                                $product_api_data = $shop->api()->rest('GET', '/admin/api/2020-10/products/'.$product_id.'.json')['body']['product'];
-//                                $variant_api_data = $shop->api()->rest('GET', '/admin/api/2020-10/variants/'.$variant_id.'.json')['body']['variant'];
+
                 $products = $woocommerce->get('products/'.$product_id);
-//                                dd($products);
                 $variations = $woocommerce->get('products/'.$products->id.'/variations/'.$variation_id);
-//                                dd($products->src);
                 $product_images_array = $products->images;
-//                                dd($product_images_array);
                 foreach ($product_images_array as $product_image){
-//                                    dd($variations->image->id);
                     if( $product_image->id === $variations->image->id){
                         $line_item['image']=$variations->image->src;
                     }elseif($product_image->id != null){
                         $line_item['image']=$product_image->src;
-//                                        dd($line_item['image']);
                     }else{
                         $line_item['image']= "null";
                     }
@@ -323,9 +320,7 @@ class WordpressController extends Controller
             }
             array_push($end_lines, $line_item);
         }
-//                        dd($end_lines);
         $end_lines=json_decode(json_encode($end_lines),FALSE);
-//                        dd($end_lines);
         $wordpress_order = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->where('wordpress_order_id', $order->id)->first();
         if($wordpress_order === null){
             $wordpress_order = new WordpressOrder();
@@ -363,7 +358,7 @@ class WordpressController extends Controller
         $wordpress_order->cart_hash = $order->cart_hash;
         $wordpress_order->meta_data = json_encode($order->meta_data);
         $wordpress_order->line_items = json_encode($end_lines);
-//                        dd($end_lines);
+
         foreach ($end_lines as $line_item){
 
             $line_item_save = WordpressLineItem::where('shop_id', session()->get('current_shop_domain'))->where('id', $line_item->id)->first();
