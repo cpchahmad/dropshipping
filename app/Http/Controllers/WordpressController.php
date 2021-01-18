@@ -249,13 +249,13 @@ class WordpressController extends Controller
 
 //                foreach($orders as $order){
 ////                    dd($order->_links->self);
-//                    $shop_domain = json_decode(json_encode($order->_links->self['0']->href),True);
+//                    $shop_domain = json_decode(json_encode($order->_links->collection[0]->href),FALSE);
 //                    dd($shop_domain);
 //                    $data = explode("wp-json",$shop_domain);
 //                    $current_shop_domain =$data['0'];
 //                    dd($current_shop_domain);
 //                }
-//
+
 //                $this->worpress_store_order($orders);
 
                 if($orders != null){
