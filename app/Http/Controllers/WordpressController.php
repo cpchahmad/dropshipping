@@ -248,7 +248,9 @@ class WordpressController extends Controller
                 $orders =  json_decode(json_encode($all_orders), FALSE);
 
 //                foreach($orders as $order){
+////                    dd($order->_links->self);
 //                    $shop_domain = json_decode(json_encode($order->_links->self['0']->href),True);
+//                    dd($shop_domain);
 //                    $data = explode("wp-json",$shop_domain);
 //                    $current_shop_domain =$data['0'];
 //                    dd($current_shop_domain);

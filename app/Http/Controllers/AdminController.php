@@ -1539,17 +1539,19 @@ class AdminController extends Controller
         $new->save();
 
         try {
-            foreach ($request->_links as $link){
-                $new = new ErrorLog();
-                $new->message = json_encode($link->self);
-                $new->save();
-//                $new = new ErrorLog();
-//                $new->message = json_encode($link->self);
-//                $new->save();
-            }
-//            $data = explode("wp-json",$shop_domain);
-//            $current_shop_domain =$data['0'];
+            foreach ($request->_links->self as $href){
+                $shop_domain = $href->href;
 
+                $new = new ErrorLog();
+                $new->message = json_encode($shop_domain);
+                $new->save();
+
+                $data = explode("wp-json",$shop_domain);
+                $current_shop_domain =$data['0'];
+                $new = new ErrorLog();
+                $new->message = json_encode($current_shop_domain);
+                $new->save();
+            }
 
 
 //            $current_shop_domain = Shop::where('id', 4)->pluck('shop_domain')->first();
