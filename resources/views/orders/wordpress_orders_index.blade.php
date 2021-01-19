@@ -681,7 +681,7 @@
                                                             <h5>
                                                                 Order #{{ $order->number }}
                                                                 <br>
-                                                                {{date_format($order->created_at,'M D, Y')}}
+                                                                {{date_format($order->created_at,'M d, Y')}}
 {{--                                                                {{Carbon\Carbon::parse($order->date_completed)->format('M H, Y')}}--}}
                                                             </h5>
                                                         </div>
