@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\ShopsController;
+use App\Shop;
+use App\WordpressOrder;
+use Automattic\WooCommerce\Client;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 
@@ -129,3 +132,11 @@ Route::get('test', function() {
    dd(count($orders));
 });
 
+route::get('check', function (){
+//    $current_shop_domain = Shop::where('id', 5)->pluck('shop_domain')->first();
+//    $wordpress_shop = Shop::where('shop_domain', $current_shop_domain)->first();
+//    $woocommerce = new Client($wordpress_shop->shop_domain, $wordpress_shop->api_key, $wordpress_shop->api_secret, ['wp_api' => true, 'version' => 'wc/v3',]);
+
+//    $wordpress_order = WordpressOrder::where('shop_id', 5)->where('wordpress_order_id', 2144)->first();
+//    dd($wordpress_order);
+});
