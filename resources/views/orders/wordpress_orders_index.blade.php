@@ -296,7 +296,7 @@
                             </td>
                             <td class="text-center" style="font-size: 12px !important;">
                                 <a class="d-block font-weight-bold" style="font-size: 14px !important;">{{ $order->number }}</a>
-                                {{Carbon\Carbon::parse($order->created_at)->format('M H, Y')}}
+                                {{date_format($order->created_at,'M H, Y')}}
                             </td>
                             <td class="" style="font-size: 12px !important;">
                                 <span class="text-left font-w400 text-uppercase badge badge-dark">{{ $order->fulfillment }}</span>
