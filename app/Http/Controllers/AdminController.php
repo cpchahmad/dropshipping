@@ -153,9 +153,9 @@ class AdminController extends Controller
             $orders = WordpressOrder::query();
             if ($request->has('search')) {
                 $orders = $orders->where('shop_id', session()->get('current_shop_domain'))->where('number', 'LIKE', '%' . $request->input('search') . '%')
-                    ->orderBy('date_paid', 'DESC')->paginate(30);
+                    ->orderBy('created_at', 'DESC')->paginate(30);
             }else{
-                $orders =WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->orderBy('date_paid', 'DESC')->paginate(30);
+                $orders =WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->orderBy('created_at', 'DESC')->paginate(30);
             }
 
             return view('orders.wordpress_orders_index')->with([
