@@ -1587,12 +1587,12 @@ class AdminController extends Controller
                 array_push($end_lines, $line_item);
             }
             $end_lines=json_decode(json_encode($end_lines),FALSE);
-            $wordpress_order = WordpressOrder::where('shop_id', 3)->where('wordpress_order_id', $request->id)->first();
+            $wordpress_order = WordpressOrder::where('shop_id', '3')->where('wordpress_order_id', $request->id)->first();
             if($wordpress_order === null){
                 $wordpress_order = new WordpressOrder();
             }
             $wordpress_order->wordpress_order_id = $request->id;
-            $wordpress_order->shop_id = 3;
+            $wordpress_order->shop_id = '3';
             $wordpress_order->parent_id = $request->parent_id;
             $wordpress_order->number = $request->number;
             $wordpress_order->order_key = $request->order_key;
@@ -1626,13 +1626,13 @@ class AdminController extends Controller
             $wordpress_order->line_items = json_encode($end_lines);
             foreach ($end_lines as $line_item){
 
-                $line_item_save = WordpressLineItem::where('shop_id', 3)->where('id', $line_item->id)->first();
+                $line_item_save = WordpressLineItem::where('shop_id', '3')->where('id', $line_item->id)->first();
 
                 if($line_item_save === null){
                     $line_item_save = new WordpressLineItem();
                 }
                 $line_item_save->id = $line_item->id;
-                $line_item_save->shop_id = 3;
+                $line_item_save->shop_id = '3';
                 $line_item_save->wordpress_order_id = $request->id;
                 $line_item_save->wordpress_product_id = $line_item->product_id;
                 $line_item_save->wordpress_variation_id = $line_item->variation_id;
