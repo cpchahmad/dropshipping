@@ -275,9 +275,11 @@
                             </th>
                             <th class="text-center" style="width: 80px;">Order</th>
                             <th class="text-center">Products</th>
+                            @hasanyrole('admin|shipping_team')
                             <th class="text-center" style="width: 150px;">Tracking & Shipping</th>
                             <th class="text-center" style="width: 120px;">Shipping Method</th>
                             <th class="text-center" style="width: 150px;">Shipping Address</th>
+                        @endrole
                             <th class="text-center" style="width: 220px;">Notes</th>
                             <th class="text-center" style="width: 120px;"></th>
                         </tr>
@@ -300,7 +302,7 @@
                             </td>
                             <td class="" style="font-size: 12px !important;">
                                 <span class="text-left font-w400 text-uppercase badge badge-dark">{{ $order->fulfillment }}</span>
-                                @role('admin')
+                                @hasanyrole('admin|shipping_team')
                                     <span class="text-left font-weight-bold text-uppercase ml-4" style="font-size: 15px;">{{$order->currency_symbol}}{{ $order->total }}</span>
                                 @endrole
                                     @php
@@ -558,6 +560,7 @@
                                     @endforeach
 
                             </td>
+                            @hasanyrole('admin|shipping_team')
                             <td class="text-left align-middle" style="font-size: 13px !important;">
 {{--                                @if($order->order_fulfillments()->count() > 0)--}}
 
@@ -593,6 +596,7 @@
 {{--                                @endif--}}
                             </td>
 
+
                             <td class="align-middle text-center" style="font-size: 12px !important;">
                                 @foreach(json_decode($order->shipping_lines) as $ship_method)
                                     {{ $ship_method->method_title }}
@@ -603,6 +607,7 @@
                                     {{ $ship_add }}
                                 @endforeach
                             </td>
+                            @endrole
                             <td  class="font-w600 text-center align-middle change-td-color" @if($order->note_check != false) style="background: yellow;"  @endif id="{{ $order->id }}">
                                 <button type="button" class="btn btn-sm btn-light push border-dark" style="border-radius: 100%" data-toggle="modal" data-target="#notesModal{{$order->id}}">
                                     <i class="si si-note "></i>
@@ -649,8 +654,9 @@
 {{--                            @dd($order)--}}
                             <td class="align-middle" style="font-size: 12px !important;">
                                <div class="">
+                                   @hasanyrole('admin|shipping_team')
                                    <button type="button" class="btn btn-sm btn-success push w-100" data-toggle="modal" data-target="#printModal{{$order->id}}">Print</button>
-
+                                   @endrole
                                    @if($order->status_check)
 {{--                                       <form action="{{ route('admin.change.order.status', $order->wordpress_order_id) }}" method="POST">--}}
 {{--                                           @csrf--}}

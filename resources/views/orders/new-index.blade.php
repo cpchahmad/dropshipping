@@ -274,9 +274,11 @@
                             </th>
                             <th class="text-center" style="width: 80px;">Order</th>
                             <th class="text-center">Products</th>
+                            @hasanyrole('admin|shipping_team')
                             <th class="text-center" style="width: 150px;">Tracking & Shipping</th>
                             <th class="text-center" style="width: 120px;">Shipping Method</th>
                             <th class="text-center" style="width: 150px;">Shipping Address</th>
+                            @endrole
                             <th class="text-center" style="width: 220px;">Notes</th>
                             <th class="text-center" style="width: 120px;"></th>
                         </tr>
@@ -515,6 +517,7 @@
                                     @endforeach
 
                             </td>
+                            @hasanyrole('admin|shipping_team')
                             <td class="text-left align-middle" style="font-size: 13px !important;">
                                 @if($order->order_fulfillments()->count() > 0)
 
@@ -555,6 +558,7 @@
                             <td class="align-middle" style="font-size: 12px !important;">
                                 {{ $order->ship_add }}
                             </td>
+                            @endrole
 {{--                            @dd($order)--}}
                             <td class="font-w600 text-center align-middle" @if($order->notes_check) style="background: yellow"  @endif id="{{ $order->id }}">
                                 <button type="button" class="btn btn-sm btn-light push border-dark" style="border-radius: 100%" data-toggle="modal" data-target="#notesModal{{$order->id}}">
@@ -600,10 +604,13 @@
 
                             </td>
                             <td class="align-middle" style="font-size: 12px !important;">
+
                                <div class="">
+                                   @hasanyrole('admin|shipping_team')
                                    <button type="button" class="btn btn-sm btn-success push w-100" data-toggle="modal" data-target="#printModal{{$order->id}}">Print</button>
 {{--                                    @dd($order)--}}
-                                    @if($order->status_check)
+                                   @endrole
+                                   @if($order->status_check)
                                         <button type="button" class="btn btn-sm btn-primary push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Mark as Fulfilled</button>
                                     @endif
                                </div>
