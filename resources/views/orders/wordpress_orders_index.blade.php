@@ -321,6 +321,7 @@
                                                 </a>
                                             </div>
                                             <div class="col-7">
+{{--                                                @dd($item)--}}
                                                 <span class="d-block font-weight-lighter">{{$item->name}}     @if(!(is_null($item->sku)) && $item->sku != '')<span class=" font-weight-lighter"><span class="font-weight-bold"> </span>@endif</span>
                                                 @if(isset($item->shopify_variant->title) && $item->shopify_variant->title !== "Default Title")<span class="d-block font-weight-bold">{{$item->shopify_variant->title}}</span>@endif
                                                 @if(!(is_null($item->sku)) && $item->sku != '')<span class="d-block font-weight-lighter"><span class="font-weight-bold">SKU: </span> {{$item->sku}}</span>@endif

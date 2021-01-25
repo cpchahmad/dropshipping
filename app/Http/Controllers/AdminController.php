@@ -1821,7 +1821,7 @@ class AdminController extends Controller
 
     }
     public function showWordpressLineImages($line_item_product_id) {
-
+//dd($line_item_product_id);
         $product_image = WordpressProduct::where('wordpress_product_id', $line_item_product_id)->get();
 //dd($product_image);
         $images = [];

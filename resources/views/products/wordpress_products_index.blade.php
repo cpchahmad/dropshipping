@@ -239,6 +239,7 @@
                                             <tr>
                                                 <td class="">
                                                     <div class="text-left pt-3">
+{{--                                                        @dd()--}}
 {{--                                                        @dd(json_decode($product->images))--}}
                                                         <?php
                                                         if(isset($product->images) && $product->images != null){

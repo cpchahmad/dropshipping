@@ -244,7 +244,7 @@ class WordpressController extends Controller
                     $all_orders = array_merge($all_orders,$orders);
                     $page++;
                 } while (count($orders) > 0);
-
+//                dd($all_orders);
                 $orders =  json_decode(json_encode($all_orders), FALSE);
 
 //                foreach($orders as $order){
@@ -292,13 +292,14 @@ class WordpressController extends Controller
     public function wordpress_store_order($order, $woocommerce){
 
         $end_lines=[];
+//        dd($order);
 
         foreach (json_decode(json_encode($order->line_items),true) as $line_item){
             $variation_id = $line_item['variation_id'];
             $product_id = $line_item['product_id'];
-
-            if($variation_id != null  && $product_id!= null){
-
+//dd($line_item);
+            if($variation_id != null  && $product_id != null){
+//dd('not null');
                 $products = $woocommerce->get('products/'.$product_id);
                 $variations = $woocommerce->get('products/'.$products->id.'/variations/'.$variation_id);
                 $product_images_array = $products->images;
@@ -311,19 +312,34 @@ class WordpressController extends Controller
                         $line_item['image']= "null";
                     }
                 }
-            }elseif ($product_id!= 0 || $variation_id == 0){
-
+            }elseif ($product_id != 0 && $variation_id == 0){
+//dd('null');
                 $products = $woocommerce->get('products/'.$product_id);
                 $product_images_array = $products->images;
-
-                foreach ($product_images_array as $product_image){
-                    $line_item['image']=$product_image->src;
+//dd();
+//                foreach ($product_images_array as $product_image){
+                $i = 0;
+                $len = count($product_images_array);
+                foreach ($product_images_array as $item) {
+                    if ($i == 0) {
+                        $line_item['image']=$item->src;
+                        break;
+                    } else if ($i == $len - 1) {
+                        continue;
+                    }
+                    $i++;
                 }
+//                if(!isset($line_item['image'])){
+//                    $line_item['image']=$product_images_array['0']->src;
+//                }
+
+//                }
             }elseif ($product_id == 0){
                 $line_item['image']= "null";
             }
             array_push($end_lines, $line_item);
         }
+//        dd($line_item);
         $end_lines=json_decode(json_encode($end_lines),FALSE);
         $wordpress_order = WordpressOrder::where('shop_id', session()->get('current_shop_domain'))->where('wordpress_order_id', $order->id)->first();
         if($wordpress_order === null){

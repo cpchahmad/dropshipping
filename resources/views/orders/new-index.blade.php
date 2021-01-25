@@ -612,7 +612,7 @@
                                    @endrole
                                    @if($order->status_check)
                                         <button type="button" class="btn btn-sm btn-primary push" data-toggle="modal" data-target="#updateModal{{$order->id}}">Mark as Fulfilled</button>
-                                    @endif
+                                   @endif
                                </div>
 
                                 <div class="modal" id="printModal{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="modal-block-small" aria-hidden="true">
