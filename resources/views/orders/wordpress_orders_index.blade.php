@@ -279,14 +279,15 @@
                             <th class="text-center" style="width: 150px;">Tracking & Shipping</th>
                             <th class="text-center" style="width: 120px;">Shipping Method</th>
                             <th class="text-center" style="width: 150px;">Shipping Address</th>
-                        @endrole
+                            @endrole
                             <th class="text-center" style="width: 220px;">Notes</th>
                             <th class="text-center" style="width: 120px;"></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($orders as $index =>$order)
-                        <tr style="background: {{ $order->bg }}; color: {{ $order->color }}">
+                            @if($order->status != 'failed')
+                                <tr style="background: {{ $order->bg }}; color: {{ $order->color }}">
 {{--                            @dd($order)--}}
                             <td>
                                 @if($order->is_unfulfilled)
@@ -995,6 +996,7 @@
                                 </div>
                             </td>
                         </tr>
+                            @endif
                         @endforeach
                     </tbody>
                 </table>

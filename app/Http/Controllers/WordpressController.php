@@ -259,6 +259,7 @@ class WordpressController extends Controller
 //                $this->worpress_store_order($orders);
 
                 if($orders != null){
+//                    dd($orders);
                     foreach ($orders as $order){
                         $this->wordpress_store_order($order, $woocommerce);
                     }
