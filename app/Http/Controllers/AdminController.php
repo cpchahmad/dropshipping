@@ -1436,16 +1436,16 @@ class AdminController extends Controller
 
                     $product_images_array = $products->images;
 
-                    foreach ($product_images_array as $product_image){
-
-                        if( $product_image->id === $variations->image->id){
-                            $line_item['image']=$variations->image->src;
-                        }elseif($product_image->id != null){
-                            $line_item['image']=$product_image->src;
-
-                        }else{
-                            $line_item['image']= "null";
+                    $i = 0;
+                    $len = count($product_images_array);
+                    foreach ($product_images_array as $item) {
+                        if ($i == 0) {
+                            $line_item['image']=$item->src;
+                            break;
+                        } else if ($i == $len - 1) {
+                            continue;
                         }
+                        $i++;
                     }
                 }elseif ($product_id!= 0 && $variation_id == 0){
 
@@ -1564,14 +1564,16 @@ class AdminController extends Controller
                     $products = $woocommerce->get('products/'.$product_id);
                     $variations = $woocommerce->get('products/'.$products->id.'/variations/'.$variation_id);
                     $product_images_array = $products->images;
-                    foreach ($product_images_array as $product_image){
-                        if( $product_image->id === $variations->image->id){
-                            $line_item['image']=$variations->image->src;
-                        }elseif($product_image->id != null){
-                            $line_item['image']=$product_image->src;
-                        }else{
-                            $line_item['image']= "null";
+                    $i = 0;
+                    $len = count($product_images_array);
+                    foreach ($product_images_array as $item) {
+                        if ($i == 0) {
+                            $line_item['image']=$item->src;
+                            break;
+                        } else if ($i == $len - 1) {
+                            continue;
                         }
+                        $i++;
                     }
                 }elseif ($product_id != 0 && $variation_id == 0){
 
