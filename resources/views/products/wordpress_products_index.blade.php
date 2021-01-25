@@ -243,12 +243,25 @@
 {{--                                                        @dd(json_decode($product->images))--}}
                                                         <?php
                                                         if(isset($product->images) && $product->images != null){
-                                                            foreach (json_decode($product->images) as $image){
-                                                                $img = $image->src;
+//                                                            foreach (json_decode($product->images) as $image){
+//                                                                $img = $image->src;
+//                                                            }
+
+                                                            $i = 0;
+                                                            $len = count(json_decode($product->images));
+                                                            foreach (json_decode($product->images) as $item) {
+                                                                if ($i == 0) {
+                                                                    $img=$item->src;
+                                                                    break;
+                                                                } else if ($i == $len - 1) {
+                                                                    continue;
+                                                                }
+                                                                $i++;
                                                             }
                                                         }
 
                                                         ?>
+{{--                                                        @dd($img)--}}
                                                         <a @if(isset($img)) href='{{ $img }}' @else href="{{asset('random_product.jpg')}}" @endif  class="fancybox" rel="group">
                                                             <img @if(isset($img))  src="{{ $img }}" @else src="{{asset('random_product.jpg')}}" @endif alt="No Image Availble" style="width: 90px; height: auto" class="hover-img">
                                                         </a>
