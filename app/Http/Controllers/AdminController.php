@@ -1447,14 +1447,23 @@ class AdminController extends Controller
                             $line_item['image']= "null";
                         }
                     }
-                }elseif ($product_id!= 0 || $variation_id == 0){
+                }elseif ($product_id!= 0 && $variation_id == 0){
 
                     $products = $woocommerce->get('products/'.$product_id);
                     $product_images_array = $products->images;
 
-                    foreach ($product_images_array as $product_image){
-                        $line_item['image']=$product_image->src;
+                    $i = 0;
+                    $len = count($product_images_array);
+                    foreach ($product_images_array as $item) {
+                        if ($i == 0) {
+                            $line_item['image']=$item->src;
+                            break;
+                        } else if ($i == $len - 1) {
+                            continue;
+                        }
+                        $i++;
                     }
+
                 }elseif ($product_id == 0){
                     $line_item['image']= "null";
                 }
